@@ -1,0 +1,59 @@
+using Smug.Models;
+
+namespace Smug.Services.Interfaces;
+
+public interface IIpRepository
+{
+    /// <summary>
+    /// Saves the specified IP address asynchronously.
+    /// </summary>
+    /// <param name="ip">The IP address to be saved.</param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the newly created <see cref="IpAddressInfo"/> object.</returns>
+    public Task<IpAddressInfo> SaveIpAsync(string ip);
+    /// <summary>
+    /// Bans the specified IP address asynchronously.
+    /// </summary>
+    /// <param name="ip">The IP address to be banned.</param>
+    /// <param name="reason">The reason for banning the IP address.</param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the banned <see cref="IpAddressInfo"/> object.</returns>
+    public Task<IpAddressInfo> BanIpAsync(string ip, string? reason);
+
+    /// <summary>
+    /// Bans the specified IP address asynchronously.
+    /// </summary>
+    /// <param name="ip">The IP address to be banned.</param>
+    /// <param name="shouldHide">Specifies whether the ban should be hidden.</param>
+    /// <param name="reason">The reason for banning the IP address.</param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the banned <see cref="IpAddressInfo"/> object.</returns>
+    public Task<IpAddressInfo> BanIpAsync(string ip, bool shouldHide, string? reason);
+
+    /// <summary>
+    /// Unbans the specified IP address asynchronously.
+    /// </summary>
+    /// <param name="ip">The IP address to be unbanned.</param>
+    /// <param name="reason">The reason for unbanning the IP address.</param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation.</returns>
+    public Task UnbanIpAsync(string ip, string? reason);
+
+    /// <summary>
+    /// Finds and retrieves the banned IP information based on the specified IP address asynchronously.
+    /// </summary>
+    /// <param name="ip">The IP address to search for.</param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the found <see cref="IpAddressInfo"/> object, or null if not found.</returns>
+    public Task<IpAddressInfo?> FindIpAsync(string ip);
+
+    /// <summary>
+    /// Finds and retrieves the banned IP information based on the specified identifier asynchronously.
+    /// </summary>
+    /// <param name="id">The identifier of the banned IP to search for.</param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the found <see cref="IpAddressInfo"/> object, or null if not found.</returns>
+    public Task<IpAddressInfo?> FindIpAsync(Guid id);
+    
+    /// <summary>
+    /// Whitelists the specified IP address asynchronously.
+    /// </summary>
+    /// <param name="ip">The IP address to be whitelisted.</param>
+    /// <param name="reason">The reason for whitelisting the IP address.</param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation.</returns>
+    public Task WhitelistIpAsync(string ip, string? reason);
+}

@@ -1,0 +1,6 @@
+@Smug_HostAddress = http://localhost:5243
+
+GET {{Smug_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+#
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smug", "Smug.csproj", "{180363EE-C4C9-4DDF-87AA-B3144B4DC749}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{0DFBC8EE-37B4-4A61-AE52-BE5153703205}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{180363EE-C4C9-4DDF-87AA-B3144B4DC749}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{180363EE-C4C9-4DDF-87AA-B3144B4DC749}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{180363EE-C4C9-4DDF-87AA-B3144B4DC749}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{180363EE-C4C9-4DDF-87AA-B3144B4DC749}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DFBC8EE-37B4-4A61-AE52-BE5153703205}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DFBC8EE-37B4-4A61-AE52-BE5153703205}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DFBC8EE-37B4-4A61-AE52-BE5153703205}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DFBC8EE-37B4-4A61-AE52-BE5153703205}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
