@@ -1,4 +1,5 @@
 using Smug.Models;
+using Smug.Exceptions;
 
 namespace Smug.Services.Interfaces;
 
@@ -22,8 +23,9 @@ public interface ITokenRepository
     /// </summary>
     /// <param name="token">Token to unban</param>
     /// <param name="reason">Reason for unban</param>
+    /// <throws><see cref="TokenRepositoryException"/> if the token is not banned.</throws>
     /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation.</returns>
-    public Task UnbanTokenAsync(string token, string? reason);
+    public Task UnbanTokenAsync(string token, string reason);
     /// <summary>
     /// Find token by token string
     /// </summary>
@@ -42,6 +44,7 @@ public interface ITokenRepository
     /// </summary>
     /// <param name="token">Token string</param>
     /// <param name="ipAddressIds">List of ids of ip addresses</param>
+    /// <throws><see cref="TokenRepositoryException"/> If the token is not found.</throws>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public Task AddIpAddressesAsync(string token, List<Guid> ipAddressIds);
 }

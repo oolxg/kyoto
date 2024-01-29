@@ -105,7 +105,8 @@ public class IpRepository : IIpRepository
         
         if (ipToChange == null)
         {
-            throw new IpRepositoryException("IpAddressInfo is not in the database");
+            ipToChange = new IpAddressInfo(ip);
+            await _dbContext.Ips.AddAsync(ipToChange);
         }
         
         ipToChange.ShouldHideIfBanned = shouldHide;

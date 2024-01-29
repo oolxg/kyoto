@@ -1,4 +1,5 @@
 using Smug.Models;
+using Smug.Exceptions;
 
 namespace Smug.Services.Interfaces;
 
@@ -15,6 +16,7 @@ public interface IIpRepository
     /// </summary>
     /// <param name="ip">The IP address to be banned.</param>
     /// <param name="reason">The reason for banning the IP address.</param>
+    /// <throws><see cref="IpRepositoryException"/> if the IP address is already banned.</throws>
     /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the banned <see cref="IpAddressInfo"/> object.</returns>
     public Task<IpAddressInfo> BanIpAsync(string ip, string reason);
 
@@ -24,6 +26,7 @@ public interface IIpRepository
     /// <param name="ip">The IP address to be banned.</param>
     /// <param name="shouldHide">Specifies whether the ban should be hidden.</param>
     /// <param name="reason">The reason for banning the IP address.</param>
+    /// <throws><see cref="IpRepositoryException"/> if the IP address is already banned.</throws>
     /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the banned <see cref="IpAddressInfo"/> object.</returns>
     public Task<IpAddressInfo> BanIpAsync(string ip, bool shouldHide, string reason);
 
@@ -32,6 +35,7 @@ public interface IIpRepository
     /// </summary>
     /// <param name="ip">The IP address to be unbanned.</param>
     /// <param name="reason">The reason for unbanning the IP address.</param>
+    /// <throws><see cref="IpRepositoryException"/> if the IP address is not banned.</throws>
     /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation.</returns>
     public Task UnbanIpAsync(string ip, string reason);
 
@@ -54,6 +58,7 @@ public interface IIpRepository
     /// </summary>
     /// <param name="ip">The IP address to be whitelisted.</param>
     /// <param name="reason">The reason for whitelisting the IP address.</param>
+    /// <throws><see cref="IpRepositoryException"/> if the IP address is already whitelisted.</throws>
     /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation.</returns>
     public Task WhitelistIpAsync(string ip, string reason);
     

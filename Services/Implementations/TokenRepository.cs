@@ -45,13 +45,19 @@ public class TokenRepository : ITokenRepository
         return bannedToken;
     }
 
-    public async Task UnbanTokenAsync(string token, string? reason = null)
+    public async Task UnbanTokenAsync(string token, string reason)
     {
         var bannedToken = await FindTokenAsync(token);
         
         if (bannedToken == null)
         {
-            throw new TokenRepositoryException("TokenInfo is not in the database");
+            bannedToken = new TokenInfo(token);
+            await _context.Tokens.AddAsync(bannedToken);
+        }
+        
+        if (bannedToken.Status != TokenInfo.TokenStatus.Banned)
+        {
+            throw new TokenRepositoryException("TokenInfo is not banned");
         }
         
         bannedToken.UpdateStatus(TokenInfo.TokenStatus.Normal, reason);

@@ -20,5 +20,6 @@
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.IpRepositoryTests&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.TokenRepositoryTests.AddIpAddressesAsync_ShouldAddIpAddresses&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.TokenRepositoryTests&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.UserRequestRepositoryTests&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

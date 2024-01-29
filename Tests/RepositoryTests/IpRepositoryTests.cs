@@ -271,7 +271,7 @@ public class IpRepositoryTests
 
     [Fact]
 
-    public async Task ChangeShouldHideIfBannedAsync_ShouldChangeShouldHideIfBanned()
+    public async Task ChangeShouldHideIfBannedAsync_ShouldChangeShouldHideStatus()
     {
         // Arrange
         const string ip = "192.168.0.1";
@@ -285,25 +285,6 @@ public class IpRepositoryTests
         Assert.Single(ips);
         Assert.Equal(ip, ips[0].Ip);
         Assert.True(ips[0].ShouldHideIfBanned);
-    }
-
-    [Fact]
-    public async Task ChangeShouldHideIfBannedAsync_ShouldThrowExceptionIfIpNotFound()
-    {
-        // Arrange
-        const string ip = "192.168.0.1";
-
-        // Act
-        try
-        {
-            await _ipRepository.ChangeShouldHideIfBannedAsync(ip, true);
-            Assert.Fail("ChangeShouldHideIfBannedAsync should throw an exception if IpAddressInfo is not in the database");
-        }
-        catch (IpRepositoryException)
-        {
-            // Assert
-            Assert.True(true);
-        }
     }
 
     [Fact]

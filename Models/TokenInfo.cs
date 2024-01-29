@@ -44,7 +44,7 @@ public class TokenInfo
         UserRequests = new List<UserRequest>();
     }
     
-    public void UpdateStatus(TokenStatus status, string? reason)
+    public void UpdateStatus(TokenStatus status, string reason)
     {
         Status = status;
         Reason = reason;
