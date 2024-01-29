@@ -186,7 +186,7 @@ namespace Smug.Migrations
                         .HasForeignKey("IpAddressInfoId");
 
                     b.HasOne("Smug.Models.TokenInfo", null)
-                        .WithMany("BannedIpTokens")
+                        .WithMany("IpTokens")
                         .HasForeignKey("TokenInfoId");
                 });
 
@@ -210,7 +210,7 @@ namespace Smug.Migrations
 
             modelBuilder.Entity("Smug.Models.TokenInfo", b =>
                 {
-                    b.Navigation("BannedIpTokens");
+                    b.Navigation("IpTokens");
 
                     b.Navigation("UserRequests");
                 });

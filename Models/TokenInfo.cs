@@ -24,14 +24,14 @@ public class TokenInfo
     
     [Column(TypeName = "timestamp with time zone"), Required]
     public DateTime CreatedAt { get; set; }
-    public List<IpToken> BannedIpTokens { get; set; }
+    public List<IpToken> IpTokens { get; set; }
     public List<UserRequest> UserRequests { get; set; }
     
     public enum TokenStatus 
     {
         Whitelisted,
-        Normal,
-        Banned
+        Banned,
+        Normal
     }
     
     public TokenInfo(string token)
@@ -40,7 +40,7 @@ public class TokenInfo
         Token = token;
         Status = TokenStatus.Normal;
         CreatedAt = DateTime.UtcNow;
-        BannedIpTokens = new List<IpToken>();
+        IpTokens = new List<IpToken>();
         UserRequests = new List<UserRequest>();
     }
     
@@ -53,6 +53,5 @@ public class TokenInfo
     
     public TokenInfo()
     {
-        
     }
 }

@@ -52,10 +52,9 @@ public class IpAddressInfo
 
     public IpAddressInfo()
     {
-        
     }
 
-    public void UpdateStatus(IpStatus status, string? reason)
+    public void UpdateStatus(IpStatus status, string reason)
     {
         Status = status;
         StatusChangeReason = reason;

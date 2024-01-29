@@ -1,4 +1,4 @@
-namespace Smug.Utils;
+namespace Smug.Exceptions;
 
 public class IpRepositoryException : Exception
 {

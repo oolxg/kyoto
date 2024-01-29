@@ -1,4 +1,3 @@
-using System.Net;
 using Microsoft.EntityFrameworkCore;
 using Smug.Models;
 using Smug.Models.SmugDbContext;
@@ -28,7 +27,7 @@ public class UserRequestRepository : IUserRequestRepository
     
     public async Task<UserRequest?> FindUserRequestAsync(Guid requestId)
     {
-        return await _context.UserRequests.FirstOrDefaultAsync(ur => ur.Id == requestId);
+        return await _context.UserRequests.FindAsync(requestId);
     }
 
     public async Task<List<UserRequest>> FindUserRequestByTokenAsync(string token)

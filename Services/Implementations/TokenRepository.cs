@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Smug.Models;
 using Smug.Models.SmugDbContext;
 using Smug.Services.Interfaces;
-using Smug.Utils;
+using Smug.Exceptions;
 
 namespace Smug.Services.Implementations;
 
@@ -15,7 +15,7 @@ public class TokenRepository : ITokenRepository
         _context = context;
     }
     
-    public async Task<TokenInfo> SaveTokenAsync(string token)
+    public async Task<TokenInfo> SaveTokenIfNeededAsync(string token)
     {
         var tokenInfo = await FindTokenAsync(token);
         if (tokenInfo != null)
@@ -29,26 +29,32 @@ public class TokenRepository : ITokenRepository
         return tokenInfo;
     }
 
-    public async Task<TokenInfo> BanTokenAsync(string token, string? reason = null)
-    {
-        var bannedToken = await FindTokenAsync(token) ?? new TokenInfo(token);
-        bannedToken.UpdateStatus(TokenInfo.TokenStatus.Banned, reason);
-
-        await _context.Tokens.AddAsync(bannedToken);
-        await _context.SaveChangesAsync();
-        return bannedToken;
-    }
-
-    public async Task UnbanTokenAsync(string token)
+    public async Task<TokenInfo> BanTokenAsync(string token, string reason)
     {
         var bannedToken = await FindTokenAsync(token);
         
         if (bannedToken == null)
         {
-            throw new TokenRepositoryException("TokenInfo is not banned");
+            bannedToken = new TokenInfo(token);
+            await _context.Tokens.AddAsync(bannedToken);    
         }
         
-        _context.Tokens.Remove(bannedToken);
+        bannedToken.UpdateStatus(TokenInfo.TokenStatus.Banned, reason);
+        
+        await _context.SaveChangesAsync();
+        return bannedToken;
+    }
+
+    public async Task UnbanTokenAsync(string token, string? reason = null)
+    {
+        var bannedToken = await FindTokenAsync(token);
+        
+        if (bannedToken == null)
+        {
+            throw new TokenRepositoryException("TokenInfo is not in the database");
+        }
+        
+        bannedToken.UpdateStatus(TokenInfo.TokenStatus.Normal, reason);
         await _context.SaveChangesAsync();
     }
     
@@ -57,8 +63,28 @@ public class TokenRepository : ITokenRepository
         return await _context.Tokens.FirstOrDefaultAsync(bt => bt.Token == token);;
     }
 
-    public Task<TokenInfo?> FindTokenAsync(Guid id)
+    public async Task<TokenInfo?> FindTokenAsync(Guid id)
     {
-        return _context.Tokens.FirstOrDefaultAsync(bt => bt.Id == id);
+        return await _context.Tokens.FindAsync(id);
+    }
+    
+    public async Task AddIpAddressesAsync(string token, List<Guid> ipAddressIds)
+    {
+        var tokenInfo = await FindTokenAsync(token);
+        if (tokenInfo == null)
+        {
+            throw new TokenRepositoryException("TokenInfo is not in the database");
+        }
+        
+        foreach (var ipAddress in ipAddressIds)
+        {
+            tokenInfo.IpTokens.Add(new IpToken
+            {
+                IpId = ipAddress,
+                TokenId = tokenInfo.Id
+            });
+        }
+        
+        await _context.SaveChangesAsync();
     }
 }

@@ -1,11 +1,12 @@
 using Microsoft.EntityFrameworkCore;
+using Smug.Middlewares;
 using Smug.Models.SmugDbContext;
 using Smug.Services.Implementations;
 using Smug.Services.Interfaces;
 
 namespace Smug;
 
-public class Program
+public class Startup
 {
     public static void Main(string[] args)
     {
@@ -25,6 +26,11 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         var app = builder.Build();
+        
+        app.UseWhen(context => context.Request.Path == "/api/v1/block", cfg =>
+        {
+            cfg.UseMiddleware<QueryParamCheckMiddleware>();
+        });
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())

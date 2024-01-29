@@ -10,10 +10,10 @@ public class RestrictedUrl
     [Column(TypeName = "uuid"), Required]
     public Guid Id { get; set; }
     
-    [RegularExpression(@"^([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$"), Required]  
+    [Column(TypeName = "text"), RegularExpression(@"^([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$"), Required]
     public string Host { get; set; }
     
-    [Column(TypeName = "text"), Required]
+    [Column(TypeName = "text"), RegularExpression(@"^\/.*\/$"), Required]
     public string Path { get; set; }
     
     [Column(TypeName = "text"), Required]
