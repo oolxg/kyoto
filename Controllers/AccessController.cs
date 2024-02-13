@@ -6,21 +6,14 @@ namespace Smug.Controllers;
 
 [ApiController]
 [Route("api/v1/")]
-public class AccessController : ControllerBase
+public class AccessController(
+    IIpRepository ipRepository, 
+    ITokenRepository tokenRepository,
+    IUserRequestRepository userRequestRepository) : ControllerBase
 {
-    private readonly IIpRepository _ipRepository;
-    private readonly ITokenRepository _tokenRepository;
-    private readonly IUserRequestRepository _userRequestRepository;
-    
-    public AccessController(
-        IIpRepository ipRepository,
-        ITokenRepository tokenRepository,
-        IUserRequestRepository userRequestRepository)
-    {
-        _ipRepository = ipRepository;
-        _tokenRepository = tokenRepository;
-        _userRequestRepository = userRequestRepository;
-    }
+    private IIpRepository IpRepository => ipRepository;
+    private ITokenRepository TokenRepository => tokenRepository;
+    private IUserRequestRepository UserRequestRepository => userRequestRepository;
     
     [HttpGet("block/ip/{ip}")]
     public async Task<IActionResult> BanIp(string ip, [FromQuery] string reason)
@@ -37,12 +30,12 @@ public class AccessController : ControllerBase
             return BadRequest(response);
         }
         
-        var bannedIp = await _ipRepository.BanIpAsync(ip, reason);
+        var bannedIp = await IpRepository.BanIpAsync(ip, reason);
         
-        var requests = await _userRequestRepository.FindUserRequestByIpAsync(ip);
-        foreach (var request in requests.Where(request => request.Token != null))
+        var requests = await UserRequestRepository.FindUserRequestByIpAsync(ip);
+        foreach (var request in requests.Where(request => request.TokenInfo?.Token != null))
         {
-            await _tokenRepository.BanTokenAsync(request.Token!, reason);
+            await TokenRepository.BanTokenAsync(request.TokenInfo!.Token, reason);
         }
         
         return Ok(bannedIp);
@@ -51,12 +44,12 @@ public class AccessController : ControllerBase
     [HttpGet("block/token/{token}")]
     public async Task<IActionResult> BanToken(string token, [FromQuery] string reason)
     {
-        var bannedToken = await _tokenRepository.BanTokenAsync(token, reason);
+        var bannedToken = await TokenRepository.BanTokenAsync(token, reason);
         
-        var requests = await _userRequestRepository.FindUserRequestByTokenAsync(token);
+        var requests = await UserRequestRepository.FindUserRequestByTokenAsync(token);
         foreach (var request in requests)
         {
-            await _ipRepository.BanIpAsync(request.IpAddress, reason);
+            await IpRepository.BanIpAsync(request.IpInfo.Ip, reason);
         }
         
         return Ok(bannedToken);
@@ -77,13 +70,13 @@ public class AccessController : ControllerBase
             return BadRequest(response);
         }
         
-        await _ipRepository.UnbanIpAsync(ip, reason);
+        await IpRepository.UnbanIpAsync(ip, reason);
         
-        var requests = await _userRequestRepository.FindUserRequestByIpAsync(ip);
+        var requests = await UserRequestRepository.FindUserRequestByIpAsync(ip);
         
-        foreach (var request in requests.Where(request => request.Token != null))
+        foreach (var request in requests.Where(request => request.TokenInfo?.Token != null))
         {
-            await _tokenRepository.UnbanTokenAsync(request.Token!, reason);
+            await TokenRepository.UnbanTokenAsync(request.TokenInfo!.Token, reason);
         }
         
         return Ok();
@@ -92,7 +85,14 @@ public class AccessController : ControllerBase
     [HttpGet("unban/token/{token}")]
     public async Task<IActionResult> UnbanToken(string token, [FromQuery] string reason)
     {
-        await _tokenRepository.UnbanTokenAsync(token, reason);
+        await TokenRepository.UnbanTokenAsync(token, reason);
+        
+        var requests = await UserRequestRepository.FindUserRequestByTokenAsync(token);
+        foreach (var request in requests)
+        {
+            await IpRepository.UnbanIpAsync(request.IpInfo.Ip, reason);
+        }
+        
         return Ok();
     }
 }

@@ -9,13 +9,15 @@ namespace Smug.Services.Implementations;
 public class TokenRepository : ITokenRepository
 {
     private readonly SmugDbContext _context;
+    private readonly UserRequestRepository _userRequestRepository;
 
-    public TokenRepository(SmugDbContext context)
+    public TokenRepository(SmugDbContext context, UserRequestRepository userRequestRepository)
     {
         _context = context;
+        _userRequestRepository = userRequestRepository;
     }
     
-    public async Task<TokenInfo> SaveTokenIfNeededAsync(string token)
+    public async Task<TokenInfo> FindOrCreateTokenAsync(string token)
     {
         var tokenInfo = await FindTokenAsync(token);
         if (tokenInfo != null)
@@ -91,6 +93,27 @@ public class TokenRepository : ITokenRepository
             });
         }
         
+        await _context.SaveChangesAsync();
+    }
+    
+    public async Task AddUserRequestToTokenAsync(string token, Guid userRequestId)
+    {
+        var tokenInfo = await FindTokenAsync(token);
+        if (tokenInfo == null)
+        {
+            throw new TokenRepositoryException("TokenInfo is not in the database");
+        }
+        
+        var userRequest = await _userRequestRepository.FindUserRequestAsync(userRequestId);
+        if (userRequest == null)
+        {
+            throw new TokenRepositoryException("UserRequest is not in the database");
+        }
+        
+        userRequest.TokenInfo = tokenInfo;
+
+        tokenInfo.UserRequests.Add(userRequest);
+
         await _context.SaveChangesAsync();
     }
 }

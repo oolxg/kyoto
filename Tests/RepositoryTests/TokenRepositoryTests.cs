@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Smug.Exceptions;
 using Tests.Helpers;
 using Smug.Models;
 using Smug.Models.SmugDbContext;
@@ -10,11 +11,14 @@ public class TokenRepositoryTests
 {
     private readonly SmugDbContext _dbContext;
     private readonly TokenRepository _tokenRepository;
+    private readonly IpRepository _ipRepository;
     
     public TokenRepositoryTests()
     {
         _dbContext = DbContextFactory.CreateDbContext();
-        _tokenRepository = new TokenRepository(_dbContext);
+        var userRequestRepository = new UserRequestRepository(_dbContext);
+        _tokenRepository = new TokenRepository(_dbContext, userRequestRepository);
+        _ipRepository = new IpRepository(_dbContext, userRequestRepository);
     }
     
     ~TokenRepositoryTests()
@@ -23,34 +27,39 @@ public class TokenRepositoryTests
     }
     
     [Fact]
-    public async Task SaveTokenAsync_ShouldSaveNewToken()
+    public async Task FindOrCreateTokenAsync_ShouldSaveNewToken()
     {
         // Arrange
         var token = Guid.NewGuid().ToString();
         
         // Act
-        await _tokenRepository.SaveTokenIfNeededAsync(token);
-        var tokens = await _dbContext.Tokens.ToListAsync();
+        var tokenInfo = await _tokenRepository.FindOrCreateTokenAsync(token);
+        var tokens = await _dbContext.Tokens.Where(t => t.Token == token).ToListAsync();
         
         // Assert
         Assert.Single(tokens);
         Assert.Equal(token, tokens[0].Token);
+        Assert.Equal(TokenInfo.TokenStatus.Normal, tokens[0].Status);
+        Assert.Null(tokens[0].Reason);
+        Assert.Equal(tokenInfo.Id, tokens[0].Id);
     }
     
     [Fact]
-    public async Task SaveTokenAsync_ShouldNotSaveExistingToken()
+    public async Task FindOrCreateTokenAsync_ShouldNotSaveExistingToken()
     {
         // Arrange
-        var token = Guid.NewGuid().ToString();
-        await _tokenRepository.SaveTokenIfNeededAsync(token);
-        var tokens = await _dbContext.Tokens.ToListAsync();
+        var tokenInfo = await _tokenRepository.FindOrCreateTokenAsync("test-token");
+        var tokens = await _dbContext.Tokens.Where(t => t.Token == tokenInfo.Token).ToListAsync();
         
         // Act
-        await _tokenRepository.SaveTokenIfNeededAsync(token);
+        await _tokenRepository.FindOrCreateTokenAsync(tokenInfo.Token);
         
         // Assert
         Assert.Single(tokens);
-        Assert.Equal(token, tokens[0].Token);
+        Assert.Equal(tokenInfo.Token, tokens[0].Token);
+        Assert.Equal(TokenInfo.TokenStatus.Normal, tokens[0].Status);
+        Assert.Null(tokens[0].Reason);
+        Assert.Equal(tokenInfo.Id, tokens[0].Id);
     }
     
     [Fact]
@@ -267,7 +276,7 @@ public class TokenRepositoryTests
         };
         await _dbContext.Ips.AddRangeAsync(ipAddresses);
         await _dbContext.SaveChangesAsync();
-        await _tokenRepository.SaveTokenIfNeededAsync(token.Token);
+        await _tokenRepository.FindOrCreateTokenAsync(token.Token);
 
         // Act
         await _tokenRepository.AddIpAddressesAsync(token.Token, ipAddresses.Select(ip => ip.Id).ToList());
@@ -276,7 +285,51 @@ public class TokenRepositoryTests
         // Assert
         Assert.Empty(tokenIps);
     }
+    
+    [Fact]
+    public async Task AddUserRequestToTokenAsync_ShouldAddUserRequest()
+    {
+        // Arrange
+        var token = MockToken();
+        const string ip = "192.168.0.1";
+        var ipInfo = await _ipRepository.FindOrCreateIpAsync(ip);
+        var userRequest = new UserRequest(ipInfo.Id, null, "example.com", "/test-path/");
+        await _dbContext.Tokens.AddAsync(token);
+        await _dbContext.UserRequests.AddAsync(userRequest);
+        await _dbContext.SaveChangesAsync();
+        
+        // Act
+        await _tokenRepository.AddUserRequestToTokenAsync(token.Token, userRequest.Id);
+        var tokenUserRequests = await _dbContext.UserRequests.Where(ur => ur.TokenInfoId == token.Id).ToListAsync();
+        
+        // Assert
+        Assert.Single(tokenUserRequests);
+        Assert.Equal(userRequest.Id, tokenUserRequests[0].Id);
+    }
 
+    [Fact]
+    public async Task AddUserRequestToTokenAsync_ShouldNotAddUserRequestIfTokenNotFound()
+    {
+        // Arrange
+        const string ip = "192.168.0.1";
+        
+        var ipInfo = await _ipRepository.FindOrCreateIpAsync(ip);
+        var userRequest = new UserRequest(ipInfo.Id, null, "example.com", "/test-path/");
+        await _dbContext.UserRequests.AddAsync(userRequest);
+        await _dbContext.SaveChangesAsync();
+        
+        // Act
+        try
+        {
+            await _tokenRepository.AddUserRequestToTokenAsync("NotExistingToken", userRequest.Id);
+        }
+        catch (TokenRepositoryException)
+        {
+            // Assert
+            Assert.True(true);
+        }
+    }
+    
     private static TokenInfo MockToken(string? token = null)
     {
         return new TokenInfo(token ?? Guid.NewGuid().ToString());

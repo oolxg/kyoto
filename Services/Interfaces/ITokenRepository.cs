@@ -10,7 +10,7 @@ public interface ITokenRepository
     /// </summary>
     /// <param name="token">Token to save</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the newly created <see cref="TokenInfo"/> object.</returns>
-    public Task<TokenInfo> SaveTokenIfNeededAsync(string token);
+    public Task<TokenInfo> FindOrCreateTokenAsync(string token);
     /// <summary>
     /// Save token if needed in database and ban it
     /// </summary>
@@ -47,4 +47,14 @@ public interface ITokenRepository
     /// <throws><see cref="TokenRepositoryException"/> If the token is not found.</throws>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public Task AddIpAddressesAsync(string token, List<Guid> ipAddressIds);
+
+    /// <summary>
+    /// Add user request associated with token
+    /// </summary>
+    /// <param name="token">Token string</param>
+    /// <param name="userRequestId">User request id</param>
+    /// <throws><see cref="TokenRepositoryException"/> If the token or user request is not found.</throws>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    public Task AddUserRequestToTokenAsync(string token, Guid userRequestId);
+
 }

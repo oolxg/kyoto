@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -91,23 +90,21 @@ namespace Smug.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     RequestDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IpAddress = table.Column<string>(type: "text", nullable: false),
-                    Token = table.Column<string>(type: "text", nullable: true),
-                    UserAgent = table.Column<string>(type: "text", nullable: true),
+                    IpInfoId = table.Column<Guid>(type: "uuid", nullable: false),
+                    TokenInfoId = table.Column<Guid>(type: "uuid", nullable: true),
                     Host = table.Column<string>(type: "text", nullable: false),
                     Path = table.Column<string>(type: "text", nullable: false),
-                    Headers = table.Column<Dictionary<string, string>>(type: "jsonb", nullable: false),
-                    IpAddressInfoId = table.Column<Guid>(type: "uuid", nullable: true),
-                    TokenInfoId = table.Column<Guid>(type: "uuid", nullable: true)
+                    Headers = table.Column<string>(type: "jsonb", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserRequests", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserRequests_IpAddresses_IpAddressInfoId",
-                        column: x => x.IpAddressInfoId,
+                        name: "FK_UserRequests_IpAddresses_IpInfoId",
+                        column: x => x.IpInfoId,
                         principalTable: "IpAddresses",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_UserRequests_Tokens_TokenInfoId",
                         column: x => x.TokenInfoId,
@@ -126,9 +123,9 @@ namespace Smug.Migrations
                 column: "TokenInfoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserRequests_IpAddressInfoId",
+                name: "IX_UserRequests_IpInfoId",
                 table: "UserRequests",
-                column: "IpAddressInfoId");
+                column: "IpInfoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserRequests_TokenInfoId",

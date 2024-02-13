@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Smug.Controllers;
 using Smug.Middlewares;
 using Smug.Models.SmugDbContext;
 using Smug.Services.Implementations;
@@ -19,19 +20,21 @@ public class Startup
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
         
         builder.Services.AddScoped<IIpRepository, IpRepository>();
-        builder.Services.AddScoped<IUserRequestRepository, UserRequestRepository>();
         builder.Services.AddScoped<ITokenRepository, TokenRepository>();
+        builder.Services.AddScoped<IUrlRepository, UrlRepository>();
+        builder.Services.AddScoped<IRestrictedUrlRepository, RestrictedUrlRepository>();
+        builder.Services.AddScoped<IUserRequestRepository, UserRequestRepository>();
         
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddSwaggerGen();
 
         var app = builder.Build();
         
-        app.UseWhen(context => context.Request.Path == "/api/v1/block", cfg =>
+        app.UseWhen(context => context.Request.Path == "/api/v1/check", appBuilder =>
         {
-            cfg.UseMiddleware<QueryParamCheckMiddleware>();
+            appBuilder.UseMiddleware<RequestSaverMiddleware>();
         });
-
+        
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {

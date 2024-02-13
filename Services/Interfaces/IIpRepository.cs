@@ -10,7 +10,7 @@ public interface IIpRepository
     /// </summary>
     /// <param name="ip">The IP address to be saved.</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the newly created <see cref="IpAddressInfo"/> object.</returns>
-    public Task<IpAddressInfo> SaveIpIfNeededAsync(string ip);
+    public Task<IpAddressInfo> FindOrCreateIpAsync(string ip);
     /// <summary>
     /// Bans the specified IP address asynchronously.
     /// </summary>
@@ -76,6 +76,14 @@ public interface IIpRepository
     /// <param name="ip">IP string</param>
     /// <param name="tokenIds">List of ids of tokens addresses</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    public Task AddIpAddressesAsync(string ip, List<Guid> tokenIds);
-    
+    public Task AddIpAddressesAsync(string ip, IEnumerable<Guid> tokenIds);
+
+    /// <summary>
+    /// Connects user request with ip
+    /// </summary>
+    /// <param name="ip">IP string</param>
+    /// <param name="userRequestId">Id of user request</param>
+    /// <throws><see cref="IpRepositoryException"/> if the IP address or user request is not found.</throws>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    public Task AddUserRequestToIpAsync(string ip, Guid userRequestId);
 }

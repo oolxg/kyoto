@@ -22,14 +22,18 @@ public class RestrictedUrl
     [Column(TypeName = "timestamp with time zone"), Required]
     public DateTime RestrictedDate { get; set; }
     
-    public RestrictedUrl(string host, string path, string reason)
+    [Column(TypeName = "timestamp with time zone")]
+    public DateTime? BannedUntil { get; set; }
+    
+    public RestrictedUrl(string host, string path, string reason, DateTime? bannedUntil = null)
     {
         Id = Guid.NewGuid();
         Host = host;
         Path = path;
         Reason = reason;
         RestrictedDate = DateTime.UtcNow;
-    }
+        BannedUntil = bannedUntil;
+    }       
     
     public RestrictedUrl()
     {

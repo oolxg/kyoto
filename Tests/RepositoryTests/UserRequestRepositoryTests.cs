@@ -26,7 +26,7 @@ public class UserRequestRepositoryTests
     public async Task SaveUserRequestAsync_ShouldSaveNewUserRequest()
     {
         // Arrange
-        var userRequest = MockUserRequest();
+        var userRequest = await MockUserRequest();
         
         // Act
         await _userRequestRepository.SaveUserRequestAsync(userRequest);
@@ -41,7 +41,7 @@ public class UserRequestRepositoryTests
     public async Task SaveUserRequestAsync_ShouldNotSaveExistingUserRequest()
     {
         // Arrange
-        var userRequest = MockUserRequest();
+        var userRequest = await MockUserRequest();
         await _userRequestRepository.SaveUserRequestAsync(userRequest);
         var userRequests = await _dbContext.UserRequests.ToListAsync();
         
@@ -57,7 +57,7 @@ public class UserRequestRepositoryTests
     public async Task FindUserRequestAsync_ShouldFindUserRequestById()
     {
         // Arrange
-        var userRequests = MockUserRequests();
+        var userRequests = await MockUserRequests();
         await _dbContext.UserRequests.AddRangeAsync(userRequests);
         await _dbContext.SaveChangesAsync();
         
@@ -72,7 +72,7 @@ public class UserRequestRepositoryTests
     public async Task FindUserRequestAsync_ShouldReturnNullIfUserRequestNotFoundById()
     {
         // Arrange
-        var userRequests = MockUserRequests();
+        var userRequests = await MockUserRequests();
         await _dbContext.UserRequests.AddRangeAsync(userRequests);
         await _dbContext.SaveChangesAsync();
         
@@ -91,14 +91,15 @@ public class UserRequestRepositoryTests
         
         for (var i = 0; i < 3; i++)
         {
-            userRequests.Add(MockUserRequest(token: $"testToken-{i}"));
+            userRequests.Add(await MockUserRequest(token: $"testToken-{i}"));
         }
         
         await _dbContext.UserRequests.AddRangeAsync(userRequests);
         await _dbContext.SaveChangesAsync();
         
         // Act
-        var foundUserRequests = await _userRequestRepository.FindUserRequestByTokenAsync(userRequests[1].Token!);
+        var foundUserRequests = await _userRequestRepository
+            .FindUserRequestByTokenAsync(userRequests[1].TokenInfo!.Token);
         
         // Assert
         Assert.Single(foundUserRequests);
@@ -113,7 +114,7 @@ public class UserRequestRepositoryTests
         
         for (var i = 0; i < 3; i++)
         {
-            userRequests.Add(MockUserRequest(token: $"testToken-{i}"));
+            userRequests.Add(await MockUserRequest(token: $"testToken-{i}"));
         }
         
         await _dbContext.UserRequests.AddRangeAsync(userRequests);
@@ -134,14 +135,14 @@ public class UserRequestRepositoryTests
         
         for (var i = 0; i < 3; i++)
         {
-            userRequests.Add(MockUserRequest(ip: $"192.168.0.{i}"));
+            userRequests.Add(await MockUserRequest(ip: $"192.168.0.{i}"));
         }
         
         await _dbContext.UserRequests.AddRangeAsync(userRequests);
         await _dbContext.SaveChangesAsync();
         
         // Act
-        var foundUserRequests = await _userRequestRepository.FindUserRequestByIpAsync(userRequests[1].IpAddress);
+        var foundUserRequests = await _userRequestRepository.FindUserRequestByIpAsync(userRequests[1].IpInfo.Ip);
         
         // Assert
         Assert.Single(foundUserRequests);
@@ -156,7 +157,7 @@ public class UserRequestRepositoryTests
         
         for (var i = 0; i < 3; i++)
         {
-            userRequests.Add(MockUserRequest(ip: $"192.168.0.{i}"));
+            userRequests.Add(await MockUserRequest(ip: $"192.168.0.{i}"));
         }
         
         await _dbContext.UserRequests.AddRangeAsync(userRequests);
@@ -169,29 +170,37 @@ public class UserRequestRepositoryTests
         Assert.Empty(foundUserRequests);
     }
     
-    private static UserRequest MockUserRequest(
+    private async Task<UserRequest> MockUserRequest(
         Guid id = default,
-        string token = "testToken",
+        string? token = "testToken",
         string ip = "192.168.0.1")
     {
+        var ipInfo = new IpAddressInfo(ip);
+        TokenInfo? tokenInfo = null;
+        
+        if (token != null) {
+            tokenInfo = new TokenInfo(token);
+            await _dbContext.Tokens.AddAsync(tokenInfo);
+        }
+        await _dbContext.Ips.AddAsync(ipInfo);
+        
         return new UserRequest(
             id,
             DateTime.UtcNow, 
-            ip,
-            token,
-            "testUserAgent",
+            ipInfo.Id,
+            tokenInfo?.Id,
             "google.com",
             "some/path",
             new Dictionary<string, string>());
     }
-
-    private static List<UserRequest> MockUserRequests()
+    
+    private async Task<List<UserRequest>> MockUserRequests()
     {
         return new List<UserRequest>
         {
-            MockUserRequest(id: Guid.Parse("00000000-0000-0000-0000-000000000001")),
-            MockUserRequest(id: Guid.Parse("00000000-0000-0000-0000-000000000002")),
-            MockUserRequest(id: Guid.Parse("00000000-0000-0000-0000-000000000003"))
+            await MockUserRequest(id: Guid.Parse("00000000-0000-0000-0000-000000000001")),
+            await MockUserRequest(id: Guid.Parse("00000000-0000-0000-0000-000000000002")),
+            await MockUserRequest(id: Guid.Parse("00000000-0000-0000-0000-000000000003"))
         };
     }
 }

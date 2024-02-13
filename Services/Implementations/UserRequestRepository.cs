@@ -5,14 +5,9 @@ using Smug.Services.Interfaces;
 
 namespace Smug.Services.Implementations;
 
-public class UserRequestRepository : IUserRequestRepository
+public class UserRequestRepository(SmugDbContext context) : IUserRequestRepository
 {
-    private readonly SmugDbContext _context;
-
-    public UserRequestRepository(SmugDbContext context)
-    {
-        _context = context;
-    }
+    private SmugDbContext Context => context;
 
     public async Task SaveUserRequestAsync(UserRequest userRequest)
     {
@@ -21,22 +16,30 @@ public class UserRequestRepository : IUserRequestRepository
             return;
         }
         
-        await _context.UserRequests.AddAsync(userRequest);
-        await _context.SaveChangesAsync();
+        await Context.UserRequests.AddAsync(userRequest);
+        await Context.SaveChangesAsync();
     }
     
     public async Task<UserRequest?> FindUserRequestAsync(Guid requestId)
     {
-        return await _context.UserRequests.FindAsync(requestId);
+        return await Context.UserRequests.FindAsync(requestId);
     }
 
     public async Task<List<UserRequest>> FindUserRequestByTokenAsync(string token)
     {
-        return await _context.UserRequests.Where(ur => ur.Token == token).ToListAsync();
+        return await Context.UserRequests
+            .Include(ur => ur.TokenInfo)
+            .Include(ur => ur.IpInfo)
+            .Where(ur => ur.TokenInfo != null && ur.TokenInfo!.Token == token)
+            .ToListAsync();
     }
 
     public async Task<List<UserRequest>> FindUserRequestByIpAsync(string ipToFind)
     {
-        return await _context.UserRequests.Where(ur => ur.IpAddress == ipToFind).ToListAsync();
+        return await Context.UserRequests
+            .Include(ur => ur.TokenInfo)
+            .Include(ur => ur.IpInfo)
+            .Where(ur => ur.IpInfo.Ip == ipToFind)
+            .ToListAsync();
     }
 }

@@ -11,11 +11,14 @@ public class IpRepositoryTests
 {
     private readonly SmugDbContext _dbContext;
     private readonly IpRepository _ipRepository;
-    
+    private readonly UserRequestRepository _userRequestRepository;
+    private readonly TokenRepository _tokenRepository;
     public IpRepositoryTests()
     {
         _dbContext = DbContextFactory.CreateDbContext();
-        _ipRepository = new IpRepository(_dbContext);
+        _userRequestRepository = new UserRequestRepository(_dbContext);
+        _tokenRepository = new TokenRepository(_dbContext, _userRequestRepository);
+        _ipRepository = new IpRepository(_dbContext, _userRequestRepository);
     }
     
     ~IpRepositoryTests()
@@ -24,13 +27,13 @@ public class IpRepositoryTests
     }
 
     [Fact]
-    public async Task SaveIpAsync_ShouldSaveNewIp()
+    public async Task FindOrCreateIpAsync_ShouldSaveNewIp()
     {
         // Arrange
         const string ip = "192.168.0.1";
 
         // Act
-        await _ipRepository.SaveIpIfNeededAsync(ip);
+        await _ipRepository.FindOrCreateIpAsync(ip);
         var ips = await _dbContext.Ips.Where(ipInfo => ipInfo.Ip == ip).ToListAsync();
 
         // Assert
@@ -39,19 +42,19 @@ public class IpRepositoryTests
     }
 
     [Fact]
-    public async Task SaveIpAsync_ShouldNotSaveExistingIp()
+    public async Task FindOrCreateIpAsync_ShouldNotSaveExistingIp()
     {
         // Arrange
-        const string ip = "192.168.0.1";
-        await _ipRepository.SaveIpIfNeededAsync(ip);
-        var ips = await _dbContext.Ips.Where(ipInfo => ipInfo.Ip == ip).ToListAsync();
+        var ipAddressInfo = await _ipRepository.FindOrCreateIpAsync("192.168.0.1");
+        var ips = await _dbContext.Ips.Where(ipInfo => ipInfo.Ip == ipAddressInfo.Ip).ToListAsync();
 
         // Act
-        await _ipRepository.SaveIpIfNeededAsync(ip);
+        await _ipRepository.FindOrCreateIpAsync(ipAddressInfo.Ip);
 
         // Assert
         Assert.Single(ips);
-        Assert.Equal(ip, ips[0].Ip);
+        Assert.Equal(ipAddressInfo.Ip, ips[0].Ip);
+        Assert.Equal(ipAddressInfo.Id, ips[0].Id);
     }
 
     [Fact]
@@ -219,7 +222,7 @@ public class IpRepositoryTests
     {
         // Arrange
         const string ip = "192.168.0.1";
-        await _ipRepository.SaveIpIfNeededAsync(ip);
+        await _ipRepository.FindOrCreateIpAsync(ip);
 
         // Act
         var foundIp = await _ipRepository.FindIpAsync(ip);
@@ -247,7 +250,7 @@ public class IpRepositoryTests
     {
         // Arrange
         const string ip = "192.168.0.1";
-        var savedIp = await _ipRepository.SaveIpIfNeededAsync(ip);
+        var savedIp = await _ipRepository.FindOrCreateIpAsync(ip);
 
         // Act
         var foundIp = await _ipRepository.FindIpAsync(savedIp.Id);
@@ -275,7 +278,7 @@ public class IpRepositoryTests
     {
         // Arrange
         const string ip = "192.168.0.1";
-        await _ipRepository.SaveIpIfNeededAsync(ip);
+        await _ipRepository.FindOrCreateIpAsync(ip);
 
         // Act
         await _ipRepository.ChangeShouldHideIfBannedAsync(ip, true);
@@ -350,29 +353,25 @@ public class IpRepositoryTests
     public async Task AddIpAddressesAsync_ShouldAddIpAddresses()
     {
         // Arrange
-        const string ip = "192.168.0.1";
-        var tokenIds = new List<Guid>
+        var ipInfo = await _ipRepository.FindOrCreateIpAsync("192.168.0.1");
+        var tokens = new List<TokenInfo>
         {
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid()
+            new("testToken-1"),
+            new("testToken-2"),
+            new("testToken-3"),
         };
-        await _ipRepository.SaveIpIfNeededAsync(ip);
-
+        await _dbContext.Tokens.AddRangeAsync(tokens);
+        
         // Act
-        await _ipRepository.AddIpAddressesAsync(ip, tokenIds);
-        var ips = await _dbContext.Ips
-            .Include(ipInfo => ipInfo.IpTokens)
-            .Where(ipInfo => ipInfo.Ip == ip)
-            .ToListAsync();
-
+        await _ipRepository.AddIpAddressesAsync(ipInfo.Ip, tokens.Select(token => token.Id));
+        var ipTokens = await _dbContext.IpTokens.Where(ipToken => ipToken.IpId == ipInfo.Id).ToListAsync();
+        
         // Assert
-        Assert.Single(ips);
-        Assert.Equal(ip, ips[0].Ip);
-        Assert.Equal(tokenIds.Count, ips[0].IpTokens.Count);
-        Assert.Equal(tokenIds[0], ips[0].IpTokens[0].TokenId);
-        Assert.Equal(tokenIds[1], ips[0].IpTokens[1].TokenId);
-        Assert.Equal(tokenIds[2], ips[0].IpTokens[2].TokenId);
+        Assert.Equal(tokens.Count, ipTokens.Count);
+        foreach (var ipToken in ipTokens)
+        {
+            Assert.Contains(tokens, token => token.Id == ipToken.TokenId);
+        }
     }
 
     [Fact]
@@ -392,6 +391,62 @@ public class IpRepositoryTests
         {
             await _ipRepository.AddIpAddressesAsync(ip, tokenIds);
             Assert.Fail("AddIpAddressesAsync should throw an exception if IpAddressInfo is not in the database");
+        }
+        catch (IpRepositoryException)
+        {
+            // Assert
+            Assert.True(true);
+        }
+    }
+
+    [Fact]
+    public async Task AddUserRequestToIpAsync_ShouldAddUserRequestToIp()
+    {
+        // Arrange
+        var ipAddressInfo = await _ipRepository.FindOrCreateIpAsync("192.168.0.1");
+        var userRequest = new UserRequest(ipAddressInfo.Id, null, "example.com", "/test-path/");
+        await _userRequestRepository.SaveUserRequestAsync(userRequest);
+        
+        // Act
+        await _ipRepository.AddUserRequestToIpAsync(ipAddressInfo.Ip, userRequest.Id);
+        var userRequests = await _dbContext.UserRequests.Where(ur => ur.IpInfoId == ipAddressInfo.Id).ToListAsync();
+        
+        // Assert
+        Assert.Single(userRequests);
+        Assert.Equal(userRequest.Id, userRequests[0].Id);
+    }
+
+    [Fact]
+    public async Task AddUserRequestToIpAsync_ShouldThrowExceptionIfIpNotFound()
+    {
+        // Arrange
+        const string ip = "192.168.0.1";
+        var userRequest = new UserRequest(Guid.NewGuid(), null, "example.com", "/test-path/");
+
+        // Act
+        try
+        {
+            await _ipRepository.AddUserRequestToIpAsync(ip, userRequest.Id);
+            Assert.Fail("AddUserRequestToIpAsync should throw an exception if IpAddressInfo is not in the database");
+        }
+        catch (IpRepositoryException)
+        {
+            // Assert
+            Assert.True(true);
+        }
+    }
+
+    [Fact]
+    public async Task AddUserRequestToIpAsync_ShouldThrowExceptionIfUserRequestNotFound()
+    {
+        // Arrange
+        var ipAddressInfo = await _ipRepository.FindOrCreateIpAsync("192.168.0.1");
+
+        // Act
+        try
+        {
+            await _ipRepository.AddUserRequestToIpAsync(ipAddressInfo.Ip, Guid.NewGuid());
+            Assert.Fail("AddUserRequestToIpAsync should throw an exception if UserRequest is not in the database");
         }
         catch (IpRepositoryException)
         {

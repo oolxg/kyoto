@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Net;
+using System.Text.Json.Serialization;
 
 namespace Smug.Models;
 
@@ -15,58 +15,64 @@ public class UserRequest
     public DateTime RequestDate { get; set; }
     
     [Column(TypeName = "text"), Required]
-    public string IpAddress { get; set; }
-    
-    [Column(TypeName = "text")]
-    public string? Token { get; set; }
-    
-    [Column(TypeName = "text")]
-    public string? UserAgent { get; set; }
-    
-    [Column(TypeName = "text"), Required]
     public string Host { get; set; }
     
     [Column(TypeName = "text"), Required]
     public string Path { get; set; }
+        
+    [ForeignKey("IpId")]
+    public Guid IpInfoId { get; set; }
+    
+    [ForeignKey("TokenId")]
+    public Guid? TokenInfoId { get; set; }
+    
+    [JsonIgnore]
+    public IpAddressInfo IpInfo { get; set; }
+    [JsonIgnore]
+    public TokenInfo? TokenInfo { get; set; }
+
+    public string? Referer => Headers.TryGetValue("Referer", out var referer) ? referer : null;
+    public string? UserAgent => Headers.TryGetValue("User-Agent", out var userAgent) ? userAgent : null;
     
     [Column(TypeName = "jsonb"), Required]
     public Dictionary<string, string> Headers { get; set; }
     
+    [Column(TypeName = "boolean"), Required]
+    public bool IsBlocked { get; set; }
+    
     public UserRequest(
-        string ipAddress, 
-        string? token,
-        string? userAgent,
+        Guid ipId, 
+        Guid? tokenId,
         string host, 
         string path, 
-        Dictionary<string, string>? headers)
+        Dictionary<string, string>? headers = null)
     {
         Id = Guid.NewGuid();
         RequestDate = DateTime.UtcNow;
-        IpAddress = ipAddress;
-        Token = token;
-        UserAgent = userAgent;
+        IpInfoId = ipId;
+        TokenInfoId = tokenId;
         Host = host;
         Path = path;
+        IsBlocked = false;
         Headers = headers ?? new Dictionary<string, string>();
     }
     
     public UserRequest(
         Guid id,
         DateTime requestDate,
-        string ipAddress, 
-        string? token, 
-        string? userAgent,
+        Guid ipId, 
+        Guid? tokenId, 
         string host,
-        string path, 
+        string path,
         Dictionary<string, string>? headers)
     {
         Id = id;
         RequestDate = requestDate;
-        IpAddress = ipAddress;
-        Token = token;
-        UserAgent = userAgent;
+        IpInfoId = ipId;
+        TokenInfoId = tokenId;
         Host = host;
         Path = path;
+        IsBlocked = false;
         Headers = headers ?? new Dictionary<string, string>();
     }
     
