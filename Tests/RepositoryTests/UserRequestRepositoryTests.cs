@@ -170,10 +170,122 @@ public class UserRequestRepositoryTests
         Assert.Empty(foundUserRequests);
     }
     
+    [Fact]
+    public async Task GetUserRequestsOnEndPointsAsync_ShouldFindUserRequestsByHostPathAndDate()
+    {
+        // Arrange
+        var userRequests = new List<UserRequest>();
+        const int requestsCount = 3;
+        
+        for (var i = 0; i < requestsCount; i++)
+        {
+            userRequests.Add(await MockUserRequest(
+                ip: $"192.168.0.{i}",
+                token: $"testToken-{i}",
+                requestDate: DateTime.UtcNow.AddHours(i))
+            );
+        }
+        
+        await _dbContext.UserRequests.AddRangeAsync(userRequests);
+        await _dbContext.SaveChangesAsync();
+        
+        // Act
+        var foundUserRequests = await _userRequestRepository
+            .GetUserRequestsOnEndPointsAsync("google.com", "some/path", DateTime.UtcNow.AddHours(-12));
+        
+        // Assert
+        Assert.Equal(requestsCount, foundUserRequests.Count);
+        Assert.Equal(userRequests, foundUserRequests);
+    }
+    
+    [Fact]
+    public async Task GetUserRequestsOnEndPointsAsync_ShouldReturnEmptyListIfUserRequestsNotFoundByDate()
+    {
+        // Arrange
+        var userRequests = new List<UserRequest>();
+        const int requestsCount = 3;
+        
+        for (var i = 0; i < requestsCount; i++)
+        {
+            userRequests.Add(await MockUserRequest(
+                ip: $"192.168.0.{i}",
+                token: $"testToken-{i}",
+                requestDate: DateTime.UtcNow.AddHours(-i))
+            );
+        }
+        
+        await _dbContext.UserRequests.AddRangeAsync(userRequests);
+        await _dbContext.SaveChangesAsync();
+        
+        // Act
+        var foundUserRequests = await _userRequestRepository
+            .GetUserRequestsOnEndPointsAsync("google.com", "some/path", DateTime.UtcNow.AddHours(1));
+        
+        // Assert
+        Assert.Empty(foundUserRequests);
+    }
+
+    [Fact]
+    public async Task GetUserRequestsOnEndPointsAsync_ShouldReturnEmptyListIfUserRequestsNotFoundByPath()
+    {
+        // Arrange
+        var userRequests = new List<UserRequest>();
+        const int requestsCount = 3;
+        
+        for (var i = 0; i < requestsCount; i++)
+        {
+            userRequests.Add(await MockUserRequest(
+                ip: $"192.168.0.{i}",
+                token: $"testToken-{i}",
+                requestDate: DateTime.UtcNow.AddHours(-i))
+            );
+        }
+        
+        await _dbContext.UserRequests.AddRangeAsync(userRequests);
+        await _dbContext.SaveChangesAsync();
+        
+        // Act
+        var foundUserRequests = await _userRequestRepository
+            .GetUserRequestsOnEndPointsAsync("google.com", "some/other/path", DateTime.UtcNow.AddHours(-12));
+        
+        // Assert
+        Assert.Empty(foundUserRequests);
+    }
+
+    [Fact]
+    public async Task GetUserRequestsOnEndPointsAsync_ShouldReturnEmptyListIfUserRequestsNotFoundByHost()
+    {
+        // Arrange
+        var userRequests = new List<UserRequest>();
+        const int requestsCount = 3;
+        
+        for (var i = 0; i < requestsCount; i++)
+        {
+            userRequests.Add(await MockUserRequest(
+                ip: $"192.168.0.{i}",
+                token: $"testToken-{i}",
+                requestDate: DateTime.UtcNow.AddHours(-i))
+            );
+        }
+        
+        await _dbContext.UserRequests.AddRangeAsync(userRequests);
+        await _dbContext.SaveChangesAsync();
+        
+        // Act
+        var foundUserRequests = await _userRequestRepository
+            .GetUserRequestsOnEndPointsAsync("some-other-host.com", "some/path", DateTime.UtcNow.AddHours(-12));
+        
+        // Assert
+        Assert.Empty(foundUserRequests);
+    }
+
     private async Task<UserRequest> MockUserRequest(
         Guid id = default,
         string? token = "testToken",
-        string ip = "192.168.0.1")
+        string ip = "192.168.0.1",
+        string host = "google.com",
+        string path = "some/path",
+        DateTime? requestDate = null)
     {
         var ipInfo = new IpAddressInfo(ip);
         TokenInfo? tokenInfo = null;
@@ -186,11 +298,11 @@ public class UserRequestRepositoryTests
         
         return new UserRequest(
             id,
-            DateTime.UtcNow, 
+            requestDate ?? DateTime.UtcNow, 
             ipInfo.Id,
             tokenInfo?.Id,
-            "google.com",
-            "some/path",
+            host,
+            path,
             new Dictionary<string, string>());
     }
     

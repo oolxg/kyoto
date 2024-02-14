@@ -44,6 +44,7 @@ public class RequestSaverMiddleware(RequestDelegate next)
         if (tokenInfo != null)
         {
             await tokenRepository.AddUserRequestToTokenAsync(tokenInfo.Token, userRequest.Id);
+            await ipRepository.AddTokenAsyncIfNeeded(ipInfo.Ip, tokenInfo.Id);
         }
 
         context.Items["UserRequest"] = userRequest;
@@ -76,4 +77,3 @@ internal class DateTimeConverter : JsonConverter<DateTime>
         writer.WriteStringValue(value.ToString(DateTimeFormat));
     }
 }
-

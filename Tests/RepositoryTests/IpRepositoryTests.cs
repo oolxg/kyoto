@@ -12,12 +12,10 @@ public class IpRepositoryTests
     private readonly SmugDbContext _dbContext;
     private readonly IpRepository _ipRepository;
     private readonly UserRequestRepository _userRequestRepository;
-    private readonly TokenRepository _tokenRepository;
     public IpRepositoryTests()
     {
         _dbContext = DbContextFactory.CreateDbContext();
         _userRequestRepository = new UserRequestRepository(_dbContext);
-        _tokenRepository = new TokenRepository(_dbContext, _userRequestRepository);
         _ipRepository = new IpRepository(_dbContext, _userRequestRepository);
     }
     
@@ -58,14 +56,14 @@ public class IpRepositoryTests
     }
 
     [Fact]
-    public async Task BanIpAsync_ShouldBanIp()
+    public async Task BanIpIfNeededAsync_ShouldBanIp()
     {
         // Arrange
         const string ip = "192.168.0.1";
         const string reason = "test reason";
 
         // Act
-        await _ipRepository.BanIpAsync(ip, reason);
+        await _ipRepository.BanIpIfNeededAsync(ip, reason);
         var ips = await _dbContext.Ips.Where(ipInfo => ipInfo.Ip == ip).ToListAsync();
 
         // Assert
@@ -77,53 +75,14 @@ public class IpRepositoryTests
     }
 
     [Fact]
-    public async Task BanIpAsync_ShouldBanIpAndHideIt()
+    public async Task BanIpIfNeededAsync_ShouldBanIpAndHideIt()
     {
         // Arrange
         const string ip = "192.168.0.1";
         const string reason = "test reason";
 
         // Act
-        await _ipRepository.BanIpAsync(ip, true, reason);
-        var ips = await _dbContext.Ips.Where(ipInfo => ipInfo.Ip == ip).ToListAsync();
-
-        // Assert
-        Assert.Single(ips);
-        Assert.Equal(ip, ips[0].Ip);
-        Assert.Equal(IpAddressInfo.IpStatus.Banned, ips[0].Status);
-        Assert.Equal(reason, ips[0].StatusChangeReason);
-        Assert.True(ips[0].ShouldHideIfBanned);
-        Assert.NotNull(ips[0].StatusChangeDate);
-    }
-
-    [Fact]
-    public async Task BanIpAsync_ShouldAddNewIpIfNotFound()
-    {
-        // Arrange
-        const string ip = "192.168.0.1";
-        const string reason = "test reason";
-
-        // Act
-        await _ipRepository.BanIpAsync(ip, reason: reason);
-        var ips = await _dbContext.Ips.Where(ipInfo => ipInfo.Ip == ip).ToListAsync();
-
-        // Assert
-        Assert.Single(ips);
-        Assert.Equal(ip, ips[0].Ip);
-        Assert.Equal(IpAddressInfo.IpStatus.Banned, ips[0].Status);
-        Assert.Equal(reason, ips[0].StatusChangeReason);
-        Assert.NotNull(ips[0].StatusChangeDate);
-    }
-
-    [Fact]
-    public async Task BanIpAsync_ShouldHideIp()
-    {
-        // Arrange
-        const string ip = "192.168.0.1";
-        const string reason = "test reason";
-
-        // Act
-        await _ipRepository.BanIpAsync(ip, true, reason);
+        await _ipRepository.BanIpIfNeededAsync(ip, true, reason);
         var ips = await _dbContext.Ips.Where(ipInfo => ipInfo.Ip == ip).ToListAsync();
 
         // Assert
@@ -136,45 +95,81 @@ public class IpRepositoryTests
     }
 
     [Fact]
-    public async Task BanIpAsync_ShouldThrowExceptionIfIpAlreadyBanned()
+    public async Task BanIpIfNeededAsync_ShouldAddNewIpIfNotFound()
     {
         // Arrange
         const string ip = "192.168.0.1";
         const string reason = "test reason";
-        await _ipRepository.BanIpAsync(ip, reason: reason);
+
+        // Act
+        await _ipRepository.BanIpIfNeededAsync(ip, reason: reason);
+        var ips = await _dbContext.Ips.Where(ipInfo => ipInfo.Ip == ip).ToListAsync();
+
+        // Assert
+        Assert.Single(ips);
+        Assert.Equal(ip, ips[0].Ip);
+        Assert.Equal(IpAddressInfo.IpStatus.Banned, ips[0].Status);
+        Assert.Equal(reason, ips[0].StatusChangeReason);
+        Assert.NotNull(ips[0].StatusChangeDate);
+    }
+
+    [Fact]
+    public async Task BanIpIfNeededAsync_ShouldHideIp()
+    {
+        // Arrange
+        const string ip = "192.168.0.1";
+        const string reason = "test reason";
+
+        // Act
+        await _ipRepository.BanIpIfNeededAsync(ip, true, reason);
+        var ips = await _dbContext.Ips.Where(ipInfo => ipInfo.Ip == ip).ToListAsync();
+
+        // Assert
+        Assert.Single(ips);
+        Assert.Equal(ip, ips[0].Ip);
+        Assert.Equal(IpAddressInfo.IpStatus.Banned, ips[0].Status);
+        Assert.Equal(reason, ips[0].StatusChangeReason);
+        Assert.True(ips[0].ShouldHideIfBanned);
+        Assert.NotNull(ips[0].StatusChangeDate);
+    }
+
+    [Fact]
+    public async Task BanIpIfNeededAsync_ShouldIgnoreIfAlreadyBanned()
+    {
+        // Arrange
+        const string ip = "192.168.0.1";
+        const string reason = "test reason";
+        await _ipRepository.BanIpIfNeededAsync(ip, reason: reason);
         
         // Act
-        try 
-        {
-            await _ipRepository.BanIpAsync(ip, reason: reason);
-            Assert.Fail("BanIpAsync should throw an exception if IpAddressInfo is already banned");
-        }
-        catch (IpRepositoryException)
-        {
-            // Assert
-            Assert.True(true);
-        }
+        await _ipRepository.BanIpIfNeededAsync(ip, reason);
+        var ips = await _dbContext.Ips.Where(ipInfo => ipInfo.Ip == ip).ToListAsync();
+        
+        // Assert
+        Assert.Single(ips);
+        Assert.Equal(ip, ips[0].Ip);
+        Assert.Equal(IpAddressInfo.IpStatus.Banned, ips[0].Status);
+        Assert.Equal(reason, ips[0].StatusChangeReason);
+        Assert.NotNull(ips[0].StatusChangeDate);
     }
 
     [Fact]
-    public async Task BanIpAsync_ShouldThrowExceptionIfIpNotFound()
+    public async Task BanIpIfNeededAsync_ShouldAddNewIpAndBanIt()
     {
         // Arrange
         const string ip = "192.168.0.1";
         const string reason = "test reason";
-        await _ipRepository.BanIpAsync(ip, reason: reason);
-
+        
         // Act
-        try
-        {
-            await _ipRepository.BanIpAsync(ip, reason);
-            Assert.Fail("BanIpAsync should throw an exception if IpAddressInfo is not in the database");
-        }
-        catch (IpRepositoryException)
-        {
-            // Assert
-            Assert.True(true);
-        }
+        await _ipRepository.BanIpIfNeededAsync(ip, reason);
+        var ips = await _dbContext.Ips.Where(ipInfo => ipInfo.Ip == ip).ToListAsync();
+        
+        // Assert
+        Assert.Single(ips);
+        Assert.Equal(ip, ips[0].Ip);
+        Assert.Equal(IpAddressInfo.IpStatus.Banned, ips[0].Status);
+        Assert.Equal(reason, ips[0].StatusChangeReason);
+        Assert.NotNull(ips[0].StatusChangeDate);
     }
 
     [Fact]
@@ -183,7 +178,7 @@ public class IpRepositoryTests
         // Arrange
         const string ip = "192.168.0.1";
         const string reason = "test reason";
-        await _ipRepository.BanIpAsync(ip, reason);
+        await _ipRepository.BanIpIfNeededAsync(ip, reason);
 
         // Act
         await _ipRepository.UnbanIpAsync(ip, reason);
@@ -350,53 +345,56 @@ public class IpRepositoryTests
     }
 
     [Fact]
-    public async Task AddIpAddressesAsync_ShouldAddIpAddresses()
+    public async Task AddTokensAsync_ShouldAddTokens()
     {
         // Arrange
         var ipInfo = await _ipRepository.FindOrCreateIpAsync("192.168.0.1");
-        var tokens = new List<TokenInfo>
-        {
-            new("testToken-1"),
-            new("testToken-2"),
-            new("testToken-3"),
-        };
-        await _dbContext.Tokens.AddRangeAsync(tokens);
+        var token = new TokenInfo("testToken"); 
+        await _dbContext.Tokens.AddAsync(token);
         
         // Act
-        await _ipRepository.AddIpAddressesAsync(ipInfo.Ip, tokens.Select(token => token.Id));
-        var ipTokens = await _dbContext.IpTokens.Where(ipToken => ipToken.IpId == ipInfo.Id).ToListAsync();
+        await _ipRepository.AddTokenAsyncIfNeeded(ipInfo.Ip, token.Id);
+        var ipTokens = await _dbContext.IpTokens.Where(it => it.IpAddressInfoId == ipInfo.Id).ToListAsync();
         
         // Assert
-        Assert.Equal(tokens.Count, ipTokens.Count);
-        foreach (var ipToken in ipTokens)
-        {
-            Assert.Contains(tokens, token => token.Id == ipToken.TokenId);
-        }
+        Assert.Single(ipTokens);
+        Assert.Equal(ipInfo.Id, ipTokens[0].IpAddressInfoId);
+        Assert.Equal(token.Id, ipTokens[0].TokenInfoId);
     }
 
     [Fact]
-    public async Task AddIpAddressesAsync_ShouldThrowExceptionIfIpNotFound()
+    public async Task AddTokensAsync_ShouldThrowExceptionIfTokenNotFound()
     {
         // Arrange
         const string ip = "192.168.0.1";
-        var tokenIds = new List<Guid>
-        {
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid()
-        };
+        var nonExistentTokenId = Guid.NewGuid();
+        
+        // Act & Assert
+        await Assert.ThrowsAsync<IpRepositoryException>(() => _ipRepository.AddTokenAsyncIfNeeded(ip, nonExistentTokenId));
+    }
 
-        // Act
-        try
-        {
-            await _ipRepository.AddIpAddressesAsync(ip, tokenIds);
-            Assert.Fail("AddIpAddressesAsync should throw an exception if IpAddressInfo is not in the database");
-        }
-        catch (IpRepositoryException)
-        {
-            // Assert
-            Assert.True(true);
-        }
+    [Fact]
+    public async Task AddTokensAsync_ShouldThrowExceptionIfIpNotFound()
+    {
+        // Arrange
+        var tokenInfo = new TokenInfo("testToken");
+        const string nonExistentIp = "192.168.0.1";
+        await _dbContext.Tokens.AddAsync(tokenInfo);
+        await _dbContext.SaveChangesAsync();
+        
+        // Act & Assert
+        await Assert.ThrowsAsync<IpRepositoryException>(() => _ipRepository.AddTokenAsyncIfNeeded(nonExistentIp, tokenInfo.Id));
+    }
+    
+    [Fact]
+    public async Task AddTokensAsync_ShouldThrowExceptionIfIpAndTokenNotFound()
+    {
+        // Arrange
+        var nonExistingToken = new TokenInfo("testToken");
+        const string nonExistentIp = "192.168.0.1";
+        
+        // Act & Assert
+        await Assert.ThrowsAsync<IpRepositoryException>(() => _ipRepository.AddTokenAsyncIfNeeded(nonExistentIp, nonExistingToken.Id));
     }
 
     [Fact]

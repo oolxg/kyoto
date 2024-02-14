@@ -9,9 +9,9 @@ namespace Smug.Services.Implementations;
 public class IpRepository : IIpRepository
 {
     private readonly SmugDbContext _dbContext;
-    private readonly UserRequestRepository _userRequestRepository;
+    private readonly IUserRequestRepository _userRequestRepository;
 
-    public IpRepository(SmugDbContext dbContext, UserRequestRepository userRequestRepository)
+    public IpRepository(SmugDbContext dbContext, IUserRequestRepository userRequestRepository)
     {
         _dbContext = dbContext;
         _userRequestRepository = userRequestRepository;
@@ -32,12 +32,12 @@ public class IpRepository : IIpRepository
         return ip;
     }
 
-    public async Task<IpAddressInfo> BanIpAsync(string ip, string reason)
+    public async Task<IpAddressInfo> BanIpIfNeededAsync(string ip, string reason)
     {
-        return await BanIpAsync(ip, false, reason);
+        return await BanIpIfNeededAsync(ip, false, reason);
     }
 
-    public async Task<IpAddressInfo> BanIpAsync(string ip, bool shouldHide, string reason)
+    public async Task<IpAddressInfo> BanIpIfNeededAsync(string ip, bool shouldHide, string reason)
     {
         var bannedIp = await FindIpAsync(ip);
 
@@ -49,7 +49,7 @@ public class IpRepository : IIpRepository
 
         if (bannedIp.Status == IpAddressInfo.IpStatus.Banned)
         {
-            throw new IpRepositoryException("IpAddressInfo is already banned");
+            return bannedIp;
         }
 
         bannedIp.UpdateStatus(IpAddressInfo.IpStatus.Banned, reason);
@@ -116,24 +116,26 @@ public class IpRepository : IIpRepository
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task AddIpAddressesAsync(string ip, IEnumerable<Guid> tokenIds)
+    public async Task AddTokenAsyncIfNeeded(string ip, Guid tokenId)
     {
         var ipAddressInfo = await FindIpAsync(ip);
         if (ipAddressInfo == null)
         {
-            throw new IpRepositoryException("TokenInfo is not in the database");
+            throw new IpRepositoryException("Token is not in the database");
         }
 
-        foreach (var tokenId in tokenIds)
+        if (await _dbContext.Tokens.FindAsync(tokenId) == null)
         {
-            ipAddressInfo.IpTokens.Add(new IpToken
-            {
-                IpId = ipAddressInfo.Id,
-                TokenId = tokenId
-            });
+            throw new IpRepositoryException("Token is not in the database");
         }
-
-        await _dbContext.SaveChangesAsync();
+        
+        var pivot = new IpToken(ipAddressInfo.Id, tokenId);
+        
+        if (await _dbContext.IpTokens.ContainsAsync(pivot) == false)
+        {
+            ipAddressInfo.IpTokens.Add(pivot);
+            await _dbContext.SaveChangesAsync();
+        }
     }
 
     public async Task AddUserRequestToIpAsync(string ip, Guid userRequestId)

@@ -43,10 +43,11 @@ public interface ITokenRepository
     /// Add ips associated with token
     /// </summary>
     /// <param name="token">Token string</param>
-    /// <param name="ipAddressIds">List of ids of ip addresses</param>
+    /// <param name="ipAddressId">Id of ip address</param>
     /// <throws><see cref="TokenRepositoryException"/> If the token is not found.</throws>
+    /// <throws><see cref="IpRepositoryException"/> If the ip address or token is not found.</throws>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    public Task AddIpAddressesAsync(string token, List<Guid> ipAddressIds);
+    public Task AddIpAddressIfNeededAsync(string token, Guid ipAddressId);
 
     /// <summary>
     /// Add user request associated with token

@@ -31,6 +31,7 @@ public class UserRequestRepository(SmugDbContext context) : IUserRequestReposito
             .Include(ur => ur.TokenInfo)
             .Include(ur => ur.IpInfo)
             .Where(ur => ur.TokenInfo != null && ur.TokenInfo!.Token == token)
+            .OrderBy(ur => ur.RequestDate)
             .ToListAsync();
     }
 
@@ -40,6 +41,28 @@ public class UserRequestRepository(SmugDbContext context) : IUserRequestReposito
             .Include(ur => ur.TokenInfo)
             .Include(ur => ur.IpInfo)
             .Where(ur => ur.IpInfo.Ip == ipToFind)
+            .OrderBy(ur => ur.RequestDate)
+            .ToListAsync();
+    }
+    
+    public async Task<List<UserRequest>> GetUserRequestsOnEndPointsAsync(string host, string path, DateTime start)
+    {
+        return await Context.UserRequests
+            .Include(ur => ur.TokenInfo)
+            .Include(ur => ur.IpInfo)
+            .Where(ur => ur.Host == host && ur.Path == path && ur.RequestDate >= start)
+            .OrderBy(ur => ur.RequestDate)
+            .ToListAsync();
+    }
+    
+    public async Task<List<UserRequest>> GetBlockedRequestsAsync(string host, string path, DateTime? start = null)
+    {
+        start ??= DateTime.MinValue;
+        return await Context.UserRequests
+            .Include(ur => ur.TokenInfo)
+            .Include(ur => ur.IpInfo)
+            .Where(ur => ur.Host == host && ur.Path == path && ur.IsBlocked && ur.RequestDate >= start)
+            .OrderByDescending(ur => ur.RequestDate)
             .ToListAsync();
     }
 }

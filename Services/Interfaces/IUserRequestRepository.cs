@@ -28,4 +28,21 @@ public interface IUserRequestRepository
     /// <param name="ip">User request ip</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the list of found <see cref="UserRequest"/> objects.</returns>
     Task<List<UserRequest>> FindUserRequestByIpAsync(string ip);
+    /// <summary>
+    /// Get user requests on endpoints
+    /// </summary>
+    /// <param name="host">Host of the endpoint</param>
+    /// <param name="path">Path of the endpoint</param>
+    /// <param name="start">Start date</param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the list of found <see cref="UserRequest"/> objects.</returns>
+    Task<List<UserRequest>> GetUserRequestsOnEndPointsAsync(string host, string path, DateTime start);
+
+    /// <summary>
+    /// Get last blocked request for given endpoint
+    /// </summary>
+    /// <param name="host">Host of the endpoint</param>
+    /// <param name="path">Path of the endpoint</param>
+    /// <param name="start">Start date</param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the list of found <see cref="UserRequest"/> objects.</returns>
+    Task<List<UserRequest>> GetBlockedRequestsAsync(string host, string path, DateTime? start = null);
 }

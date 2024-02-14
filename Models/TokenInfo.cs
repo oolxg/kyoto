@@ -24,8 +24,8 @@ public class TokenInfo
     
     [Column(TypeName = "timestamp with time zone"), Required]
     public DateTime CreatedAt { get; set; }
-    public List<IpToken> IpTokens { get; set; }
-    public List<UserRequest> UserRequests { get; set; }
+    public List<IpToken> IpTokens { get; set; } = new();
+    public List<UserRequest> UserRequests { get; set; } = new();
     
     public enum TokenStatus 
     {

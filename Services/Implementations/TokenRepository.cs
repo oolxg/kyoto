@@ -6,17 +6,8 @@ using Smug.Exceptions;
 
 namespace Smug.Services.Implementations;
 
-public class TokenRepository : ITokenRepository
+public class TokenRepository(SmugDbContext context, IUserRequestRepository userRequestRepository) : ITokenRepository
 {
-    private readonly SmugDbContext _context;
-    private readonly UserRequestRepository _userRequestRepository;
-
-    public TokenRepository(SmugDbContext context, UserRequestRepository userRequestRepository)
-    {
-        _context = context;
-        _userRequestRepository = userRequestRepository;
-    }
-    
     public async Task<TokenInfo> FindOrCreateTokenAsync(string token)
     {
         var tokenInfo = await FindTokenAsync(token);
@@ -26,8 +17,8 @@ public class TokenRepository : ITokenRepository
         }
         
         tokenInfo = new TokenInfo(token);
-        await _context.Tokens.AddAsync(tokenInfo);
-        await _context.SaveChangesAsync();
+        await context.Tokens.AddAsync(tokenInfo);
+        await context.SaveChangesAsync();
         return tokenInfo;
     }
 
@@ -38,12 +29,12 @@ public class TokenRepository : ITokenRepository
         if (bannedToken == null)
         {
             bannedToken = new TokenInfo(token);
-            await _context.Tokens.AddAsync(bannedToken);    
+            await context.Tokens.AddAsync(bannedToken);    
         }
         
         bannedToken.UpdateStatus(TokenInfo.TokenStatus.Banned, reason);
         
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
         return bannedToken;
     }
 
@@ -54,7 +45,7 @@ public class TokenRepository : ITokenRepository
         if (bannedToken == null)
         {
             bannedToken = new TokenInfo(token);
-            await _context.Tokens.AddAsync(bannedToken);
+            await context.Tokens.AddAsync(bannedToken);
         }
         
         if (bannedToken.Status != TokenInfo.TokenStatus.Banned)
@@ -63,20 +54,20 @@ public class TokenRepository : ITokenRepository
         }
         
         bannedToken.UpdateStatus(TokenInfo.TokenStatus.Normal, reason);
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
     }
     
     public async Task<TokenInfo?> FindTokenAsync(string token)
     {
-        return await _context.Tokens.FirstOrDefaultAsync(bt => bt.Token == token);;
+        return await context.Tokens.FirstOrDefaultAsync(bt => bt.Token == token);;
     }
 
     public async Task<TokenInfo?> FindTokenAsync(Guid id)
     {
-        return await _context.Tokens.FindAsync(id);
+        return await context.Tokens.FindAsync(id);
     }
     
-    public async Task AddIpAddressesAsync(string token, List<Guid> ipAddressIds)
+    public async Task AddIpAddressIfNeededAsync(string token, Guid ipAddressId)
     {
         var tokenInfo = await FindTokenAsync(token);
         if (tokenInfo == null)
@@ -84,16 +75,18 @@ public class TokenRepository : ITokenRepository
             throw new TokenRepositoryException("TokenInfo is not in the database");
         }
         
-        foreach (var ipAddress in ipAddressIds)
+        if (await context.Ips.FindAsync(ipAddressId) == null)
         {
-            tokenInfo.IpTokens.Add(new IpToken
-            {
-                IpId = ipAddress,
-                TokenId = tokenInfo.Id
-            });
+            throw new TokenRepositoryException("IpAddress is not in the database");
         }
         
-        await _context.SaveChangesAsync();
+        var pivot = new IpToken(ipAddressInfoId: ipAddressId, tokenInfoId: tokenInfo.Id);
+        
+        if (await context.IpTokens.ContainsAsync(pivot) == false)
+        {
+            tokenInfo.IpTokens.Add(pivot);
+            await context.SaveChangesAsync();
+        }
     }
     
     public async Task AddUserRequestToTokenAsync(string token, Guid userRequestId)
@@ -104,7 +97,7 @@ public class TokenRepository : ITokenRepository
             throw new TokenRepositoryException("TokenInfo is not in the database");
         }
         
-        var userRequest = await _userRequestRepository.FindUserRequestAsync(userRequestId);
+        var userRequest = await userRequestRepository.FindUserRequestAsync(userRequestId);
         if (userRequest == null)
         {
             throw new TokenRepositoryException("UserRequest is not in the database");
@@ -114,6 +107,6 @@ public class TokenRepository : ITokenRepository
 
         tokenInfo.UserRequests.Add(userRequest);
 
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
     }
 }

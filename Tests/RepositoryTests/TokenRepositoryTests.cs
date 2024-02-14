@@ -236,54 +236,58 @@ public class TokenRepositoryTests
     }
     
     [Fact]
-    public async Task AddIpAddressesAsync_ShouldAddIpAddresses()
+    public async Task AddIpAddressAsync_ShouldAddIpAddresses()
     {
         // Arrange
         var token = MockToken();
-        var ipAddresses = new List<IpAddressInfo>
-        {
-            new("192.168.0.1"),
-            new("192.168.0.2"),
-            new("192.168.0.3")
-        };
-        
+        const string ip = "192.168.0.1";
+        var ipInfo = await _ipRepository.FindOrCreateIpAsync(ip);
         await _dbContext.Tokens.AddAsync(token);
-        await _dbContext.Ips.AddRangeAsync(ipAddresses);
         await _dbContext.SaveChangesAsync();
         
         // Act
-        await _tokenRepository.AddIpAddressesAsync(token.Token, ipAddresses.Select(ip => ip.Id).ToList());
-        var tokenIps = await _dbContext.IpTokens.Where(ipToken => ipToken.TokenId == token.Id).ToListAsync();
+        await _tokenRepository.AddIpAddressIfNeededAsync(token.Token, ipInfo.Id);
+        var tokenIps = await _dbContext.IpTokens.Where(ipToken => ipToken.TokenInfoId == token.Id).ToListAsync();
         
         // Assert
-        Assert.Equal(ipAddresses.Count, tokenIps.Count);
-        foreach (var tokenIp in tokenIps)
-        {
-            Assert.Contains(ipAddresses, ip => ip.Id == tokenIp.IpId);
-        }
+        Assert.Single(tokenIps);
+        Assert.Equal(ipInfo.Id, tokenIps[0].IpAddressInfoId);
     }
 
     [Fact]
-    public async Task AddIpAddressesAsync_ShouldNotAddIpAddressesIfTokenNotFound()
+    public async Task AddIpAddressAsync_ShouldThrowExceptionIfTokenNotFound()
+    {
+        // Arrange
+        var ipAddress = new IpAddressInfo("192.168.0.1");
+        await _dbContext.Ips.AddAsync(ipAddress);
+        await _dbContext.SaveChangesAsync();
+        
+        // Act
+        await Assert.ThrowsAsync<TokenRepositoryException>(() => _tokenRepository.AddIpAddressIfNeededAsync("NotExistingToken", ipAddress.Id));
+    }
+
+    [Fact]
+    public async Task AddIpAddressAsync_ShouldThrowExceptionIfIpAddressNotFound()
     {
         // Arrange
         var token = MockToken();
-        var ipAddresses = new List<IpAddressInfo>
-        {
-            new("192.168.0.1"),
-            new("192.168.0.2"),
-            new("192.168.0.3")
-        };
-        await _dbContext.Ips.AddRangeAsync(ipAddresses);
+        var nonExistingIpId = Guid.NewGuid();
+        await _dbContext.Tokens.AddAsync(token);
         await _dbContext.SaveChangesAsync();
-        await _tokenRepository.FindOrCreateTokenAsync(token.Token);
-
+        
         // Act
-        await _tokenRepository.AddIpAddressesAsync(token.Token, ipAddresses.Select(ip => ip.Id).ToList());
-        var tokenIps = await _dbContext.IpTokens.Where(ipToken => ipToken.TokenId == token.Id).ToListAsync();
-
-        // Assert
-        Assert.Empty(tokenIps);
+        await Assert.ThrowsAsync<TokenRepositoryException>(() => _tokenRepository.AddIpAddressIfNeededAsync(token.Token, nonExistingIpId));
+    }
+    
+    [Fact]
+    public async Task AddIpAddressAsync_ShouldThrowExceptionIfIpAddressAndTokenNotFound()
+    {
+        // Arrange
+        var nonExistingIpId = Guid.NewGuid();
+        const string nonExistingToken = "NotExistingToken";
+        
+        // Act
+        await Assert.ThrowsAsync<TokenRepositoryException>(() => _tokenRepository.AddIpAddressIfNeededAsync(nonExistingToken, nonExistingIpId));
     }
     
     [Fact]

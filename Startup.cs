@@ -17,13 +17,16 @@ public class Startup
 
         builder.Services.AddControllers();
         builder.Services.AddDbContext<SmugDbContext>(options =>
-            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+        {
+            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+            options.EnableSensitiveDataLogging();
+        });
         
+        builder.Services.AddScoped<IUserRequestRepository, UserRequestRepository>();
+        builder.Services.AddScoped<IRestrictedUrlRepository, RestrictedUrlRepository>();
         builder.Services.AddScoped<IIpRepository, IpRepository>();
         builder.Services.AddScoped<ITokenRepository, TokenRepository>();
-        builder.Services.AddScoped<IUrlRepository, UrlRepository>();
-        builder.Services.AddScoped<IRestrictedUrlRepository, RestrictedUrlRepository>();
-        builder.Services.AddScoped<IUserRequestRepository, UserRequestRepository>();
+        builder.Services.AddScoped<IAccessValidator, AccessValidator>();
         
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddSwaggerGen();

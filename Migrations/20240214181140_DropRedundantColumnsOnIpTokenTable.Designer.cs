@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Smug.Models.SmugDbContext;
@@ -11,9 +12,11 @@ using Smug.Models.SmugDbContext;
 namespace Smug.Migrations
 {
     [DbContext(typeof(SmugDbContext))]
-    partial class SmugDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240214181140_DropRedundantColumnsOnIpTokenTable")]
+    partial class DropRedundantColumnsOnIpTokenTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

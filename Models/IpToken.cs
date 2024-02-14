@@ -1,26 +1,23 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Smug.Models;
 
 [Table("IpToken")]
+[PrimaryKey("IpAddressInfoId", "TokenInfoId")]
 public class IpToken
 {
-    [Key]
     [Column(TypeName = "uuid"), Required]
-    public Guid Id { get; set; }
+    public Guid IpAddressInfoId { get; set; }
     
     [Column(TypeName = "uuid"), Required]
-    public Guid IpId { get; set; }
+    public Guid TokenInfoId { get; set; }
     
-    [Column(TypeName = "uuid"), Required]
-    public Guid TokenId { get; set; }
-    
-    public IpToken(Guid ipId, Guid tokenId)
+    public IpToken(Guid ipAddressInfoId, Guid tokenInfoId)
     {
-        Id = Guid.NewGuid();
-        IpId = ipId;
-        TokenId = tokenId;
+        IpAddressInfoId = ipAddressInfoId;
+        TokenInfoId = tokenInfoId;
     }
     
     public IpToken()

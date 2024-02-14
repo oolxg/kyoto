@@ -6,15 +6,8 @@ using Smug.Services.Interfaces;
 
 namespace Smug.Services.Implementations;
 
-public class RestrictedUrlRepository : IRestrictedUrlRepository
+public class RestrictedUrlRepository(SmugDbContext dbContext) : IRestrictedUrlRepository
 {
-    private readonly SmugDbContext _dbContext;
-
-    public RestrictedUrlRepository(SmugDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public async Task BlockUrl(string host, string path, string reason, DateTime? bannedUntil = null)
     {
         if (await IsUrlBlocked(host, path))
@@ -24,26 +17,26 @@ public class RestrictedUrlRepository : IRestrictedUrlRepository
         
         var restrictedUrl = new RestrictedUrl(host, path, reason, bannedUntil);
         
-        await _dbContext.RestrictedUrls.AddAsync(restrictedUrl);
-        await _dbContext.SaveChangesAsync();
+        await dbContext.RestrictedUrls.AddAsync(restrictedUrl);
+        await dbContext.SaveChangesAsync();
     }
     
     public async Task UnblockUrl(string host, string path)
     {
-        var restrictedUrl = await _dbContext.RestrictedUrls.FirstOrDefaultAsync(ru => ru.Host == host && ru.Path == path);
+        var restrictedUrl = await dbContext.RestrictedUrls.FirstOrDefaultAsync(ru => ru.Host == host && ru.Path == path);
         
         if (restrictedUrl == null)
         {
             throw new RestrictedUrlRepositoryException($"URL {host}{path} is not blocked");
         }
         
-        _dbContext.RestrictedUrls.Remove(restrictedUrl);
-        await _dbContext.SaveChangesAsync();
+        dbContext.RestrictedUrls.Remove(restrictedUrl);
+        await dbContext.SaveChangesAsync();
     }
     
     public async Task<bool> IsUrlBlocked(string host, string path)
     {
-        var restrictedUrl = await _dbContext.RestrictedUrls
+        var restrictedUrl = await dbContext.RestrictedUrls
             .FirstOrDefaultAsync(ru => ru.Host == host && ru.Path == path);
         
         if (restrictedUrl == null)

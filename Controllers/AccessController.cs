@@ -11,9 +11,6 @@ public class AccessController(
     ITokenRepository tokenRepository,
     IUserRequestRepository userRequestRepository) : ControllerBase
 {
-    private IIpRepository IpRepository => ipRepository;
-    private ITokenRepository TokenRepository => tokenRepository;
-    private IUserRequestRepository UserRequestRepository => userRequestRepository;
     
     [HttpGet("block/ip/{ip}")]
     public async Task<IActionResult> BanIp(string ip, [FromQuery] string reason)
@@ -30,12 +27,12 @@ public class AccessController(
             return BadRequest(response);
         }
         
-        var bannedIp = await IpRepository.BanIpAsync(ip, reason);
+        var bannedIp = await ipRepository.BanIpIfNeededAsync(ip, reason);
         
-        var requests = await UserRequestRepository.FindUserRequestByIpAsync(ip);
+        var requests = await userRequestRepository.FindUserRequestByIpAsync(ip);
         foreach (var request in requests.Where(request => request.TokenInfo?.Token != null))
         {
-            await TokenRepository.BanTokenAsync(request.TokenInfo!.Token, reason);
+            await tokenRepository.BanTokenAsync(request.TokenInfo!.Token, reason);
         }
         
         return Ok(bannedIp);
@@ -44,12 +41,12 @@ public class AccessController(
     [HttpGet("block/token/{token}")]
     public async Task<IActionResult> BanToken(string token, [FromQuery] string reason)
     {
-        var bannedToken = await TokenRepository.BanTokenAsync(token, reason);
+        var bannedToken = await tokenRepository.BanTokenAsync(token, reason);
         
-        var requests = await UserRequestRepository.FindUserRequestByTokenAsync(token);
+        var requests = await userRequestRepository.FindUserRequestByTokenAsync(token);
         foreach (var request in requests)
         {
-            await IpRepository.BanIpAsync(request.IpInfo.Ip, reason);
+            await ipRepository.BanIpIfNeededAsync(request.IpInfo.Ip, reason);
         }
         
         return Ok(bannedToken);
@@ -70,13 +67,13 @@ public class AccessController(
             return BadRequest(response);
         }
         
-        await IpRepository.UnbanIpAsync(ip, reason);
+        await ipRepository.UnbanIpAsync(ip, reason);
         
-        var requests = await UserRequestRepository.FindUserRequestByIpAsync(ip);
+        var requests = await userRequestRepository.FindUserRequestByIpAsync(ip);
         
         foreach (var request in requests.Where(request => request.TokenInfo?.Token != null))
         {
-            await TokenRepository.UnbanTokenAsync(request.TokenInfo!.Token, reason);
+            await tokenRepository.UnbanTokenAsync(request.TokenInfo!.Token, reason);
         }
         
         return Ok();
@@ -85,12 +82,12 @@ public class AccessController(
     [HttpGet("unban/token/{token}")]
     public async Task<IActionResult> UnbanToken(string token, [FromQuery] string reason)
     {
-        await TokenRepository.UnbanTokenAsync(token, reason);
+        await tokenRepository.UnbanTokenAsync(token, reason);
         
-        var requests = await UserRequestRepository.FindUserRequestByTokenAsync(token);
+        var requests = await userRequestRepository.FindUserRequestByTokenAsync(token);
         foreach (var request in requests)
         {
-            await IpRepository.UnbanIpAsync(request.IpInfo.Ip, reason);
+            await ipRepository.UnbanIpAsync(request.IpInfo.Ip, reason);
         }
         
         return Ok();

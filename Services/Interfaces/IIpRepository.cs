@@ -16,9 +16,8 @@ public interface IIpRepository
     /// </summary>
     /// <param name="ip">The IP address to be banned.</param>
     /// <param name="reason">The reason for banning the IP address.</param>
-    /// <throws><see cref="IpRepositoryException"/> if the IP address is already banned.</throws>
     /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the banned <see cref="IpAddressInfo"/> object.</returns>
-    public Task<IpAddressInfo> BanIpAsync(string ip, string reason);
+    public Task<IpAddressInfo> BanIpIfNeededAsync(string ip, string reason);
 
     /// <summary>
     /// Bans the specified IP address asynchronously.
@@ -28,7 +27,7 @@ public interface IIpRepository
     /// <param name="reason">The reason for banning the IP address.</param>
     /// <throws><see cref="IpRepositoryException"/> if the IP address is already banned.</throws>
     /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the banned <see cref="IpAddressInfo"/> object.</returns>
-    public Task<IpAddressInfo> BanIpAsync(string ip, bool shouldHide, string reason);
+    public Task<IpAddressInfo> BanIpIfNeededAsync(string ip, bool shouldHide, string reason);
 
     /// <summary>
     /// Unbans the specified IP address asynchronously.
@@ -74,9 +73,10 @@ public interface IIpRepository
     /// Add tokens associated with ip
     /// </summary>
     /// <param name="ip">IP string</param>
-    /// <param name="tokenIds">List of ids of tokens addresses</param>
+    /// <param name="tokenId">Id of token address</param>
+    /// <throws><see cref="IpRepositoryException"/> If the IP address or some of the tokens are not found.</throws>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    public Task AddIpAddressesAsync(string ip, IEnumerable<Guid> tokenIds);
+    public Task AddTokenAsyncIfNeeded(string ip, Guid tokenId);
 
     /// <summary>
     /// Connects user request with ip

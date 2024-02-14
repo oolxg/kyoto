@@ -25,9 +25,9 @@ public class IpAddressInfo
     
     [Column(TypeName = "boolean"), Required]
     public bool ShouldHideIfBanned { get; set; }
-    
-    public List<IpToken> IpTokens { get; set; }
-    public List<UserRequest> UserRequests { get; set; }
+
+    public List<IpToken> IpTokens { get; set; } = new();
+    public List<UserRequest> UserRequests { get; set; } = new();
     
     [Column(TypeName = "timestamp with time zone"), Required]
     public DateTime CreatedAt { get; set; }
