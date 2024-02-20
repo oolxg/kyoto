@@ -27,13 +27,6 @@ public class TokenInfo
     public List<IpToken> IpTokens { get; set; } = new();
     public List<UserRequest> UserRequests { get; set; } = new();
     
-    public enum TokenStatus 
-    {
-        Whitelisted,
-        Banned,
-        Normal
-    }
-    
     public TokenInfo(string token)
     {
         Id = Guid.NewGuid();
@@ -54,4 +47,11 @@ public class TokenInfo
     public TokenInfo()
     {
     }
+}
+
+public enum TokenStatus 
+{
+    Whitelisted,
+    Banned,
+    Normal
 }

@@ -1,5 +1,5 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=0a4c0559_002D1f81_002D47a6_002D8da4_002D6e9ec4a8114d/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="TokenRepositoryTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=0a4c0559_002D1f81_002D47a6_002D8da4_002D6e9ec4a8114d/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="TokenRepositoryTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.UserRequestRepositoryTests&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.IpRepositoryTests&lt;/TestId&gt;
@@ -7,6 +7,60 @@
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.RestrictedUrlRepositoryTests.BlockUrl_ShouldBlockUrl&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.RestrictedUrlRepositoryTests.BlockUrl_ShouldNotBlockAlreadyBlockedUrl&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.RestrictedUrlRepositoryTests&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenIpIsNotBanned_ReturnsValidationResultWithBlockFalse&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=0e5d0ec4_002Daed1_002D4ace_002Db45e_002Dd31b98824495/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="GetBlockedRequestsAsync_ShouldFindBlockedUserRequestsByHostPathAndDate" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.UserRequestRepositoryTests&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.RestrictedUrlRepositoryTests&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.IpRepositoryTests.AddUserRequestToIpAsync_ShouldThrowExceptionIfUserRequestNotFound&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenIpIsNotBanned_ReturnsValidationResultWithBlockFalse&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenIpIsNotBanned_ReturnsValidationResultWithBlockFalse_ShouldNotBanTokenOrIp&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenIpIsBannedAndNoTokenGiven_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenTokenIsBanned_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=21f3fec1_002D1940_002D4453_002Da777_002Da05979359779/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="ValidateRequestAsync_WhenUrlIsBlockedWithNoTimeLimit_TokenGiven_ReturnsValidationResultWithBlockTrue" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenUrlIsBlockedWithNoTimeLimit_TokenGiven_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenUrlIsBlockedWithNoTimeLimit_GivenWhitelistedIpAndToken_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenUrlIsBlockedWithNoTimeLimit_GivenWhitelistedIpAndToken_ReturnsValidationResultWithBlockFalse&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenUrlIsBlockedWithNoTimeLimit_GivenWhitelistedTokenAndIp_ReturnsValidationResultWithBlockFalse&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenUrlIsBlockedWithNoTimeLimit_GivenWhitelistedIpAndNoToken_ReturnsValidationResultWithBlockFalse&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenUrlIsBlockedWithTimeLimit_GivenNoTokenAndDateIsNotPassed_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenUrlIsBlockedWithTimeLimit_GivenTokenAndDateNotIsPassed_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenUrlIsBlockedWithTimeLimit_GivenNoTokenAndDateIsPassed_ReturnsValidationResultWithBlockFalse&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenUrlIsBlockedWithTimeLimit_GivenWhitelistedTokenAndIpAndDateIsPassed_ReturnsValidationResultWithBlockFalse&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenUrlIsBlockedWithTimeLimit_GivenWhitelistedTokenAndIpAndDateIsNotPassed_ReturnsValidationResultWithBlockFalse&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenUrlIsBlockedWithTimeLimit_GivenWhitelistedIpAndTokenAndDateIsPassed_ReturnsValidationResultWithBlockFalse&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenUrlIsBlockedWithTimeLimit_GivenWhitelistedIpAndTokenAndDateIsNotPassed_ReturnsValidationResultWithBlockFalse&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenUrlIsBlockedWithTimeLimit_GivenTokenAndDateIsPassed_ReturnsValidationResultWithBlockFalse&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenRequestIsFromCrawler_GivenBlockedUrl_ReturnsValidationResultWithBlockFalse&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenRequestIsFromCrawler_GivenBlockedUrlWithTimeLimitAndDateIsPassed_ReturnsValidationResultWithBlockFalse&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenRequestIsFromCrawler_GivenBlockedUrlWithTimeLimitAndDateIsNotPassed_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenRequestIsFromCrawler_ReturnsValidationResultWithBlockFalse&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenRequestIsFromCrawler_GivenBlockedUrlWithTimeLimitAndDateIsNotPassed_ReturnsValidationResultWithBlockFalse&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenRequestIsFromCrawler_GivenBlockedUrlWithNoTimeLimit_ReturnsValidationResultWithBlockFalse&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_GivenUserAgentWithPython_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_GivenNoUserAgent_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=683c2c36_002D3b80_002D43e9_002D8966_002Dd37064ff63a4/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ValidateRequestAsync_WhenTokenIsBanned_ReturnsValidationResultWithBlockTrue" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ae417b9e_002D9c69_002D4c28_002D90e6_002Ddcd534970a64/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ValidateRequestAsync_GivenUserAgentWithPython_ReturnsValidationResultWithBlockTrue" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_GivenUserAgentWithPython_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_GivenRefererWithJsRedir_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=d220ccae_002D8098_002D46ac_002D95cd_002D915940f2d6f6/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ValidateRequestAsync_GivenRefererWithJsRedir_ReturnsValidationResultWithBlockTrue" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_GivenRefererWithJsRedir_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenIpIsLinkedToBannedToken_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
 	

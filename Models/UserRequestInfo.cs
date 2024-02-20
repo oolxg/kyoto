@@ -4,22 +4,18 @@ public class UserRequestInfo
 {
     public DateTime RequestDate { get; set; }
     public string UserIp { get; set; }
-    public string? Token => Headers?.TryGetValue("Token", out var token) ?? false ? token : null;
     public string Host { get; set; }
     public string Path { get; set; }
     public Dictionary<string, string>? Headers { get; set; }
-
+    public string? Token => Headers?.TryGetValue("Token", out var token) ?? false ? token : null;
+    
     public UserRequest AsUserRequest(Guid ipInfoId, Guid? tokenInfoId)
     {
-        return new UserRequest
-        {
-            Id = Guid.NewGuid(),
-            RequestDate = RequestDate,
-            IpInfoId = ipInfoId,
-            TokenInfoId = tokenInfoId,
-            Host = Host,
-            Path = Path,
-            Headers = Headers ?? new Dictionary<string, string>(),
-        };
+        return new UserRequest(
+            ipInfoId,
+            tokenInfoId,
+            Host,
+            Path,
+            Headers);
     }
 }

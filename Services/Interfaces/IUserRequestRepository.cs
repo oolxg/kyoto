@@ -1,3 +1,4 @@
+using Smug.Exceptions;
 using Smug.Models;
 
 namespace Smug.Services.Interfaces;
@@ -45,4 +46,12 @@ public interface IUserRequestRepository
     /// <param name="start">Start date</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the list of found <see cref="UserRequest"/> objects.</returns>
     Task<List<UserRequest>> GetBlockedRequestsAsync(string host, string path, DateTime? start = null);
+    
+    /// <summary>
+    /// Updates user request
+    /// </summary>
+    /// <param name="userRequest">User request to update</param>
+    /// <throws><see cref="UserRequestRepositoryException"/> if user request is not found</throws>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    Task UpdateUserRequestAsync(UserRequest userRequest);
 }

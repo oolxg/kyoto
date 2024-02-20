@@ -19,6 +19,12 @@ public class UserRequest
     
     [Column(TypeName = "text"), Required]
     public string Path { get; set; }
+    
+    [Column(TypeName = "boolean"), Required]
+    public bool IsBlocked { get; set; }
+    
+    [Column(TypeName = "text")]
+    public string? BlockReason { get; set; }
         
     [ForeignKey("IpId")]
     public Guid IpInfoId { get; set; }
@@ -36,9 +42,6 @@ public class UserRequest
     
     [Column(TypeName = "jsonb"), Required]
     public Dictionary<string, string> Headers { get; set; }
-    
-    [Column(TypeName = "boolean"), Required]
-    public bool IsBlocked { get; set; }
     
     public UserRequest(
         Guid ipId, 

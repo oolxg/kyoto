@@ -32,13 +32,6 @@ public class IpAddressInfo
     [Column(TypeName = "timestamp with time zone"), Required]
     public DateTime CreatedAt { get; set; }
     
-    public enum IpStatus
-    {
-        Whitelisted,
-        Banned,
-        Normal
-    }
-    
     public IpAddressInfo(string ip)
     {
         Id = Guid.NewGuid();
@@ -60,4 +53,11 @@ public class IpAddressInfo
         StatusChangeReason = reason;
         StatusChangeDate = DateTime.UtcNow;
     } 
+}
+
+public enum IpStatus
+{
+    Whitelisted,
+    Banned,
+    Normal
 }

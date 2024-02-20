@@ -213,4 +213,68 @@ public class RestrictedUrlRepositoryTests
         // Assert
         Assert.False(isBlocked);
     }
+    
+    [Fact]
+    public async Task IsUrlBlocked_TestWildcardHost_ShouldReturnTrueIfUrlIsBlocked()
+    {
+        // Arrange
+        const string host = "www.example.com";
+        var path = Guid.NewGuid().ToString();
+        const string reason = "Test";
+        await _restrictedUrlRepository.BlockUrl("*", path, reason);
+        
+        // Act
+        var isBlocked = await _restrictedUrlRepository.IsUrlBlocked(host, path);
+        
+        // Assert
+        Assert.True(isBlocked);
+    }
+    
+    [Fact]
+    public async Task IsUrlBlocked_TestWildcardPath_ShouldReturnTrueIfUrlIsBlocked()
+    {
+        // Arrange
+        const string host = "www.example.com";
+        var path = Guid.NewGuid().ToString();
+        const string reason = "Test";
+        await _restrictedUrlRepository.BlockUrl(host, "*", reason);
+        
+        // Act
+        var isBlocked = await _restrictedUrlRepository.IsUrlBlocked(host, path);
+        
+        // Assert
+        Assert.True(isBlocked);
+    }
+    
+    [Fact]
+    public async Task IsUrlBlocked_TestWildcardHostAndPath_ShouldReturnTrueIfUrlIsBlocked()
+    {
+        // Arrange
+        const string host = "www.example.com";
+        var path = Guid.NewGuid().ToString();
+        const string reason = "Test";
+        await _restrictedUrlRepository.BlockUrl("*", "*", reason);
+        
+        // Act
+        var isBlocked = await _restrictedUrlRepository.IsUrlBlocked(host, path);
+        
+        // Assert
+        Assert.True(isBlocked);
+    }
+    
+    [Fact]
+    public async Task IsUrlBlocked_TestWildcardHost_ShouldFalseIfPathIsDifferent()
+    {
+        // Arrange
+        const string host = "www.example.com";
+        const string path = "/restricted";
+        const string reason = "Test";
+        await _restrictedUrlRepository.BlockUrl("*", path, reason);
+        
+        // Act
+        var isBlocked = await _restrictedUrlRepository.IsUrlBlocked(host, "/not-restricted");
+        
+        // Assert
+        Assert.False(isBlocked);
+    }
 }

@@ -25,7 +25,7 @@ public class IpRepositoryTests
     }
 
     [Fact]
-    public async Task FindOrCreateIpAsync_ShouldSaveNewIp()
+    public async Task FindOrCreateIpAsync_GivenIp_ShouldSaveNewIp()
     {
         // Arrange
         const string ip = "192.168.0.1";
@@ -56,7 +56,7 @@ public class IpRepositoryTests
     }
 
     [Fact]
-    public async Task BanIpIfNeededAsync_ShouldBanIp()
+    public async Task BanIpIfNeededAsync_GivenReason_ShouldBanIpWithReason()
     {
         // Arrange
         const string ip = "192.168.0.1";
@@ -70,12 +70,12 @@ public class IpRepositoryTests
         Assert.Single(ips);
         Assert.Equal(ip, ips[0].Ip);
         Assert.Equal(reason, ips[0].StatusChangeReason);
-        Assert.Equal(IpAddressInfo.IpStatus.Banned, ips[0].Status);
+        Assert.Equal(IpStatus.Banned, ips[0].Status);
         Assert.NotNull(ips[0].StatusChangeDate);
     }
 
     [Fact]
-    public async Task BanIpIfNeededAsync_ShouldBanIpAndHideIt()
+    public async Task BanIpIfNeededAsync_GivenShouldHide_ShouldBanIpAndHideIt()
     {
         // Arrange
         const string ip = "192.168.0.1";
@@ -88,7 +88,7 @@ public class IpRepositoryTests
         // Assert
         Assert.Single(ips);
         Assert.Equal(ip, ips[0].Ip);
-        Assert.Equal(IpAddressInfo.IpStatus.Banned, ips[0].Status);
+        Assert.Equal(IpStatus.Banned, ips[0].Status);
         Assert.Equal(reason, ips[0].StatusChangeReason);
         Assert.True(ips[0].ShouldHideIfBanned);
         Assert.NotNull(ips[0].StatusChangeDate);
@@ -108,28 +108,8 @@ public class IpRepositoryTests
         // Assert
         Assert.Single(ips);
         Assert.Equal(ip, ips[0].Ip);
-        Assert.Equal(IpAddressInfo.IpStatus.Banned, ips[0].Status);
+        Assert.Equal(IpStatus.Banned, ips[0].Status);
         Assert.Equal(reason, ips[0].StatusChangeReason);
-        Assert.NotNull(ips[0].StatusChangeDate);
-    }
-
-    [Fact]
-    public async Task BanIpIfNeededAsync_ShouldHideIp()
-    {
-        // Arrange
-        const string ip = "192.168.0.1";
-        const string reason = "test reason";
-
-        // Act
-        await _ipRepository.BanIpIfNeededAsync(ip, true, reason);
-        var ips = await _dbContext.Ips.Where(ipInfo => ipInfo.Ip == ip).ToListAsync();
-
-        // Assert
-        Assert.Single(ips);
-        Assert.Equal(ip, ips[0].Ip);
-        Assert.Equal(IpAddressInfo.IpStatus.Banned, ips[0].Status);
-        Assert.Equal(reason, ips[0].StatusChangeReason);
-        Assert.True(ips[0].ShouldHideIfBanned);
         Assert.NotNull(ips[0].StatusChangeDate);
     }
 
@@ -148,7 +128,7 @@ public class IpRepositoryTests
         // Assert
         Assert.Single(ips);
         Assert.Equal(ip, ips[0].Ip);
-        Assert.Equal(IpAddressInfo.IpStatus.Banned, ips[0].Status);
+        Assert.Equal(IpStatus.Banned, ips[0].Status);
         Assert.Equal(reason, ips[0].StatusChangeReason);
         Assert.NotNull(ips[0].StatusChangeDate);
     }
@@ -167,7 +147,7 @@ public class IpRepositoryTests
         // Assert
         Assert.Single(ips);
         Assert.Equal(ip, ips[0].Ip);
-        Assert.Equal(IpAddressInfo.IpStatus.Banned, ips[0].Status);
+        Assert.Equal(IpStatus.Banned, ips[0].Status);
         Assert.Equal(reason, ips[0].StatusChangeReason);
         Assert.NotNull(ips[0].StatusChangeDate);
     }
@@ -187,7 +167,7 @@ public class IpRepositoryTests
         // Assert
         Assert.Single(ips);
         Assert.Equal(ip, ips[0].Ip);
-        Assert.Equal(IpAddressInfo.IpStatus.Normal, ips[0].Status);
+        Assert.Equal(IpStatus.Normal, ips[0].Status);
         Assert.Equal(reason, ips[0].StatusChangeReason);
         Assert.NotNull(ips[0].StatusChangeDate);
     }
@@ -299,7 +279,7 @@ public class IpRepositoryTests
         // Assert
         Assert.Single(ips);
         Assert.Equal(ip, ips[0].Ip);
-        Assert.Equal(IpAddressInfo.IpStatus.Whitelisted, ips[0].Status);
+        Assert.Equal(IpStatus.Whitelisted, ips[0].Status);
         Assert.Equal(reason, ips[0].StatusChangeReason);
         Assert.NotNull(ips[0].StatusChangeDate);
     }
@@ -318,7 +298,7 @@ public class IpRepositoryTests
         // Assert
         Assert.Single(ips);
         Assert.Equal(ip, ips[0].Ip);
-        Assert.Equal(IpAddressInfo.IpStatus.Whitelisted, ips[0].Status);
+        Assert.Equal(IpStatus.Whitelisted, ips[0].Status);
         Assert.Equal(reason, ips[0].StatusChangeReason);
         Assert.NotNull(ips[0].StatusChangeDate);
     }
@@ -421,17 +401,8 @@ public class IpRepositoryTests
         const string ip = "192.168.0.1";
         var userRequest = new UserRequest(Guid.NewGuid(), null, "example.com", "/test-path/");
 
-        // Act
-        try
-        {
-            await _ipRepository.AddUserRequestToIpAsync(ip, userRequest.Id);
-            Assert.Fail("AddUserRequestToIpAsync should throw an exception if IpAddressInfo is not in the database");
-        }
-        catch (IpRepositoryException)
-        {
-            // Assert
-            Assert.True(true);
-        }
+        // Act & Assert
+        await Assert.ThrowsAsync<IpRepositoryException>(() => _ipRepository.AddUserRequestToIpAsync(ip, userRequest.Id));
     }
 
     [Fact]
@@ -440,16 +411,7 @@ public class IpRepositoryTests
         // Arrange
         var ipAddressInfo = await _ipRepository.FindOrCreateIpAsync("192.168.0.1");
 
-        // Act
-        try
-        {
-            await _ipRepository.AddUserRequestToIpAsync(ipAddressInfo.Ip, Guid.NewGuid());
-            Assert.Fail("AddUserRequestToIpAsync should throw an exception if UserRequest is not in the database");
-        }
-        catch (IpRepositoryException)
-        {
-            // Assert
-            Assert.True(true);
-        }
+        // Act & Assert
+        await Assert.ThrowsAsync<IpRepositoryException>(() => _ipRepository.AddUserRequestToIpAsync(ipAddressInfo.Ip, Guid.NewGuid()));
     }
 }

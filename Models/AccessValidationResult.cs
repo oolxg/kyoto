@@ -1,7 +1,7 @@
 namespace Smug.Models;
 
-public class AccessValidationResult
+public class AccessValidationResult(bool block, string reason)
 {
-    public bool block { get; set; }
-    public string reason { get; set; }
+    public bool Block { get; } = block;
+    public string Reason { get; } = reason;
 }

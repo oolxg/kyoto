@@ -32,7 +32,7 @@ public class TokenRepository(SmugDbContext context, IUserRequestRepository userR
             await context.Tokens.AddAsync(bannedToken);    
         }
         
-        bannedToken.UpdateStatus(TokenInfo.TokenStatus.Banned, reason);
+        bannedToken.UpdateStatus(TokenStatus.Banned, reason);
         
         await context.SaveChangesAsync();
         return bannedToken;
@@ -48,12 +48,12 @@ public class TokenRepository(SmugDbContext context, IUserRequestRepository userR
             await context.Tokens.AddAsync(bannedToken);
         }
         
-        if (bannedToken.Status != TokenInfo.TokenStatus.Banned)
+        if (bannedToken.Status != TokenStatus.Banned)
         {
             throw new TokenRepositoryException("TokenInfo is not banned");
         }
         
-        bannedToken.UpdateStatus(TokenInfo.TokenStatus.Normal, reason);
+        bannedToken.UpdateStatus(TokenStatus.Normal, reason);
         await context.SaveChangesAsync();
     }
     

@@ -10,7 +10,7 @@ public class RestrictedUrlRepository(SmugDbContext dbContext) : IRestrictedUrlRe
 {
     public async Task BlockUrl(string host, string path, string reason, DateTime? bannedUntil = null)
     {
-        if (await IsUrlBlocked(host, path))
+        if (await dbContext.RestrictedUrls.AnyAsync(ru => ru.Host == host && ru.Path == path))
         {
             throw new RestrictedUrlRepositoryException($"URL {host}{path} is already blocked");
         }
@@ -37,7 +37,9 @@ public class RestrictedUrlRepository(SmugDbContext dbContext) : IRestrictedUrlRe
     public async Task<bool> IsUrlBlocked(string host, string path)
     {
         var restrictedUrl = await dbContext.RestrictedUrls
-            .FirstOrDefaultAsync(ru => ru.Host == host && ru.Path == path);
+            .Where(ru => ru.Host == "*" || ru.Host == host)
+            .Where(ru => ru.Path == "*" || ru.Path == path)
+            .FirstOrDefaultAsync();
         
         if (restrictedUrl == null)
         {
@@ -49,6 +51,14 @@ public class RestrictedUrlRepository(SmugDbContext dbContext) : IRestrictedUrlRe
             return true;
         }
         
-        return restrictedUrl.BannedUntil.Value > DateTime.UtcNow;
+        var isBanned = restrictedUrl.BannedUntil.Value > DateTime.UtcNow;
+        
+        if (!isBanned)
+        {
+            dbContext.RestrictedUrls.Remove(restrictedUrl);
+            await dbContext.SaveChangesAsync();
+        }
+        
+        return isBanned;
     }
 }

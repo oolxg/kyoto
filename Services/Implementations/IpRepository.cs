@@ -47,12 +47,12 @@ public class IpRepository : IIpRepository
             await _dbContext.Ips.AddAsync(bannedIp);
         }
 
-        if (bannedIp.Status == IpAddressInfo.IpStatus.Banned)
+        if (bannedIp.Status == IpStatus.Banned)
         {
             return bannedIp;
         }
 
-        bannedIp.UpdateStatus(IpAddressInfo.IpStatus.Banned, reason);
+        bannedIp.UpdateStatus(IpStatus.Banned, reason);
         bannedIp.ShouldHideIfBanned = shouldHide;
 
         await _dbContext.SaveChangesAsync();
@@ -68,7 +68,7 @@ public class IpRepository : IIpRepository
             throw new IpRepositoryException("IpAddressInfo is not in the database");
         }
 
-        bannedIp.UpdateStatus(IpAddressInfo.IpStatus.Normal, reason);
+        bannedIp.UpdateStatus(IpStatus.Normal, reason);
     }
 
     public async Task<IpAddressInfo?> FindIpAsync(string ipToFind)
@@ -91,12 +91,12 @@ public class IpRepository : IIpRepository
             await _dbContext.Ips.AddAsync(ipToWhitelist);
         }
 
-        if (ipToWhitelist.Status == IpAddressInfo.IpStatus.Whitelisted)
+        if (ipToWhitelist.Status == IpStatus.Whitelisted)
         {
             throw new IpRepositoryException("IpAddressInfo is already whitelisted");
         }
 
-        ipToWhitelist.UpdateStatus(IpAddressInfo.IpStatus.Whitelisted, reason);
+        ipToWhitelist.UpdateStatus(IpStatus.Whitelisted, reason);
 
         await _dbContext.SaveChangesAsync();
     }

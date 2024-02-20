@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Smug.Exceptions;
 using Smug.Models;
 using Smug.Models.SmugDbContext;
 using Smug.Services.Interfaces;
@@ -64,5 +65,15 @@ public class UserRequestRepository(SmugDbContext context) : IUserRequestReposito
             .Where(ur => ur.Host == host && ur.Path == path && ur.IsBlocked && ur.RequestDate >= start)
             .OrderByDescending(ur => ur.RequestDate)
             .ToListAsync();
+    }
+    
+    public async Task UpdateUserRequestAsync(UserRequest userRequest)
+    {
+        if (await FindUserRequestAsync(userRequest.Id) == null)
+        {
+            throw new UserRequestRepositoryException("User request with given id does not exist");
+        }
+        Context.UserRequests.Update(userRequest);
+        await Context.SaveChangesAsync();
     }
 }

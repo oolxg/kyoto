@@ -39,7 +39,7 @@ public class TokenRepositoryTests
         // Assert
         Assert.Single(tokens);
         Assert.Equal(token, tokens[0].Token);
-        Assert.Equal(TokenInfo.TokenStatus.Normal, tokens[0].Status);
+        Assert.Equal(TokenStatus.Normal, tokens[0].Status);
         Assert.Null(tokens[0].Reason);
         Assert.Equal(tokenInfo.Id, tokens[0].Id);
     }
@@ -57,7 +57,7 @@ public class TokenRepositoryTests
         // Assert
         Assert.Single(tokens);
         Assert.Equal(tokenInfo.Token, tokens[0].Token);
-        Assert.Equal(TokenInfo.TokenStatus.Normal, tokens[0].Status);
+        Assert.Equal(TokenStatus.Normal, tokens[0].Status);
         Assert.Null(tokens[0].Reason);
         Assert.Equal(tokenInfo.Id, tokens[0].Id);
     }
@@ -76,7 +76,7 @@ public class TokenRepositoryTests
         // Assert
         Assert.Single(tokens);
         Assert.Equal(token, tokens[0].Token);
-        Assert.Equal(TokenInfo.TokenStatus.Banned, tokens[0].Status);
+        Assert.Equal(TokenStatus.Banned, tokens[0].Status);
         Assert.Equal(reason, tokens[0].Reason);
     }
     
@@ -94,7 +94,7 @@ public class TokenRepositoryTests
         // Assert
         Assert.Single(tokens);
         Assert.Equal(token, tokens[0].Token);
-        Assert.Equal(TokenInfo.TokenStatus.Banned, tokens[0].Status);
+        Assert.Equal(TokenStatus.Banned, tokens[0].Status);
         Assert.Equal(reason, tokens[0].Reason);
     }
     
@@ -113,7 +113,7 @@ public class TokenRepositoryTests
         // Assert
         Assert.Single(tokens);
         Assert.Equal(token, tokens[0].Token);
-        Assert.Equal(TokenInfo.TokenStatus.Banned, tokens[0].Status);
+        Assert.Equal(TokenStatus.Banned, tokens[0].Status);
         Assert.Equal(reason, tokens[0].Reason);
     }
     
@@ -133,7 +133,7 @@ public class TokenRepositoryTests
         // Assert
         Assert.Single(tokens);
         Assert.Equal(token, tokens[0].Token);
-        Assert.Equal(TokenInfo.TokenStatus.Normal, tokens[0].Status);
+        Assert.Equal(TokenStatus.Normal, tokens[0].Status);
         Assert.Equal(reason, tokens[0].Reason);
     }
     
@@ -152,7 +152,7 @@ public class TokenRepositoryTests
         // Assert
         Assert.Single(tokens);
         Assert.Equal(token, tokens[0].Token);
-        Assert.Equal(TokenInfo.TokenStatus.Normal, tokens[0].Status);
+        Assert.Equal(TokenStatus.Normal, tokens[0].Status);
         Assert.Equal(reason, tokens[0].Reason);
     }
     
@@ -171,7 +171,7 @@ public class TokenRepositoryTests
         // Assert
         Assert.Single(tokens);
         Assert.Equal(token, tokens[0].Token);
-        Assert.Equal(TokenInfo.TokenStatus.Normal, tokens[0].Status);
+        Assert.Equal(TokenStatus.Normal, tokens[0].Status);
         Assert.Equal(reason, tokens[0].Reason);
     }
     

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Smug.Exceptions;
 using Tests.Helpers;
 using Smug.Models;
 using Smug.Models.SmugDbContext;
@@ -278,6 +279,150 @@ public class UserRequestRepositoryTests
         // Assert
         Assert.Empty(foundUserRequests);
     }
+    
+    [Fact]
+    public async Task GetBlockedRequestsAsync_ShouldFindBlockedUserRequestsByHostPathAndDate()
+    {
+        // Arrange
+        var userRequests = new List<UserRequest>();
+        const int requestsCount = 10;
+        
+        for (var i = 0; i < requestsCount; i++)
+        {
+            userRequests.Add(await MockUserRequest(
+                ip: $"192.168.0.{i}",
+                token: $"testToken-{i}",
+                requestDate: DateTime.UtcNow.AddHours(-i),
+                isBlocked: i % 2 == 0)
+            );
+        }
+        
+        await _dbContext.UserRequests.AddRangeAsync(userRequests);
+        await _dbContext.SaveChangesAsync();
+        
+        // Act
+        var foundUserRequests = await _userRequestRepository
+            .GetBlockedRequestsAsync("google.com", "some/path", DateTime.UtcNow.AddHours(-12));
+        
+        // Assert
+        Assert.Equal(requestsCount / 2, foundUserRequests.Count);
+        Assert.Equal(userRequests.Where(ur => ur.IsBlocked), foundUserRequests);
+    }
+    
+    [Fact]
+    public async Task GetBlockedRequestsAsync_ShouldReturnEmptyListIfUserRequestsNotFoundByDate()
+    {
+        // Arrange
+        var userRequests = new List<UserRequest>();
+        const int requestsCount = 10;
+        
+        for (var i = 0; i < requestsCount; i++)
+        {
+            userRequests.Add(await MockUserRequest(
+                ip: $"192.168.0.{i}",
+                token: $"testToken-{i}",
+                requestDate: DateTime.UtcNow.AddHours(-i),
+                isBlocked: i % 2 == 0)
+            );
+        }
+        
+        await _dbContext.UserRequests.AddRangeAsync(userRequests);
+        await _dbContext.SaveChangesAsync();
+        
+        // Act
+        var foundUserRequests = await _userRequestRepository
+            .GetBlockedRequestsAsync("google.com", "some/path", DateTime.UtcNow.AddHours(1));
+        
+        // Assert
+        Assert.Empty(foundUserRequests);
+    }
+    
+    [Fact]
+    public async Task GetBlockedRequestsAsync_ShouldReturnEmptyListIfUserRequestsNotFoundByPath()
+    {
+        // Arrange
+        var userRequests = new List<UserRequest>();
+        const int requestsCount = 10;
+        
+        for (var i = 0; i < requestsCount; i++)
+        {
+            userRequests.Add(await MockUserRequest(
+                ip: $"192.168.0.{i}",
+                token: $"testToken-{i}",
+                requestDate: DateTime.UtcNow.AddHours(-i),
+                isBlocked: i % 2 == 0)
+            );
+        }
+        
+        await _dbContext.UserRequests.AddRangeAsync(userRequests);
+        await _dbContext.SaveChangesAsync();
+        
+        // Act
+        var foundUserRequests = await _userRequestRepository
+            .GetBlockedRequestsAsync("google.com", "some/other/path", DateTime.UtcNow.AddHours(-12));
+        
+        // Assert
+        Assert.Empty(foundUserRequests);
+    }
+    
+    [Fact]
+    public async Task GetBlockedRequestsAsync_ShouldReturnEmptyListIfUserRequestsNotFoundByHost()
+    {
+        // Arrange
+        var userRequests = new List<UserRequest>();
+        const int requestsCount = 10;
+        
+        for (var i = 0; i < requestsCount; i++)
+        {
+            userRequests.Add(await MockUserRequest(
+                ip: $"192.168.0.{i}",
+                token: $"testToken-{i}",
+                requestDate: DateTime.UtcNow.AddHours(-i),
+                isBlocked: i % 2 == 0)
+            );
+        }
+        
+        await _dbContext.UserRequests.AddRangeAsync(userRequests);
+        await _dbContext.SaveChangesAsync();
+        
+        // Act
+        var foundUserRequests = await _userRequestRepository
+            .GetBlockedRequestsAsync("some-other-host.com", "some/path", DateTime.UtcNow.AddHours(-12));
+        
+        // Assert
+        Assert.Empty(foundUserRequests);
+    }
+    
+    [Fact]
+    public async Task UpdateUserRequestAsync_ShouldUpdateUserRequest()
+    {
+        // Arrange
+        var userRequest = await MockUserRequest();
+        await _dbContext.UserRequests.AddAsync(userRequest);
+        await _dbContext.SaveChangesAsync();
+        
+        userRequest.IsBlocked = true;
+        userRequest.BlockReason = "testReason";
+        
+        // Act
+        await _userRequestRepository.UpdateUserRequestAsync(userRequest);
+        var updatedUserRequest = await _dbContext.UserRequests.FindAsync(userRequest.Id);
+        
+        // Assert
+        Assert.True(updatedUserRequest!.IsBlocked);
+        Assert.Equal("testReason", updatedUserRequest.BlockReason);
+    }
+    
+    [Fact]
+    public async Task UpdateUserRequestAsync_ShouldThrowIfUserRequestNotFound()
+    {
+        // Arrange
+        var userRequest = await MockUserRequest();
+        
+        // Act & Assert
+        await Assert.ThrowsAsync<UserRequestRepositoryException>(
+            () => _userRequestRepository.UpdateUserRequestAsync(userRequest));
+    }
 
     private async Task<UserRequest> MockUserRequest(
         Guid id = default,
@@ -285,7 +430,8 @@ public class UserRequestRepositoryTests
         string ip = "192.168.0.1",
         string host = "google.com",
         string path = "some/path",
-        DateTime? requestDate = null)
+        DateTime? requestDate = null, 
+        bool isBlocked = false)
     {
         var ipInfo = new IpAddressInfo(ip);
         TokenInfo? tokenInfo = null;
@@ -296,7 +442,7 @@ public class UserRequestRepositoryTests
         }
         await _dbContext.Ips.AddAsync(ipInfo);
         
-        return new UserRequest(
+        var userRequest = new UserRequest(
             id,
             requestDate ?? DateTime.UtcNow, 
             ipInfo.Id,
@@ -304,6 +450,10 @@ public class UserRequestRepositoryTests
             host,
             path,
             new Dictionary<string, string>());
+        
+        userRequest.IsBlocked = isBlocked;
+        
+        return userRequest;
     }
     
     private async Task<List<UserRequest>> MockUserRequests()
