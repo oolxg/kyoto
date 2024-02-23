@@ -44,13 +44,17 @@
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenRequestIsFromCrawler_GivenBlockedUrlWithNoTimeLimit_ReturnsValidationResultWithBlockFalse&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_GivenUserAgentWithPython_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_GivenNoUserAgent_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_GivenRecentBlockedRequest5MinutesAndNoReferer_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_GivenRefererWithJsRedir_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_GivenRecentBlockedRequestToPageAndLessThan5MinutesIntervalAndNoReferer_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_GivenRecentBlockedRequestToPageAndLessThan5MinutesIntervalAndValidReferer_ReturnsValidationResultWithBlockFalse&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_GivenRecentBlockedRequestToPageAndMoreThan5MinutesIntervalAndValidReferer_ReturnsValidationResultWithBlockFalse&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_GivenRecentBlockedRequestToPageAndMoreThan5MinutesIntervalAndNoReferer_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_GivenRecentBlockedRequestToPageAndMoreThan30MinutesIntervalAndNoReferer_ReturnsValidationResultWithBlockFalse&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_GivenRecentBlockedRequestToPageAndMoreThan30MinutesIntervalAndValidReferer_ReturnsValidationResultWithBlockFalse&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=683c2c36_002D3b80_002D43e9_002D8966_002Dd37064ff63a4/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ValidateRequestAsync_WhenTokenIsBanned_ReturnsValidationResultWithBlockTrue" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
-  &lt;TestAncestor&gt;
-    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests&lt;/TestId&gt;
-  &lt;/TestAncestor&gt;
-&lt;/SessionState&gt;</s:String>
+	
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ae417b9e_002D9c69_002D4c28_002D90e6_002Ddcd534970a64/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ValidateRequestAsync_GivenUserAgentWithPython_ReturnsValidationResultWithBlockTrue" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_GivenUserAgentWithPython_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;

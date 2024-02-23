@@ -402,7 +402,7 @@ public class UserRequestRepositoryTests
         await _dbContext.SaveChangesAsync();
         
         userRequest.IsBlocked = true;
-        userRequest.BlockReason = "testReason";
+        userRequest.DecisionReason = "testReason";
         
         // Act
         await _userRequestRepository.UpdateUserRequestAsync(userRequest);
@@ -410,7 +410,7 @@ public class UserRequestRepositoryTests
         
         // Assert
         Assert.True(updatedUserRequest!.IsBlocked);
-        Assert.Equal("testReason", updatedUserRequest.BlockReason);
+        Assert.Equal("testReason", updatedUserRequest.DecisionReason);
     }
     
     [Fact]

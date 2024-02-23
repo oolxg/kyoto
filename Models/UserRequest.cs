@@ -24,7 +24,7 @@ public class UserRequest
     public bool IsBlocked { get; set; }
     
     [Column(TypeName = "text")]
-    public string? BlockReason { get; set; }
+    public string? DecisionReason { get; set; }
         
     [ForeignKey("IpId")]
     public Guid IpInfoId { get; set; }

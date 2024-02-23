@@ -2,6 +2,7 @@ using Smug.Models;
 using Smug.Models.SmugDbContext;
 using Smug.Services.Implementations;
 using Smug.Tests.Fakes;
+using Smug.Resources;
 using Tests.Helpers;
 
 namespace Tests.RepositoryTests;
@@ -18,6 +19,10 @@ public class AccessValidatorTests
     {
         {"User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}
     };
+    
+    private const string DefaultIp = "192.168.0.1";
+    private const string DefaultHost = "example.com";
+    private const string DefaultPath = "/test/path/";
     
     public AccessValidatorTests()
     {
@@ -54,7 +59,7 @@ public class AccessValidatorTests
         
         // Assert
         Assert.False(result.Block);
-        Assert.Equal("Request is valid", result.Reason);
+        Assert.Equal(AccessValidatorReasons.RequestIsValid, result.Reason);
         Assert.Equal(0, _ipRepositoryFake.BanIpIfNeededAsync3ParamsCount);
         // Token is not given, so it cant be saved
         Assert.Equal(0, _tokenRepositoryFake.FindOrCreateTokenAsyncCount);
@@ -81,7 +86,7 @@ public class AccessValidatorTests
         
         // Assert
         Assert.False(result.Block);
-        Assert.Equal("Request is valid", result.Reason);
+        Assert.Equal(AccessValidatorReasons.RequestIsValid, result.Reason);
         Assert.Equal(0, _ipRepositoryFake.BanIpIfNeededAsync3ParamsCount);
         Assert.Equal(0, _tokenRepositoryFake.BanTokenAsyncCount);
         Assert.Equal(1, _tokenRepositoryFake.FindOrCreateTokenAsyncCount);
@@ -103,7 +108,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("IP is banned", result.Reason);
+        Assert.Equal(AccessValidatorReasons.IpIsBanned, result.Reason);
         Assert.True(result.Block);
         Assert.Equal(0, _tokenRepositoryFake.FindOrCreateTokenAsyncCount);
         Assert.Equal(0, _tokenRepositoryFake.BanTokenAsyncCount);
@@ -129,7 +134,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("Token is banned", result.Reason);
+        Assert.Equal(AccessValidatorReasons.TokenIsBanned, result.Reason);
         Assert.True(result.Block);
         Assert.Equal(1, _tokenRepositoryFake.FindOrCreateTokenAsyncCount);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
@@ -148,7 +153,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("Request is valid", result.Reason);
+        Assert.Equal(AccessValidatorReasons.RequestIsValid, result.Reason);
         Assert.False(result.Block);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
     }
@@ -171,7 +176,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("Request is valid", result.Reason);
+        Assert.Equal(AccessValidatorReasons.RequestIsValid, result.Reason);
         Assert.False(result.Block);
         Assert.Equal(1, _tokenRepositoryFake.FindOrCreateTokenAsyncCount);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
@@ -197,7 +202,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("IP is banned", result.Reason);
+        Assert.Equal(AccessValidatorReasons.IpIsBanned, result.Reason);
         Assert.True(result.Block);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
     }
@@ -221,7 +226,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("Token is banned", result.Reason);
+        Assert.Equal(AccessValidatorReasons.TokenIsBanned, result.Reason);
         Assert.True(result.Block);
         Assert.Equal(1, _tokenRepositoryFake.FindOrCreateTokenAsyncCount);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
@@ -243,7 +248,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("IP is whitelisted", result.Reason);
+        Assert.Equal(AccessValidatorReasons.IpIsWhitelisted, result.Reason);
         Assert.False(result.Block);
         Assert.Equal(0, _tokenRepositoryFake.FindOrCreateTokenAsyncCount);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
@@ -268,7 +273,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("Token is whitelisted", result.Reason);
+        Assert.Equal(AccessValidatorReasons.TokenIsWhitelisted, result.Reason);
         Assert.False(result.Block);
         Assert.Equal(1, _tokenRepositoryFake.FindOrCreateTokenAsyncCount);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
@@ -295,7 +300,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("IP is whitelisted", result.Reason);
+        Assert.Equal(AccessValidatorReasons.IpIsWhitelisted, result.Reason);
         Assert.False(result.Block);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
     }
@@ -315,7 +320,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("Requested URL is blocked", result.Reason);
+        Assert.Equal(AccessValidatorReasons.RequestedUrlIsBlocked, result.Reason);
         Assert.True(result.Block);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
     }
@@ -339,7 +344,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("Requested URL is blocked", result.Reason);
+        Assert.Equal(AccessValidatorReasons.RequestedUrlIsBlocked, result.Reason);
         Assert.True(result.Block);
         Assert.Equal(1, _tokenRepositoryFake.FindOrCreateTokenAsyncCount);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
@@ -367,7 +372,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("IP is whitelisted", result.Reason);
+        Assert.Equal(AccessValidatorReasons.IpIsWhitelisted, result.Reason);
         Assert.False(result.Block);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
     }
@@ -388,7 +393,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("IP is whitelisted", result.Reason);
+        Assert.Equal(AccessValidatorReasons.IpIsWhitelisted, result.Reason);
         Assert.False(result.Block);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
     }
@@ -414,7 +419,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("Token is whitelisted", result.Reason);
+        Assert.Equal(AccessValidatorReasons.TokenIsWhitelisted, result.Reason);
         Assert.False(result.Block);
         Assert.Equal(1, _tokenRepositoryFake.FindOrCreateTokenAsyncCount);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
@@ -435,7 +440,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("Requested URL is blocked", result.Reason);
+        Assert.Equal(AccessValidatorReasons.RequestedUrlIsBlocked, result.Reason);
         Assert.True(result.Block);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
     }
@@ -460,7 +465,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("Requested URL is blocked", result.Reason);
+        Assert.Equal(AccessValidatorReasons.RequestedUrlIsBlocked, result.Reason);
         Assert.True(result.Block);
         Assert.Equal(1, _tokenRepositoryFake.FindOrCreateTokenAsyncCount);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
@@ -481,7 +486,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("Request is valid", result.Reason);
+        Assert.Equal(AccessValidatorReasons.RequestIsValid, result.Reason);
         Assert.False(result.Block);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
     }
@@ -506,7 +511,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("Request is valid", result.Reason);
+        Assert.Equal(AccessValidatorReasons.RequestIsValid, result.Reason);
         Assert.False(result.Block);
         Assert.Equal(1, _tokenRepositoryFake.FindOrCreateTokenAsyncCount);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
@@ -535,7 +540,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("IP is whitelisted", result.Reason);
+        Assert.Equal(AccessValidatorReasons.IpIsWhitelisted, result.Reason);
         Assert.False(result.Block);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
     }
@@ -563,7 +568,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("IP is whitelisted", result.Reason);
+        Assert.Equal(AccessValidatorReasons.IpIsWhitelisted, result.Reason);
         Assert.False(result.Block);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
     }
@@ -590,7 +595,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("Token is whitelisted", result.Reason);
+        Assert.Equal(AccessValidatorReasons.TokenIsWhitelisted, result.Reason);
         Assert.False(result.Block);
         Assert.Equal(1, _tokenRepositoryFake.FindOrCreateTokenAsyncCount);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
@@ -618,7 +623,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("Token is whitelisted", result.Reason);
+        Assert.Equal(AccessValidatorReasons.TokenIsWhitelisted, result.Reason);
         Assert.False(result.Block);
         Assert.Equal(1, _tokenRepositoryFake.FindOrCreateTokenAsyncCount);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
@@ -639,7 +644,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("Request is from a crawler like Yandex or Google bot", result.Reason);
+        Assert.Equal(AccessValidatorReasons.RequestIsFromCrawler, result.Reason);
         Assert.False(result.Block);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
     }
@@ -659,7 +664,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("Request is from a crawler like Yandex or Google bot", result.Reason);
+        Assert.Equal(AccessValidatorReasons.RequestIsFromCrawler, result.Reason);
         Assert.False(result.Block);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
     }
@@ -680,7 +685,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("Request is from a crawler like Yandex or Google bot", result.Reason);
+        Assert.Equal(AccessValidatorReasons.RequestIsFromCrawler, result.Reason);
         Assert.False(result.Block);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
     }
@@ -701,7 +706,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("Request is from a crawler like Yandex or Google bot", result.Reason);
+        Assert.Equal(AccessValidatorReasons.RequestIsFromCrawler, result.Reason);
         Assert.False(result.Block);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
     }
@@ -720,7 +725,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("User-Agent is empty", result.Reason);
+        Assert.Equal(AccessValidatorReasons.UserAgentIsEmpty, result.Reason);
         Assert.True(result.Block);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
     }
@@ -739,7 +744,7 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("User-Agent contains `python`, seems like a bot", result.Reason);
+        Assert.Equal(AccessValidatorReasons.BadBotUserAgent, result.Reason);
         Assert.True(result.Block);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
     }
@@ -759,17 +764,140 @@ public class AccessValidatorTests
         var result = await _accessValidator.ValidateAsync(userRequest);
         
         // Assert
-        Assert.Equal("Referer contains `jsredir`, seems like a bot", result.Reason);
+        Assert.Equal(AccessValidatorReasons.JsRedirReferer, result.Reason);
         Assert.True(result.Block);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
     }
     
+    // Tests for recent blocked requests
 
+    [Fact]
+    public async Task ValidateRequestAsync_GivenRecentBlockedRequestToPageAndLessThan5MinutesIntervalAndNoReferer_ReturnsValidationResultWithBlockTrue()
+    {
+        // Arrange
+        var bannedUserRequestInfo = CreateRequestInfo(requestDate: DateTime.UtcNow.AddMinutes(-4));
+        var bannedUserRequest = bannedUserRequestInfo.AsUserRequest(Guid.Empty, null);
+        bannedUserRequest.IsBlocked = true;
+        _userRequestRepositoryFake.UserRequests.Add(bannedUserRequest);
+        
+        var userRequestInfo = CreateRequestInfo(headers: _defaultHeaders);
+        var ipInfo = new IpAddressInfo(userRequestInfo.UserIp);
+        var userRequest = userRequestInfo.AsUserRequest(ipInfo.Id, null);
+        userRequest.IpInfo = ipInfo;
+        
+        // Act
+        var result = await _accessValidator.ValidateAsync(userRequest);
+        
+        // Assert
+        Assert.Equal(AccessValidatorReasons.RequestWasMadeToRecentlyBlockedPage, result.Reason);
+        Assert.True(result.Block);
+        Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
+        Assert.Equal(1, _userRequestRepositoryFake.GetBlockedRequestsAsyncCount);
+    }
+    
+    [Fact]
+    public async Task ValidateRequestAsync_GivenRecentBlockedRequestToPageAndMoreThan5MinutesIntervalAndValidReferer_ReturnsValidationResultWithBlockFalse()
+    {
+        // Arrange
+        var bannedUserRequestInfo = CreateRequestInfo(requestDate: DateTime.UtcNow.AddMinutes(-7), headers: _defaultHeaders);
+        var bannedUserRequest = bannedUserRequestInfo.AsUserRequest(Guid.Empty, null);
+        bannedUserRequest.IsBlocked = true;
+        _userRequestRepositoryFake.UserRequests.Add(bannedUserRequest);
+        
+        _defaultHeaders.Add("Referer", "https://google.com");
+        var userRequestInfo = CreateRequestInfo(headers: _defaultHeaders);
+        var ipInfo = new IpAddressInfo(userRequestInfo.UserIp);
+        var userRequest = userRequestInfo.AsUserRequest(ipInfo.Id, null);
+        userRequest.IpInfo = ipInfo;
+        
+        // Act
+        var result = await _accessValidator.ValidateAsync(userRequest);
+        
+        // Assert
+        Assert.Equal(AccessValidatorReasons.RequestIsValid, result.Reason);
+        Assert.False(result.Block);
+        Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
+        Assert.Equal(1, _userRequestRepositoryFake.GetBlockedRequestsAsyncCount);
+    }
+    
+    [Fact]
+    public async Task ValidateRequestAsync_GivenRecentBlockedRequestToPageAndMoreThan5MinutesIntervalAndNoReferer_ReturnsValidationResultWithBlockTrue()
+    {
+        // Arrange
+        var bannedUserRequestInfo = CreateRequestInfo(requestDate: DateTime.UtcNow.AddMinutes(-7), headers: _defaultHeaders);
+        var bannedUserRequest = bannedUserRequestInfo.AsUserRequest(Guid.Empty, null);
+        bannedUserRequest.IsBlocked = true;
+        _userRequestRepositoryFake.UserRequests.Add(bannedUserRequest);
+        
+        var userRequestInfo = CreateRequestInfo(headers: _defaultHeaders);
+        var ipInfo = new IpAddressInfo(userRequestInfo.UserIp);
+        var userRequest = userRequestInfo.AsUserRequest(ipInfo.Id, null);
+        userRequest.IpInfo = ipInfo;
+        
+        // Act
+        var result = await _accessValidator.ValidateAsync(userRequest);
+        
+        // Assert
+        Assert.Equal(AccessValidatorReasons.RequestWasMadeToRecentlyBlockedPage, result.Reason);
+        Assert.True(result.Block);
+        Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
+        Assert.Equal(1, _userRequestRepositoryFake.GetBlockedRequestsAsyncCount);
+    }
+    
+    [Fact]
+    public async Task ValidateRequestAsync_GivenRecentBlockedRequestToPageAndMoreThan30MinutesIntervalAndNoReferer_ReturnsValidationResultWithBlockFalse()
+    {
+        // Arrange
+        var bannedUserRequestInfo = CreateRequestInfo(requestDate: DateTime.UtcNow.AddMinutes(-31), headers: _defaultHeaders);
+        var bannedUserRequest = bannedUserRequestInfo.AsUserRequest(Guid.Empty, null);
+        bannedUserRequest.IsBlocked = true;
+        _userRequestRepositoryFake.UserRequests.Add(bannedUserRequest);
+        
+        var userRequestInfo = CreateRequestInfo(headers: _defaultHeaders);
+        var ipInfo = new IpAddressInfo(userRequestInfo.UserIp);
+        var userRequest = userRequestInfo.AsUserRequest(ipInfo.Id, null);
+        userRequest.IpInfo = ipInfo;
+        
+        // Act
+        var result = await _accessValidator.ValidateAsync(userRequest);
+        
+        // Assert
+        Assert.Equal(AccessValidatorReasons.RequestIsValid, result.Reason);
+        Assert.False(result.Block);
+        Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
+        Assert.Equal(1, _userRequestRepositoryFake.GetBlockedRequestsAsyncCount);
+    }
+    
+    [Fact]
+    public async Task ValidateRequestAsync_GivenRecentBlockedRequestToPageAndMoreThan30MinutesIntervalAndValidReferer_ReturnsValidationResultWithBlockFalse()
+    {
+        // Arrange
+        var bannedUserRequestInfo = CreateRequestInfo(requestDate: DateTime.UtcNow.AddMinutes(-31), headers: _defaultHeaders);
+        var bannedUserRequest = bannedUserRequestInfo.AsUserRequest(Guid.Empty, null);
+        bannedUserRequest.IsBlocked = true;
+        _userRequestRepositoryFake.UserRequests.Add(bannedUserRequest);
+        
+        _defaultHeaders.Add("Referer", "https://google.com");
+        var userRequestInfo = CreateRequestInfo(headers: _defaultHeaders);
+        var ipInfo = new IpAddressInfo(userRequestInfo.UserIp);
+        var userRequest = userRequestInfo.AsUserRequest(ipInfo.Id, null);
+        userRequest.IpInfo = ipInfo;
+        
+        // Act
+        var result = await _accessValidator.ValidateAsync(userRequest);
+        
+        // Assert
+        Assert.Equal(AccessValidatorReasons.RequestIsValid, result.Reason);
+        Assert.False(result.Block);
+        Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
+        Assert.Equal(1, _userRequestRepositoryFake.GetBlockedRequestsAsyncCount);
+    }
+    
     private static UserRequestInfo CreateRequestInfo(
         DateTime requestDate = default,
-        string ip = "192.168.0.1",
-        string host = "example.com",
-        string path = "/test/path/",
+        string ip = DefaultIp,
+        string host = DefaultHost,
+        string path = DefaultPath,
         Dictionary<string, string>? headers = null)
     {
         return new UserRequestInfo

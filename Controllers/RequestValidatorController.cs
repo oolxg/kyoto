@@ -17,12 +17,10 @@ public class RequestValidatorController(
     public async Task<IActionResult> CheckRequest()
     {
         var userRequest = (UserRequest) HttpContext.Items["UserRequest"]!;
-        var validationResultTask = accessValidator.ValidateAsync(userRequest);
-        
-        var validationResult = await validationResultTask;
+        var validationResult = await accessValidator.ValidateAsync(userRequest);
         
         userRequest.IsBlocked = validationResult.Block;
-        userRequest.BlockReason = validationResult.Reason;
+        userRequest.DecisionReason = validationResult.Reason;
 
         await userRequestRepository.UpdateUserRequestAsync(userRequest);
         

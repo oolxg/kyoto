@@ -1,5 +1,6 @@
 using Smug.Models;
 using Smug.Services.Interfaces;
+using Smug.Resources;
 
 namespace Smug.Services.Implementations;
 
@@ -14,7 +15,7 @@ public class AccessValidator(
         var ip = await ipRepository.FindOrCreateIpAsync(userRequest.IpInfo.Ip);
         if (ip.Status == IpStatus.Whitelisted)
         {
-            return new AccessValidationResult(false, "IP is whitelisted");
+            return new AccessValidationResult(false, AccessValidatorReasons.IpIsWhitelisted);
         }
         
         var validationResult = ValidateUserAgent(userRequest.UserAgent);
@@ -31,7 +32,7 @@ public class AccessValidator(
         
         if (ip.Status == IpStatus.Banned)
         {
-            return new AccessValidationResult(true, "IP is banned");
+            return new AccessValidationResult(true, AccessValidatorReasons.IpIsBanned);
         }
         
         if (userRequest.TokenInfo != null)
@@ -41,10 +42,10 @@ public class AccessValidator(
             switch (token.Status)
             {
                 case TokenStatus.Banned:
-                    return new AccessValidationResult(true, "Token is banned");
+                    return new AccessValidationResult(true, AccessValidatorReasons.TokenIsBanned);
             
                 case TokenStatus.Whitelisted:
-                    return new AccessValidationResult(false, "Token is whitelisted");
+                    return new AccessValidationResult(false, AccessValidatorReasons.TokenIsWhitelisted);
                 
                 case TokenStatus.Normal:
                     break;
@@ -55,59 +56,53 @@ public class AccessValidator(
         }
         if (IsRequestFromCrawler(userRequest.UserAgent!))
         {
-            return new AccessValidationResult(false, "Request is from a crawler like Yandex or Google bot");
+            return new AccessValidationResult(false, AccessValidatorReasons.RequestIsFromCrawler);
         }
         
         if (await IsUrlBlocked(userRequest.Host, userRequest.Path))
         {
-            return new AccessValidationResult(true, "Requested URL is blocked");
+            return new AccessValidationResult(true, AccessValidatorReasons.RequestedUrlIsBlocked);
         }
         
-        var blockedRequests = await userRequestRepository.GetBlockedRequestsAsync(userRequest.Host, userRequest.Path);
-        
-        if (blockedRequests.Count > 0)
+        var timeThreshold = DateTime.UtcNow.AddMinutes(userRequest.Referer == null ? -30 : -5);
+        var blockedRequests = await userRequestRepository
+            .GetBlockedRequestsAsync(userRequest.Host, userRequest.Path, timeThreshold);
+
+        if (blockedRequests.Count == 0)
         {
-            if (await IsRequestedPagePopular(userRequest.Host, userRequest.Path, DateTime.UtcNow.AddHours(-12), 60))
-            {
-                return new AccessValidationResult(false, "Requested page is popular, so will ignore last blocked request(s)");
-            }
-
-            var timePassed = DateTime.UtcNow - blockedRequests.First().RequestDate;
-
-            if (userRequest.Referer == null && timePassed.TotalMinutes < 5 && userRequest.Path != "/")
-            {
-                return new AccessValidationResult(true, "Request was made to the page that was blocked less than 5 minutes ago. User has no referer.");
-            }
-        
-            if (userRequest.Referer != null && timePassed.TotalMinutes < 30 && userRequest.Path != "/")
-            {
-                return new AccessValidationResult(true, "Request was made to the page that was blocked less than 30 minutes ago. User has referer.");
-            }
+            return new AccessValidationResult(false, AccessValidatorReasons.RequestIsValid);
         }
-
-        return new AccessValidationResult(false, "Request is valid");
+        
+        if (await IsRequestedPagePopular(userRequest.Host, userRequest.Path, DateTime.UtcNow.AddHours(-12), 60))
+        {
+            return new AccessValidationResult(false, AccessValidatorReasons.PopularPageRequested);
+        }
+        
+        return new AccessValidationResult(true, userRequest.Referer == null
+            ? AccessValidatorReasons.RequestWasMadeToRecentlyBlockedPage
+            : AccessValidatorReasons.RequestWasMadeToRecentlyBlockedPageWithReferer);
     }
     
     private static AccessValidationResult ValidateUserAgent(string? userAgent)
     {
         if (string.IsNullOrEmpty(userAgent))
         {
-            return new AccessValidationResult(true, "User-Agent is empty");
+            return new AccessValidationResult(true, AccessValidatorReasons.UserAgentIsEmpty);
         }
         
         if (userAgent.ToLower().Contains("python"))
         {
-            return new AccessValidationResult(true, "User-Agent contains `python`, seems like a bot");
+            return new AccessValidationResult(true, AccessValidatorReasons.BadBotUserAgent);
         }
         
-        return new AccessValidationResult(false, "User agent is valid");
+        return new AccessValidationResult(false, "User-Agent is valid");
     }
     
     private static AccessValidationResult ValidateReferer(string? referer)
     {
         if (!string.IsNullOrEmpty(referer) && referer.Contains("yandex.ru/clck/jsredir"))
         {
-            return new AccessValidationResult(true, "Referer contains `jsredir`, seems like a bot");
+            return new AccessValidationResult(true, AccessValidatorReasons.JsRedirReferer);
         }
         
         return new AccessValidationResult(false, "Referer is valid");

@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Smug.Controllers;
 using Smug.Middlewares;
 using Smug.Models.SmugDbContext;
 using Smug.Services.Implementations;

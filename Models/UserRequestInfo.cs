@@ -8,14 +8,18 @@ public class UserRequestInfo
     public string Path { get; set; }
     public Dictionary<string, string>? Headers { get; set; }
     public string? Token => Headers?.TryGetValue("Token", out var token) ?? false ? token : null;
-    
+
     public UserRequest AsUserRequest(Guid ipInfoId, Guid? tokenInfoId)
     {
-        return new UserRequest(
-            ipInfoId,
-            tokenInfoId,
-            Host,
-            Path,
-            Headers);
+        return new UserRequest
+        {
+            Id = Guid.NewGuid(),
+            RequestDate = RequestDate,
+            Host = Host,
+            Path = Path,
+            IpInfoId = ipInfoId,
+            TokenInfoId = tokenInfoId,
+            Headers = Headers ?? new Dictionary<string, string>()
+        };
     }
 }

@@ -12,6 +12,7 @@ public class UserRequestRepositoryFake : IUserRequestRepository
     public int FindUserRequestByIpAsyncCount { get; private set; } = 0;
     public int GetUserRequestsOnEndPointsAsyncCount { get; private set; } = 0;
     public int GetBlockedRequestsAsyncCount { get; private set; } = 0;
+    public int UpdateUserRequestAsyncCount { get; private set; } = 0;
 
     public async Task SaveUserRequestAsync(UserRequest userRequest)
     {
@@ -54,7 +55,7 @@ public class UserRequestRepositoryFake : IUserRequestRepository
     
     public Task UpdateUserRequestAsync(UserRequest userRequest)
     {
-        
+        UpdateUserRequestAsyncCount++;
         return Task.CompletedTask;
     }
 }
