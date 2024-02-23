@@ -20,10 +20,7 @@ public class IpRepository : IIpRepository
     public async Task<IpAddressInfo> FindOrCreateIpAsync(string ipToSave)
     {
         var ip = await FindIpAsync(ipToSave);
-        if (ip != null)
-        {
-            return ip;
-        }
+        if (ip != null) return ip;
 
         ip = new IpAddressInfo(ipToSave);
         await _dbContext.Ips.AddAsync(ip);
@@ -47,10 +44,7 @@ public class IpRepository : IIpRepository
             await _dbContext.Ips.AddAsync(bannedIp);
         }
 
-        if (bannedIp.Status == IpStatus.Banned)
-        {
-            return bannedIp;
-        }
+        if (bannedIp.Status == IpStatus.Banned) return bannedIp;
 
         bannedIp.UpdateStatus(IpStatus.Banned, reason);
         bannedIp.ShouldHideIfBanned = shouldHide;
@@ -63,10 +57,7 @@ public class IpRepository : IIpRepository
     {
         var bannedIp = await FindIpAsync(ip);
 
-        if (bannedIp == null)
-        {
-            throw new IpRepositoryException("IpAddressInfo is not in the database");
-        }
+        if (bannedIp == null) throw new IpRepositoryException("IpAddressInfo is not in the database");
 
         bannedIp.UpdateStatus(IpStatus.Normal, reason);
     }
@@ -92,9 +83,7 @@ public class IpRepository : IIpRepository
         }
 
         if (ipToWhitelist.Status == IpStatus.Whitelisted)
-        {
             throw new IpRepositoryException("IpAddressInfo is already whitelisted");
-        }
 
         ipToWhitelist.UpdateStatus(IpStatus.Whitelisted, reason);
 
@@ -119,18 +108,13 @@ public class IpRepository : IIpRepository
     public async Task AddTokenAsyncIfNeeded(string ip, Guid tokenId)
     {
         var ipAddressInfo = await FindIpAsync(ip);
-        if (ipAddressInfo == null)
-        {
-            throw new IpRepositoryException("Token is not in the database");
-        }
+        if (ipAddressInfo == null) throw new IpRepositoryException("Token is not in the database");
 
         if (await _dbContext.Tokens.FindAsync(tokenId) == null)
-        {
             throw new IpRepositoryException("Token is not in the database");
-        }
-        
+
         var pivot = new IpToken(ipAddressInfo.Id, tokenId);
-        
+
         if (await _dbContext.IpTokens.ContainsAsync(pivot) == false)
         {
             ipAddressInfo.IpTokens.Add(pivot);
@@ -141,17 +125,11 @@ public class IpRepository : IIpRepository
     public async Task AddUserRequestToIpAsync(string ip, Guid userRequestId)
     {
         var ipAddressInfo = await FindIpAsync(ip);
-        if (ipAddressInfo == null)
-        {
-            throw new IpRepositoryException("IP is not in the database");
-        }
-        
+        if (ipAddressInfo == null) throw new IpRepositoryException("IP is not in the database");
+
         var userRequest = await _userRequestRepository.FindUserRequestAsync(userRequestId);
-        if (userRequest == null)
-        {
-            throw new IpRepositoryException("UserRequest is not in the database");
-        }
-        
+        if (userRequest == null) throw new IpRepositoryException("UserRequest is not in the database");
+
         userRequest.IpInfo = ipAddressInfo;
 
         ipAddressInfo.UserRequests.Add(userRequest);

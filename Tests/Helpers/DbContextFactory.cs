@@ -12,17 +12,17 @@ public class DbContextFactory
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.Test.json")
             .Build();
-        
+
         var options = new DbContextOptionsBuilder<SmugDbContext>()
             .UseNpgsql(config.GetConnectionString("DefaultConnection"))
             .Options;
-        
+
         var dbContext = new SmugDbContext(options);
         dbContext.Database.EnsureDeleted();
         dbContext.Database.Migrate();
         return dbContext;
     }
-    
+
     public static void DisposeDbContext(SmugDbContext dbContext)
     {
         dbContext.Database.EnsureDeleted();

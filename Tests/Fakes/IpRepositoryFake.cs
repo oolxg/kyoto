@@ -4,11 +4,11 @@ using Smug.Services.Interfaces;
 
 namespace Smug.Tests.Fakes;
 
-public class IpRepositoryFake(IUserRequestRepository userRequestRepository): IIpRepository
+public class IpRepositoryFake
+    (IUserRequestRepository userRequestRepository, ITokenRepository tokenRepository) : IIpRepository
 {
     public List<IpAddressInfo> Ips { get; private set; } = new();
     public List<IpToken> IpTokens { get; set; } = new();
-    public List<TokenInfo> Tokens { get; set; } = new(); 
     public int FindOrCreateIpAsyncCount { get; private set; } = 0;
     public int BanIpIfNeededAsync2ParamsCount { get; private set; } = 0;
     public int BanIpIfNeededAsync3ParamsCount { get; private set; } = 0;
@@ -19,15 +19,12 @@ public class IpRepositoryFake(IUserRequestRepository userRequestRepository): IIp
     public int ChangeShouldHideIfBannedAsyncCount { get; private set; } = 0;
     public int AddTokenAsyncIfNeededCount { get; private set; } = 0;
     public int AddUserRequestToIpAsyncCount { get; private set; } = 0;
-    
+
     public Task<IpAddressInfo> FindOrCreateIpAsync(string ipToSave)
     {
         FindOrCreateIpAsyncCount++;
         var ip = Ips.FirstOrDefault(i => i.Ip == ipToSave);
-        if (ip != null)
-        {
-            return Task.FromResult(ip);
-        }
+        if (ip != null) return Task.FromResult(ip);
 
         ip = new IpAddressInfo(ipToSave);
         Ips.Add(ip);
@@ -39,7 +36,7 @@ public class IpRepositoryFake(IUserRequestRepository userRequestRepository): IIp
         BanIpIfNeededAsync2ParamsCount++;
         return BanIpIfNeededAsync(ip, false, reason);
     }
-    
+
     public Task<IpAddressInfo> BanIpIfNeededAsync(string ip, bool shouldHide, string reason)
     {
         BanIpIfNeededAsync3ParamsCount++;
@@ -51,26 +48,20 @@ public class IpRepositoryFake(IUserRequestRepository userRequestRepository): IIp
             Ips.Add(bannedIp);
         }
 
-        if (bannedIp.Status == IpStatus.Banned)
-        {
-            return Task.FromResult(bannedIp);
-        }
+        if (bannedIp.Status == IpStatus.Banned) return Task.FromResult(bannedIp);
 
         bannedIp.UpdateStatus(IpStatus.Banned, reason);
         bannedIp.ShouldHideIfBanned = shouldHide;
 
         return Task.FromResult(bannedIp);
     }
-    
+
     public Task UnbanIpAsync(string ip, string reason)
     {
         UnbanIpAsyncCount++;
         var bannedIp = Ips.FirstOrDefault(i => i.Ip == ip);
 
-        if (bannedIp == null)
-        {
-            throw new IpRepositoryException("Ip not found");
-        }
+        if (bannedIp == null) throw new IpRepositoryException("Ip not found");
 
         bannedIp.UpdateStatus(IpStatus.Normal, reason);
         return Task.CompletedTask;
@@ -92,15 +83,9 @@ public class IpRepositoryFake(IUserRequestRepository userRequestRepository): IIp
     {
         WhitelistIpAsyncCount++;
         var ipInfo = Ips.FirstOrDefault(i => i.Ip == ip);
-        if (ipInfo == null)
-        {
-            throw new IpRepositoryException("Ip not found");
-        }
-        
-        if (ipInfo.Status == IpStatus.Whitelisted)
-        {
-            throw new IpRepositoryException("Ip already whitelisted");
-        }
+        if (ipInfo == null) throw new IpRepositoryException("Ip not found");
+
+        if (ipInfo.Status == IpStatus.Whitelisted) throw new IpRepositoryException("Ip already whitelisted");
 
         ipInfo.UpdateStatus(IpStatus.Whitelisted, reason);
         return Task.CompletedTask;
@@ -110,10 +95,7 @@ public class IpRepositoryFake(IUserRequestRepository userRequestRepository): IIp
     {
         ChangeShouldHideIfBannedAsyncCount++;
         var ipInfo = Ips.FirstOrDefault(i => i.Ip == ip);
-        if (ipInfo == null)
-        {
-            throw new IpRepositoryException("Ip not found");
-        }
+        if (ipInfo == null) throw new IpRepositoryException("Ip not found");
 
         ipInfo.ShouldHideIfBanned = shouldHide;
         return Task.CompletedTask;
@@ -123,16 +105,10 @@ public class IpRepositoryFake(IUserRequestRepository userRequestRepository): IIp
     {
         AddTokenAsyncIfNeededCount++;
         var ipInfo = Ips.FirstOrDefault(i => i.Ip == ip);
-        if (ipInfo == null)
-        {
-            throw new IpRepositoryException("Ip not found");
-        }
+        if (ipInfo == null) throw new IpRepositoryException("Ip not found");
 
-        var token = Tokens.FirstOrDefault(t => t.Id == tokenId);
-        if (token == null)
-        {
-            throw new IpRepositoryException("Token not found");
-        }
+        var token = tokenRepository.FindTokenAsync(tokenId).Result;
+        if (token == null) throw new IpRepositoryException("Token not found");
 
         var ipToken = new IpToken
         {
@@ -147,16 +123,10 @@ public class IpRepositoryFake(IUserRequestRepository userRequestRepository): IIp
     {
         AddUserRequestToIpAsyncCount++;
         var ipInfo = Ips.FirstOrDefault(i => i.Ip == ip);
-        if (ipInfo == null)
-        {
-            throw new IpRepositoryException("Ip not found");
-        }
+        if (ipInfo == null) throw new IpRepositoryException("Ip not found");
 
         var userRequest = userRequestRepository.FindUserRequestAsync(userRequestId).Result;
-        if (userRequest == null)
-        {
-            throw new IpRepositoryException("User request not found");
-        }
+        if (userRequest == null) throw new IpRepositoryException("User request not found");
 
         ipInfo.UserRequests.Add(userRequest);
         return Task.CompletedTask;

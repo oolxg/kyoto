@@ -20,23 +20,21 @@ public class Startup
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
             options.EnableSensitiveDataLogging();
         });
-        
+
         builder.Services.AddScoped<IUserRequestRepository, UserRequestRepository>();
         builder.Services.AddScoped<IRestrictedUrlRepository, RestrictedUrlRepository>();
         builder.Services.AddScoped<IIpRepository, IpRepository>();
         builder.Services.AddScoped<ITokenRepository, TokenRepository>();
         builder.Services.AddScoped<IAccessValidator, AccessValidator>();
-        
+
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddSwaggerGen();
 
         var app = builder.Build();
-        
-        app.UseWhen(context => context.Request.Path == "/api/v1/check", appBuilder =>
-        {
-            appBuilder.UseMiddleware<RequestSaverMiddleware>();
-        });
-        
+
+        app.UseWhen(context => context.Request.Path == "/api/v1/check",
+            appBuilder => { appBuilder.UseMiddleware<RequestSaverMiddleware>(); });
+
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {

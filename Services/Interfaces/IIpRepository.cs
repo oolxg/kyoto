@@ -11,6 +11,7 @@ public interface IIpRepository
     /// <param name="ip">The IP address to be saved.</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the newly created <see cref="IpAddressInfo"/> object.</returns>
     public Task<IpAddressInfo> FindOrCreateIpAsync(string ip);
+
     /// <summary>
     /// Bans the specified IP address asynchronously.
     /// </summary>
@@ -51,7 +52,7 @@ public interface IIpRepository
     /// <param name="id">The identifier of the banned IP to search for.</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the found <see cref="IpAddressInfo"/> object, or null if not found.</returns>
     public Task<IpAddressInfo?> FindIpAsync(Guid id);
-    
+
     /// <summary>
     /// Whitelists the specified IP address asynchronously.
     /// </summary>
@@ -60,7 +61,7 @@ public interface IIpRepository
     /// <throws><see cref="IpRepositoryException"/> if the IP address is already whitelisted.</throws>
     /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation.</returns>
     public Task WhitelistIpAsync(string ip, string reason);
-    
+
     /// <summary>
     /// Change status of shouldHideIfBanned for the specified IP address asynchronously.
     /// </summary>
@@ -68,7 +69,7 @@ public interface IIpRepository
     /// <param name="shouldHide">The new value of shouldHideIfBanned.</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation.</returns>
     public Task ChangeShouldHideIfBannedAsync(string ip, bool shouldHide);
-    
+
     /// <summary>
     /// Add tokens associated with ip
     /// </summary>

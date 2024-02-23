@@ -18,7 +18,7 @@ public class UserRequestRepositoryFake : IUserRequestRepository
     {
         UserRequests.Add(userRequest);
         SaveUserRequestAsyncCount++;
-        
+
         await Task.CompletedTask;
     }
 
@@ -43,16 +43,18 @@ public class UserRequestRepositoryFake : IUserRequestRepository
     public Task<List<UserRequest>> GetUserRequestsOnEndPointsAsync(string host, string path, DateTime start)
     {
         GetUserRequestsOnEndPointsAsyncCount++;
-        return Task.FromResult(UserRequests.Where(ur => ur.Host == host && ur.Path == path && ur.RequestDate >= start).ToList());
+        return Task.FromResult(UserRequests.Where(ur => ur.Host == host && ur.Path == path && ur.RequestDate >= start)
+            .ToList());
     }
 
     public Task<List<UserRequest>> GetBlockedRequestsAsync(string host, string path, DateTime? start = null)
     {
         GetBlockedRequestsAsyncCount++;
         start ??= DateTime.MinValue;
-        return Task.FromResult(UserRequests.Where(ur => ur.Host == host && ur.Path == path && ur.RequestDate >= start).ToList());
+        return Task.FromResult(UserRequests.Where(ur => ur.Host == host && ur.Path == path && ur.RequestDate >= start)
+            .ToList());
     }
-    
+
     public Task UpdateUserRequestAsync(UserRequest userRequest)
     {
         UpdateUserRequestAsyncCount++;

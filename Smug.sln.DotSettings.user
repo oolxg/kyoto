@@ -21,7 +21,7 @@
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenTokenIsBanned_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=21f3fec1_002D1940_002D4453_002Da777_002Da05979359779/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="ValidateRequestAsync_WhenUrlIsBlockedWithNoTimeLimit_TokenGiven_ReturnsValidationResultWithBlockTrue" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=21f3fec1_002D1940_002D4453_002Da777_002Da05979359779/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ValidateRequestAsync_WhenUrlIsBlockedWithNoTimeLimit_TokenGiven_ReturnsValidationResultWithBlockTrue" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenUrlIsBlockedWithNoTimeLimit_TokenGiven_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenUrlIsBlockedWithNoTimeLimit_GivenWhitelistedIpAndToken_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
@@ -52,6 +52,18 @@
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_GivenRecentBlockedRequestToPageAndMoreThan5MinutesIntervalAndNoReferer_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_GivenRecentBlockedRequestToPageAndMoreThan30MinutesIntervalAndNoReferer_ReturnsValidationResultWithBlockFalse&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_GivenRecentBlockedRequestToPageAndMoreThan30MinutesIntervalAndValidReferer_ReturnsValidationResultWithBlockFalse&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Smug.Tests.MiddlewareTests.RequestSaverMiddlewareTests.InvokeAsync_ShouldSaveUserRequest_WhenRequestIsNotBlocked&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Smug.Tests.MiddlewareTests.RequestSaverMiddlewareTests.InvokeAsync_GivenValidDataAndNoToken_ShouldSaveUserRequestAndReturn200&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Smug.Tests.MiddlewareTests.RequestSaverMiddlewareTests.InvokeAsync_GivenBadData_ShouldNotSaveUserRequestAndReturn400&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::0DFBC8EE-37B4-4A61-AE52-BE5153703205::net8.0::Smug.Tests.MiddlewareTests.RequestSaverMiddlewareTests.InvokeAsync_GivenValidDataAndNoToken_ShouldSaveUserRequestAndReturn200&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::0DFBC8EE-37B4-4A61-AE52-BE5153703205::net8.0::Smug.Tests.MiddlewareTests.RequestSaverMiddlewareTests.InvokeAsync_GivenValidDataAndToken_ShouldSaveUserRequestAndReturn200&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Smug.Tests.MiddlewareTests.RequestSaverMiddlewareTests.InvokeAsync_GivenValidDataAndToken_ShouldSaveUserRequestAndReturn200&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=922010fc_002D5bf8_002D46d1_002D8bc2_002D63d822c69a92/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="AccessValidatorTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Smug.Tests.MiddlewareTests.RequestSaverMiddlewareTests&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
 	

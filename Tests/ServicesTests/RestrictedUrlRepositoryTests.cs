@@ -10,18 +10,18 @@ public class RestrictedUrlRepositoryTests
 {
     private readonly RestrictedUrlRepository _restrictedUrlRepository;
     private readonly SmugDbContext _dbContext;
-    
+
     public RestrictedUrlRepositoryTests()
     {
         _dbContext = DbContextFactory.CreateDbContext();
         _restrictedUrlRepository = new RestrictedUrlRepository(_dbContext);
     }
-    
+
     ~RestrictedUrlRepositoryTests()
     {
         DbContextFactory.DisposeDbContext(_dbContext);
     }
-    
+
     [Fact]
     public async Task BlockUrl_ShouldBlockUrl()
     {
@@ -29,16 +29,16 @@ public class RestrictedUrlRepositoryTests
         const string host = "www.example.com";
         const string path = "/restricted";
         const string reason = "Test";
-        
+
         // Act
         await _restrictedUrlRepository.BlockUrl(host, path, reason);
-        
+
         // Assert
         var url = await _dbContext.RestrictedUrls.FirstOrDefaultAsync(ru => ru.Host == host && ru.Path == path);
         Assert.NotNull(url);
         Assert.Equal(reason, url.Reason);
     }
-    
+
     [Fact]
     public async Task BlockUrl_ShouldNotBlockAlreadyBlockedUrl()
     {
@@ -47,11 +47,12 @@ public class RestrictedUrlRepositoryTests
         const string path = "/restricted";
         const string reason = "Test";
         await _restrictedUrlRepository.BlockUrl(host, path, reason);
-        
+
         // Act & Assert
-        await Assert.ThrowsAsync<RestrictedUrlRepositoryException>(() => _restrictedUrlRepository.BlockUrl(host, path, reason));
+        await Assert.ThrowsAsync<RestrictedUrlRepositoryException>(() =>
+            _restrictedUrlRepository.BlockUrl(host, path, reason));
     }
-    
+
     [Fact]
     public async Task UnblockUrl_ShouldUnblockUrl()
     {
@@ -60,26 +61,27 @@ public class RestrictedUrlRepositoryTests
         const string path = "/restricted";
         const string reason = "Test";
         await _restrictedUrlRepository.BlockUrl(host, path, reason);
-        
+
         // Act
         await _restrictedUrlRepository.UnblockUrl(host, path);
-        
+
         // Assert
         var url = await _dbContext.RestrictedUrls.FirstOrDefaultAsync(ru => ru.Host == host && ru.Path == path);
         Assert.Null(url);
     }
-    
+
     [Fact]
     public async Task UnblockUrl_ShouldNotUnblockNotBlockedUrl()
     {
         // Arrange
         const string host = "www.example.com";
         const string path = "/restricted";
-        
+
         // Act & Assert
-        await Assert.ThrowsAsync<RestrictedUrlRepositoryException>(() => _restrictedUrlRepository.UnblockUrl(host, path));
+        await Assert.ThrowsAsync<RestrictedUrlRepositoryException>(
+            () => _restrictedUrlRepository.UnblockUrl(host, path));
     }
-    
+
     [Fact]
     public async Task IsUrlBlocked_ShouldReturnTrueIfUrlIsBlocked()
     {
@@ -88,28 +90,28 @@ public class RestrictedUrlRepositoryTests
         const string path = "/restricted";
         const string reason = "Test";
         await _restrictedUrlRepository.BlockUrl(host, path, reason);
-        
+
         // Act
         var isBlocked = await _restrictedUrlRepository.IsUrlBlocked(host, path);
-        
+
         // Assert
         Assert.True(isBlocked);
     }
-    
+
     [Fact]
     public async Task IsUrlBlocked_ShouldReturnFalseIfUrlIsNotBlocked()
     {
         // Arrange
         const string host = "www.example.com";
         const string path = "/restricted";
-        
+
         // Act
         var isBlocked = await _restrictedUrlRepository.IsUrlBlocked(host, path);
-        
+
         // Assert
         Assert.False(isBlocked);
-    }   
-    
+    }
+
     [Fact]
     public async Task IsUrlBlocked_ShouldReturnFalseIfUrlIsUnblocked()
     {
@@ -119,14 +121,14 @@ public class RestrictedUrlRepositoryTests
         const string reason = "Test";
         await _restrictedUrlRepository.BlockUrl(host, path, reason);
         await _restrictedUrlRepository.UnblockUrl(host, path);
-        
+
         // Act
         var isBlocked = await _restrictedUrlRepository.IsUrlBlocked(host, path);
-        
+
         // Assert
         Assert.False(isBlocked);
     }
-    
+
     [Fact]
     public async Task IsUrlBlocked_ShouldReturnTrueIfUrlIsBlockedUntilDate()
     {
@@ -136,14 +138,14 @@ public class RestrictedUrlRepositoryTests
         const string reason = "Test";
         var bannedUntil = DateTime.UtcNow.AddDays(1);
         await _restrictedUrlRepository.BlockUrl(host, path, reason, bannedUntil);
-        
+
         // Act
         var isBlocked = await _restrictedUrlRepository.IsUrlBlocked(host, path);
-        
+
         // Assert
         Assert.True(isBlocked);
     }
-    
+
     [Fact]
     public async Task IsUrlBlocked_ShouldReturnFalseIfUrlIsBlockedUntilDateIsPassed()
     {
@@ -153,14 +155,14 @@ public class RestrictedUrlRepositoryTests
         const string reason = "Test";
         var bannedUntil = DateTime.UtcNow.AddDays(-1);
         await _restrictedUrlRepository.BlockUrl(host, path, reason, bannedUntil);
-        
+
         // Act
         var isBlocked = await _restrictedUrlRepository.IsUrlBlocked(host, path);
-        
+
         // Assert
         Assert.False(isBlocked);
     }
-    
+
     [Fact]
     public async Task IsUrlBlocked_ShouldReturnFalseIfUrlIsBlockedUntilDateIsToday()
     {
@@ -170,14 +172,14 @@ public class RestrictedUrlRepositoryTests
         const string reason = "Test";
         var bannedUntil = DateTime.UtcNow;
         await _restrictedUrlRepository.BlockUrl(host, path, reason, bannedUntil);
-        
+
         // Act
         var isBlocked = await _restrictedUrlRepository.IsUrlBlocked(host, path);
-        
+
         // Assert
         Assert.False(isBlocked);
     }
-    
+
     [Fact]
     public async Task IsUrlBlocked_ShouldReturnFalseIfUrlIsBlockedWithUntilDateInFutureAndUnblocked()
     {
@@ -188,32 +190,32 @@ public class RestrictedUrlRepositoryTests
         var bannedUntil = DateTime.UtcNow.AddDays(1);
         await _restrictedUrlRepository.BlockUrl(host, path, reason, bannedUntil);
         await _restrictedUrlRepository.UnblockUrl(host, path);
-        
+
         // Act
         var isBlocked = await _restrictedUrlRepository.IsUrlBlocked(host, path);
-        
+
         // Assert
         Assert.False(isBlocked);
     }
-    
+
     [Fact]
     public async Task IsUrlBlocked_ShouldReturnFalseIfUrlIsBlockedWithUntilDateInPastAndUnblocked()
     {
-    // Arrange
+        // Arrange
         const string host = "www.example.com";
         const string path = "/restricted";
         const string reason = "Test";
         var bannedUntil = DateTime.UtcNow.AddDays(-1);
         await _restrictedUrlRepository.BlockUrl(host, path, reason, bannedUntil);
         await _restrictedUrlRepository.UnblockUrl(host, path);
-        
+
         // Act
         var isBlocked = await _restrictedUrlRepository.IsUrlBlocked(host, path);
-        
+
         // Assert
         Assert.False(isBlocked);
     }
-    
+
     [Fact]
     public async Task IsUrlBlocked_TestWildcardHost_ShouldReturnTrueIfUrlIsBlocked()
     {
@@ -222,14 +224,14 @@ public class RestrictedUrlRepositoryTests
         var path = Guid.NewGuid().ToString();
         const string reason = "Test";
         await _restrictedUrlRepository.BlockUrl("*", path, reason);
-        
+
         // Act
         var isBlocked = await _restrictedUrlRepository.IsUrlBlocked(host, path);
-        
+
         // Assert
         Assert.True(isBlocked);
     }
-    
+
     [Fact]
     public async Task IsUrlBlocked_TestWildcardPath_ShouldReturnTrueIfUrlIsBlocked()
     {
@@ -238,14 +240,14 @@ public class RestrictedUrlRepositoryTests
         var path = Guid.NewGuid().ToString();
         const string reason = "Test";
         await _restrictedUrlRepository.BlockUrl(host, "*", reason);
-        
+
         // Act
         var isBlocked = await _restrictedUrlRepository.IsUrlBlocked(host, path);
-        
+
         // Assert
         Assert.True(isBlocked);
     }
-    
+
     [Fact]
     public async Task IsUrlBlocked_TestWildcardHostAndPath_ShouldReturnTrueIfUrlIsBlocked()
     {
@@ -254,14 +256,14 @@ public class RestrictedUrlRepositoryTests
         var path = Guid.NewGuid().ToString();
         const string reason = "Test";
         await _restrictedUrlRepository.BlockUrl("*", "*", reason);
-        
+
         // Act
         var isBlocked = await _restrictedUrlRepository.IsUrlBlocked(host, path);
-        
+
         // Assert
         Assert.True(isBlocked);
     }
-    
+
     [Fact]
     public async Task IsUrlBlocked_TestWildcardHost_ShouldFalseIfPathIsDifferent()
     {
@@ -270,10 +272,10 @@ public class RestrictedUrlRepositoryTests
         const string path = "/restricted";
         const string reason = "Test";
         await _restrictedUrlRepository.BlockUrl("*", path, reason);
-        
+
         // Act
         var isBlocked = await _restrictedUrlRepository.IsUrlBlocked(host, "/not-restricted");
-        
+
         // Assert
         Assert.False(isBlocked);
     }

@@ -12,13 +12,14 @@ public class IpRepositoryTests
     private readonly SmugDbContext _dbContext;
     private readonly IpRepository _ipRepository;
     private readonly UserRequestRepository _userRequestRepository;
+
     public IpRepositoryTests()
     {
         _dbContext = DbContextFactory.CreateDbContext();
         _userRequestRepository = new UserRequestRepository(_dbContext);
         _ipRepository = new IpRepository(_dbContext, _userRequestRepository);
     }
-    
+
     ~IpRepositoryTests()
     {
         DbContextFactory.DisposeDbContext(_dbContext);
@@ -102,7 +103,7 @@ public class IpRepositoryTests
         const string reason = "test reason";
 
         // Act
-        await _ipRepository.BanIpIfNeededAsync(ip, reason: reason);
+        await _ipRepository.BanIpIfNeededAsync(ip, reason);
         var ips = await _dbContext.Ips.Where(ipInfo => ipInfo.Ip == ip).ToListAsync();
 
         // Assert
@@ -119,12 +120,12 @@ public class IpRepositoryTests
         // Arrange
         const string ip = "192.168.0.1";
         const string reason = "test reason";
-        await _ipRepository.BanIpIfNeededAsync(ip, reason: reason);
-        
+        await _ipRepository.BanIpIfNeededAsync(ip, reason);
+
         // Act
         await _ipRepository.BanIpIfNeededAsync(ip, reason);
         var ips = await _dbContext.Ips.Where(ipInfo => ipInfo.Ip == ip).ToListAsync();
-        
+
         // Assert
         Assert.Single(ips);
         Assert.Equal(ip, ips[0].Ip);
@@ -139,11 +140,11 @@ public class IpRepositoryTests
         // Arrange
         const string ip = "192.168.0.1";
         const string reason = "test reason";
-        
+
         // Act
         await _ipRepository.BanIpIfNeededAsync(ip, reason);
         var ips = await _dbContext.Ips.Where(ipInfo => ipInfo.Ip == ip).ToListAsync();
-        
+
         // Assert
         Assert.Single(ips);
         Assert.Equal(ip, ips[0].Ip);
@@ -248,7 +249,6 @@ public class IpRepositoryTests
     }
 
     [Fact]
-
     public async Task ChangeShouldHideIfBannedAsync_ShouldChangeShouldHideStatus()
     {
         // Arrange
@@ -290,11 +290,11 @@ public class IpRepositoryTests
         // Arrange
         const string ip = "192.168.0.1";
         const string reason = "test reason";
-        
+
         // Act
         await _ipRepository.WhitelistIpAsync(ip, reason);
         var ips = await _dbContext.Ips.Where(ipInfo => ipInfo.Ip == ip).ToListAsync();
-        
+
         // Assert
         Assert.Single(ips);
         Assert.Equal(ip, ips[0].Ip);
@@ -329,13 +329,13 @@ public class IpRepositoryTests
     {
         // Arrange
         var ipInfo = await _ipRepository.FindOrCreateIpAsync("192.168.0.1");
-        var token = new TokenInfo("testToken"); 
+        var token = new TokenInfo("testToken");
         await _dbContext.Tokens.AddAsync(token);
-        
+
         // Act
         await _ipRepository.AddTokenAsyncIfNeeded(ipInfo.Ip, token.Id);
         var ipTokens = await _dbContext.IpTokens.Where(it => it.IpAddressInfoId == ipInfo.Id).ToListAsync();
-        
+
         // Assert
         Assert.Single(ipTokens);
         Assert.Equal(ipInfo.Id, ipTokens[0].IpAddressInfoId);
@@ -348,9 +348,10 @@ public class IpRepositoryTests
         // Arrange
         const string ip = "192.168.0.1";
         var nonExistentTokenId = Guid.NewGuid();
-        
+
         // Act & Assert
-        await Assert.ThrowsAsync<IpRepositoryException>(() => _ipRepository.AddTokenAsyncIfNeeded(ip, nonExistentTokenId));
+        await Assert.ThrowsAsync<IpRepositoryException>(() =>
+            _ipRepository.AddTokenAsyncIfNeeded(ip, nonExistentTokenId));
     }
 
     [Fact]
@@ -361,20 +362,22 @@ public class IpRepositoryTests
         const string nonExistentIp = "192.168.0.1";
         await _dbContext.Tokens.AddAsync(tokenInfo);
         await _dbContext.SaveChangesAsync();
-        
+
         // Act & Assert
-        await Assert.ThrowsAsync<IpRepositoryException>(() => _ipRepository.AddTokenAsyncIfNeeded(nonExistentIp, tokenInfo.Id));
+        await Assert.ThrowsAsync<IpRepositoryException>(() =>
+            _ipRepository.AddTokenAsyncIfNeeded(nonExistentIp, tokenInfo.Id));
     }
-    
+
     [Fact]
     public async Task AddTokensAsync_ShouldThrowExceptionIfIpAndTokenNotFound()
     {
         // Arrange
         var nonExistingToken = new TokenInfo("testToken");
         const string nonExistentIp = "192.168.0.1";
-        
+
         // Act & Assert
-        await Assert.ThrowsAsync<IpRepositoryException>(() => _ipRepository.AddTokenAsyncIfNeeded(nonExistentIp, nonExistingToken.Id));
+        await Assert.ThrowsAsync<IpRepositoryException>(() =>
+            _ipRepository.AddTokenAsyncIfNeeded(nonExistentIp, nonExistingToken.Id));
     }
 
     [Fact]
@@ -384,11 +387,11 @@ public class IpRepositoryTests
         var ipAddressInfo = await _ipRepository.FindOrCreateIpAsync("192.168.0.1");
         var userRequest = new UserRequest(ipAddressInfo.Id, null, "example.com", "/test-path/");
         await _userRequestRepository.SaveUserRequestAsync(userRequest);
-        
+
         // Act
         await _ipRepository.AddUserRequestToIpAsync(ipAddressInfo.Ip, userRequest.Id);
         var userRequests = await _dbContext.UserRequests.Where(ur => ur.IpInfoId == ipAddressInfo.Id).ToListAsync();
-        
+
         // Assert
         Assert.Single(userRequests);
         Assert.Equal(userRequest.Id, userRequests[0].Id);
@@ -402,7 +405,8 @@ public class IpRepositoryTests
         var userRequest = new UserRequest(Guid.NewGuid(), null, "example.com", "/test-path/");
 
         // Act & Assert
-        await Assert.ThrowsAsync<IpRepositoryException>(() => _ipRepository.AddUserRequestToIpAsync(ip, userRequest.Id));
+        await Assert.ThrowsAsync<IpRepositoryException>(() =>
+            _ipRepository.AddUserRequestToIpAsync(ip, userRequest.Id));
     }
 
     [Fact]
@@ -412,6 +416,7 @@ public class IpRepositoryTests
         var ipAddressInfo = await _ipRepository.FindOrCreateIpAsync("192.168.0.1");
 
         // Act & Assert
-        await Assert.ThrowsAsync<IpRepositoryException>(() => _ipRepository.AddUserRequestToIpAsync(ipAddressInfo.Ip, Guid.NewGuid()));
+        await Assert.ThrowsAsync<IpRepositoryException>(() =>
+            _ipRepository.AddUserRequestToIpAsync(ipAddressInfo.Ip, Guid.NewGuid()));
     }
 }

@@ -1,7 +1,6 @@
 using System.Globalization;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using Smug.Models;
 using Smug.Services.Interfaces;
 
@@ -9,12 +8,14 @@ namespace Smug.Middlewares;
 
 public class RequestSaverMiddleware(RequestDelegate next)
 {
-    private RequestDelegate Next => next; 
-    private readonly JsonSerializerOptions _jsonSerializerOptions = new()
+    private readonly JsonSerializerSettings _jsonSerializerSettings = new()
     {
-        Converters = {new DateTimeConverter()},
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        PropertyNameCaseInsensitive = true
+        Converters = { new DateTimeConverter() },
+        ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver
+        {
+            NamingStrategy = new Newtonsoft.Json.Serialization.CamelCaseNamingStrategy()
+        },
+        TypeNameHandling = TypeNameHandling.All
     };
 
     public async Task InvokeAsync(
@@ -23,35 +24,51 @@ public class RequestSaverMiddleware(RequestDelegate next)
         ITokenRepository tokenRepository,
         IUserRequestRepository userRequestRepository)
     {
-        var body = await new StreamReader(context.Request.Body, Encoding.UTF8).ReadToEndAsync();
-        var requestDetails = JsonSerializer.Deserialize<UserRequestInfo>(body, _jsonSerializerOptions);
+        try
+        {
+            var body = await new StreamReader(context.Request.Body, Encoding.UTF8).ReadToEndAsync();
+            var requestDetails = JsonConvert.DeserializeObject<UserRequestInfo>(body, _jsonSerializerSettings);
 
-        if (requestDetails == null)
+            if (requestDetails == null)
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync("Invalid request body");
+                return;
+            }
+
+            var ipInfo = await ipRepository.FindOrCreateIpAsync(requestDetails.UserIp);
+            var tokenInfo = requestDetails.Token != null
+                ? await tokenRepository.FindOrCreateTokenAsync(requestDetails.Token)
+                : null;
+            var userRequest = requestDetails.AsUserRequest(ipInfo.Id, tokenInfo?.Id);
+
+            await userRequestRepository.SaveUserRequestAsync(userRequest);
+
+            await ipRepository.AddUserRequestToIpAsync(ipInfo.Ip, userRequest.Id);
+
+            if (tokenInfo != null)
+            {
+                await tokenRepository.AddUserRequestToTokenAsync(tokenInfo.Token, userRequest.Id);
+                await ipRepository.AddTokenAsyncIfNeeded(ipInfo.Ip, tokenInfo.Id);
+            }
+
+            context.Items["UserRequest"] = userRequest;
+            context.Items["IpInfo"] = ipInfo;
+            context.Items["TokenInfo"] = tokenInfo;
+
+            await next(context);
+        }
+        catch (JsonSerializationException ex)
         {
             context.Response.StatusCode = 400;
-            await context.Response.WriteAsync("Invalid request body");
-            return;
+            var response = new
+            {
+                error = true,
+                description = "Invalid request body",
+                exception = ex.Message
+            };
+            await context.Response.WriteAsync(JsonConvert.SerializeObject(response));
         }
-
-        var ipInfo = await ipRepository.FindOrCreateIpAsync(requestDetails.UserIp);
-        var tokenInfo = requestDetails.Token != null ? await tokenRepository.FindOrCreateTokenAsync(requestDetails.Token) : null;
-        var userRequest = requestDetails.AsUserRequest(ipInfo.Id, tokenInfo?.Id);
-
-        await userRequestRepository.SaveUserRequestAsync(userRequest);
-        
-        await ipRepository.AddUserRequestToIpAsync(ipInfo.Ip, userRequest.Id);
-        
-        if (tokenInfo != null)
-        {
-            await tokenRepository.AddUserRequestToTokenAsync(tokenInfo.Token, userRequest.Id);
-            await ipRepository.AddTokenAsyncIfNeeded(ipInfo.Ip, tokenInfo.Id);
-        }
-
-        context.Items["UserRequest"] = userRequest;
-        context.Items["IpInfo"] = ipInfo;
-        context.Items["TokenInfo"] = tokenInfo;
-        
-        await Next(context);
     }
 }
 
@@ -59,21 +76,20 @@ internal class DateTimeConverter : JsonConverter<DateTime>
 {
     private const string DateTimeFormat = "dd.MM.yyyy HH:mm:ss";
 
-    public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override DateTime ReadJson(JsonReader reader, Type objectType, DateTime existingValue, bool hasExistingValue,
+        JsonSerializer serializer)
     {
-        if (reader.GetString() is { } dateString)
-        {
-            return DateTime.TryParseExact(dateString, DateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDateTime)
+        if (reader.Value is string dateString)
+            return DateTime.TryParseExact(dateString, DateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.None,
+                out var parsedDateTime)
                 ? TimeZoneInfo.ConvertTimeToUtc(parsedDateTime, TimeZoneInfo.FindSystemTimeZoneById("Europe/Moscow"))
-                : reader.GetDateTime();
-        }
+                : Convert.ToDateTime(reader.Value);
 
-        return reader.GetDateTime();
+        return Convert.ToDateTime(reader.Value);
     }
 
-
-    public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
+    public override void WriteJson(JsonWriter writer, DateTime value, JsonSerializer serializer)
     {
-        writer.WriteStringValue(value.ToString(DateTimeFormat));
+        writer.WriteValue(value.ToString(DateTimeFormat));
     }
 }

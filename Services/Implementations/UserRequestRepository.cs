@@ -12,15 +12,12 @@ public class UserRequestRepository(SmugDbContext context) : IUserRequestReposito
 
     public async Task SaveUserRequestAsync(UserRequest userRequest)
     {
-        if (await FindUserRequestAsync(userRequest.Id) != null)
-        {
-            return;
-        }
-        
+        if (await FindUserRequestAsync(userRequest.Id) != null) return;
+
         await Context.UserRequests.AddAsync(userRequest);
         await Context.SaveChangesAsync();
     }
-    
+
     public async Task<UserRequest?> FindUserRequestAsync(Guid requestId)
     {
         return await Context.UserRequests.FindAsync(requestId);
@@ -45,7 +42,7 @@ public class UserRequestRepository(SmugDbContext context) : IUserRequestReposito
             .OrderBy(ur => ur.RequestDate)
             .ToListAsync();
     }
-    
+
     public async Task<List<UserRequest>> GetUserRequestsOnEndPointsAsync(string host, string path, DateTime start)
     {
         return await Context.UserRequests
@@ -55,7 +52,7 @@ public class UserRequestRepository(SmugDbContext context) : IUserRequestReposito
             .OrderBy(ur => ur.RequestDate)
             .ToListAsync();
     }
-    
+
     public async Task<List<UserRequest>> GetBlockedRequestsAsync(string host, string path, DateTime? start = null)
     {
         start ??= DateTime.MinValue;
@@ -66,13 +63,11 @@ public class UserRequestRepository(SmugDbContext context) : IUserRequestReposito
             .OrderByDescending(ur => ur.RequestDate)
             .ToListAsync();
     }
-    
+
     public async Task UpdateUserRequestAsync(UserRequest userRequest)
     {
         if (await FindUserRequestAsync(userRequest.Id) == null)
-        {
             throw new UserRequestRepositoryException("User request with given id does not exist");
-        }
         Context.UserRequests.Update(userRequest);
         await Context.SaveChangesAsync();
     }

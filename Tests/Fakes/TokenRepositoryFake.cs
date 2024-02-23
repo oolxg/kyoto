@@ -2,7 +2,7 @@ using Smug.Exceptions;
 using Smug.Models;
 using Smug.Services.Interfaces;
 
-public class TokenRepositoryFake(IUserRequestRepository userRequestRepository): ITokenRepository
+public class TokenRepositoryFake(IUserRequestRepository userRequestRepository) : ITokenRepository
 {
     public List<TokenInfo> Tokens { get; private set; } = new();
     public List<IpAddressInfo> Ips { get; set; } = new();
@@ -14,16 +14,13 @@ public class TokenRepositoryFake(IUserRequestRepository userRequestRepository): 
     public int FindTokenAsyncByIdCount { get; private set; } = 0;
     public int AddIpAddressIfNeededAsyncCount { get; private set; } = 0;
     public int AddUserRequestToTokenAsyncCount { get; private set; } = 0;
-        
+
     public Task<TokenInfo> FindOrCreateTokenAsync(string token)
     {
         FindOrCreateTokenAsyncCount++;
         var tokenInfo = Tokens.FirstOrDefault(t => t.Token == token);
-        if (tokenInfo != null)
-        {
-            return Task.FromResult(tokenInfo);
-        }
-        
+        if (tokenInfo != null) return Task.FromResult(tokenInfo);
+
         tokenInfo = new TokenInfo(token);
         Tokens.Add(tokenInfo);
         return Task.FromResult(tokenInfo);
@@ -38,7 +35,7 @@ public class TokenRepositoryFake(IUserRequestRepository userRequestRepository): 
             tokenInfo = new TokenInfo(token);
             Tokens.Add(tokenInfo);
         }
-        
+
         tokenInfo.UpdateStatus(TokenStatus.Banned, reason);
         return Task.FromResult(tokenInfo);
     }
@@ -52,12 +49,9 @@ public class TokenRepositoryFake(IUserRequestRepository userRequestRepository): 
             tokenInfo = new TokenInfo(token);
             Tokens.Add(tokenInfo);
         }
-        
-        if (tokenInfo.Status != TokenStatus.Banned)
-        {
-            throw new TokenRepositoryException("TokenInfo is not banned");
-        }
-        
+
+        if (tokenInfo.Status != TokenStatus.Banned) throw new TokenRepositoryException("TokenInfo is not banned");
+
         tokenInfo.UpdateStatus(TokenStatus.Normal, reason);
         return Task.CompletedTask;
     }
@@ -78,23 +72,15 @@ public class TokenRepositoryFake(IUserRequestRepository userRequestRepository): 
     {
         AddIpAddressIfNeededAsyncCount++;
         var tokenInfo = FindTokenAsync(token).Result;
-        if (tokenInfo == null)
-        {
-            throw new TokenRepositoryException("TokenInfo is not in the database");
-        }
-        
+        if (tokenInfo == null) throw new TokenRepositoryException("TokenInfo is not in the database");
+
         if (Ips.FirstOrDefault(i => i.Id == ipAddressId) == null)
-        {
             throw new TokenRepositoryException("IpAddress is not in the database");
-        }
-        
-        var pivot = new IpToken(ipAddressInfoId: ipAddressId, tokenInfoId: tokenInfo.Id);
-        
-        if (IpTokens.Contains(pivot) == false)
-        {
-            tokenInfo.IpTokens.Add(pivot);
-        }
-        
+
+        var pivot = new IpToken(ipAddressId, tokenInfo.Id);
+
+        if (IpTokens.Contains(pivot) == false) tokenInfo.IpTokens.Add(pivot);
+
         return Task.CompletedTask;
     }
 
@@ -102,21 +88,15 @@ public class TokenRepositoryFake(IUserRequestRepository userRequestRepository): 
     {
         AddUserRequestToTokenAsyncCount++;
         var tokenInfo = Tokens.FirstOrDefault(t => t.Token == token);
-        if (tokenInfo == null)
-        {
-            throw new TokenRepositoryException("TokenInfo is not in the database");
-        }
-        
+        if (tokenInfo == null) throw new TokenRepositoryException("TokenInfo is not in the database");
+
         var userRequest = userRequestRepository.FindUserRequestAsync(userRequestId).Result;
-        if (userRequest == null)
-        {
-            throw new TokenRepositoryException("UserRequest is not in the database");
-        }
-        
+        if (userRequest == null) throw new TokenRepositoryException("UserRequest is not in the database");
+
         userRequest.TokenInfo = tokenInfo;
 
         tokenInfo.UserRequests.Add(userRequest);
-        
+
         return Task.CompletedTask;
     }
 }

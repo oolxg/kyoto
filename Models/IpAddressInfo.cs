@@ -8,30 +8,32 @@ namespace Smug.Models;
 public class IpAddressInfo
 {
     [Key]
-    [Column(TypeName = "uuid"), Required]
+    [Column(TypeName = "uuid")]
+    [Required]
     public Guid Id { get; set; }
-    
-    [Column(TypeName = "text"), Required]
-    public string Ip { get; set; }
-    
-    [Column(TypeName = "integer"), Required]
+
+    [Column(TypeName = "text")] [Required] public string Ip { get; set; }
+
+    [Column(TypeName = "integer")]
+    [Required]
     public IpStatus Status { get; set; }
-    
-    [Column(TypeName = "text")]
-    public string? StatusChangeReason { get; set; }
-    
+
+    [Column(TypeName = "text")] public string? StatusChangeReason { get; set; }
+
     [Column(TypeName = "timestamp with time zone")]
     public DateTime? StatusChangeDate { get; set; }
-    
-    [Column(TypeName = "boolean"), Required]
+
+    [Column(TypeName = "boolean")]
+    [Required]
     public bool ShouldHideIfBanned { get; set; }
 
     public List<IpToken> IpTokens { get; set; } = new();
     public List<UserRequest> UserRequests { get; set; } = new();
-    
-    [Column(TypeName = "timestamp with time zone"), Required]
+
+    [Column(TypeName = "timestamp with time zone")]
+    [Required]
     public DateTime CreatedAt { get; set; }
-    
+
     public IpAddressInfo(string ip)
     {
         Id = Guid.NewGuid();
@@ -52,7 +54,7 @@ public class IpAddressInfo
         Status = status;
         StatusChangeReason = reason;
         StatusChangeDate = DateTime.UtcNow;
-    } 
+    }
 }
 
 public enum IpStatus

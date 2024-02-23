@@ -15,30 +15,25 @@ public class RestrictedUrlRepositoryFake : IRestrictedUrlRepository
     {
         BlockUrlCount++;
         if (RestrictedUrls.Any(ru => ru.Host == host && ru.Path == path))
-        {
             throw new RestrictedUrlRepositoryException($"URL {host}{path} is already blocked");
-        }
-        
+
         var restrictedUrl = new RestrictedUrl(host, path, reason, bannedUntil);
-        
+
         RestrictedUrls.Add(restrictedUrl);
         return Task.CompletedTask;
     }
-    
+
     public Task UnblockUrl(string host, string path)
     {
         UnblockUrlCount++;
         var restrictedUrl = RestrictedUrls.FirstOrDefault(ru => ru.Host == host && ru.Path == path);
-        
-        if (restrictedUrl == null)
-        {
-            throw new RestrictedUrlRepositoryException($"URL {host}{path} is not blocked");
-        }
-        
+
+        if (restrictedUrl == null) throw new RestrictedUrlRepositoryException($"URL {host}{path} is not blocked");
+
         RestrictedUrls.Remove(restrictedUrl);
         return Task.CompletedTask;
     }
-    
+
     public Task<bool> IsUrlBlocked(string host, string path)
     {
         IsUrlBlockedCount++;
@@ -46,24 +41,15 @@ public class RestrictedUrlRepositoryFake : IRestrictedUrlRepository
             .Where(ru => ru.Host == "*" || ru.Host == host)
             .Where(ru => ru.Path == "*" || ru.Path == path)
             .FirstOrDefault();
-        
-        if (restrictedUrl == null)
-        {
-            return Task.FromResult(false);
-        }
-        
-        if (!restrictedUrl.BannedUntil.HasValue)
-        {
-            return Task.FromResult(true);
-        }
-        
+
+        if (restrictedUrl == null) return Task.FromResult(false);
+
+        if (!restrictedUrl.BannedUntil.HasValue) return Task.FromResult(true);
+
         var isBanned = restrictedUrl.BannedUntil.Value > DateTime.UtcNow;
-        
-        if (!isBanned)
-        {
-            RestrictedUrls.Remove(restrictedUrl);
-        }
-        
+
+        if (!isBanned) RestrictedUrls.Remove(restrictedUrl);
+
         return Task.FromResult(isBanned);
     }
 }

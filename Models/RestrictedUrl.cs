@@ -7,24 +7,29 @@ namespace Smug.Models;
 public class RestrictedUrl
 {
     [Key]
-    [Column(TypeName = "uuid"), Required]
+    [Column(TypeName = "uuid")]
+    [Required]
     public Guid Id { get; set; }
-    
-    [Column(TypeName = "text"), RegularExpression(@"^([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$"), Required]
+
+    [Column(TypeName = "text")]
+    [RegularExpression(@"^([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$")]
+    [Required]
     public string Host { get; set; }
-    
-    [Column(TypeName = "text"), RegularExpression(@"^\/.*\/$"), Required]
+
+    [Column(TypeName = "text")]
+    [RegularExpression(@"^\/.*\/$")]
+    [Required]
     public string Path { get; set; }
-    
-    [Column(TypeName = "text"), Required]
-    public string Reason { get; set; }
-    
-    [Column(TypeName = "timestamp with time zone"), Required]
+
+    [Column(TypeName = "text")] [Required] public string Reason { get; set; }
+
+    [Column(TypeName = "timestamp with time zone")]
+    [Required]
     public DateTime RestrictedDate { get; set; }
-    
+
     [Column(TypeName = "timestamp with time zone")]
     public DateTime? BannedUntil { get; set; }
-    
+
     public RestrictedUrl(string host, string path, string reason, DateTime? bannedUntil = null)
     {
         Id = Guid.NewGuid();
@@ -33,8 +38,8 @@ public class RestrictedUrl
         Reason = reason;
         RestrictedDate = DateTime.UtcNow;
         BannedUntil = bannedUntil;
-    }       
-    
+    }
+
     public RestrictedUrl()
     {
     }
