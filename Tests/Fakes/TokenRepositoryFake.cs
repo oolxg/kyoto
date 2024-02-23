@@ -1,6 +1,6 @@
-using Smug.Exceptions;
-using Smug.Models;
-using Smug.Services.Interfaces;
+using Kyoto.Exceptions;
+using Kyoto.Models;
+using Kyoto.Services.Interfaces;
 
 public class TokenRepositoryFake(IUserRequestRepository userRequestRepository) : ITokenRepository
 {

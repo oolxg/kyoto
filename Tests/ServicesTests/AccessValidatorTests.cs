@@ -1,15 +1,15 @@
-using Smug.Models;
-using Smug.Models.SmugDbContext;
-using Smug.Services.Implementations;
-using Smug.Tests.Fakes;
-using Smug.Resources;
+using Kyoto.Models;
+using Kyoto.Models.KyotoDbContext;
+using Kyoto.Services.Implementations;
+using Kyoto.Tests.Fakes;
+using Kyoto.Resources;
 using Tests.Helpers;
 
 namespace Tests.RepositoryTests;
 
 public class AccessValidatorTests
 {
-    private readonly SmugDbContext _dbContext;
+    private readonly KyotoDbContext _dbContext;
     private readonly IpRepositoryFake _ipRepositoryFake;
     private readonly TokenRepositoryFake _tokenRepositoryFake;
     private readonly UserRequestRepositoryFake _userRequestRepositoryFake;

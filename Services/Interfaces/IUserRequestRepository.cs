@@ -1,7 +1,7 @@
-using Smug.Exceptions;
-using Smug.Models;
+using Kyoto.Exceptions;
+using Kyoto.Models;
 
-namespace Smug.Services.Interfaces;
+namespace Kyoto.Services.Interfaces;
 
 public interface IUserRequestRepository
 {

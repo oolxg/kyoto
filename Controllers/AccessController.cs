@@ -1,8 +1,8 @@
 using System.Net;
+using Kyoto.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Smug.Services.Interfaces;
 
-namespace Smug.Controllers;
+namespace Kyoto.Controllers;
 
 [ApiController]
 [Route("api/v1/")]

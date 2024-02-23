@@ -1,7 +1,7 @@
-using Smug.Models;
-using Smug.Services.Interfaces;
+using Kyoto.Models;
+using Kyoto.Services.Interfaces;
 
-namespace Smug.Tests.Fakes;
+namespace Kyoto.Tests.Fakes;
 
 public class UserRequestRepositoryFake : IUserRequestRepository
 {

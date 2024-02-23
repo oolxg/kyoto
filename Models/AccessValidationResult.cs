@@ -1,4 +1,4 @@
-namespace Smug.Models;
+namespace Kyoto.Models;
 
 public class AccessValidationResult(bool block, string reason)
 {

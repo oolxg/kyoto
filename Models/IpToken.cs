@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Smug.Models;
+namespace Kyoto.Models;
 
 [Table("IpToken")]
 [PrimaryKey("IpAddressInfoId", "TokenInfoId")]

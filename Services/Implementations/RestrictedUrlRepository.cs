@@ -1,12 +1,12 @@
+using Kyoto.Exceptions;
+using Kyoto.Models;
+using Kyoto.Models.KyotoDbContext;
+using Kyoto.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Smug.Exceptions;
-using Smug.Models;
-using Smug.Models.SmugDbContext;
-using Smug.Services.Interfaces;
 
-namespace Smug.Services.Implementations;
+namespace Kyoto.Services.Implementations;
 
-public class RestrictedUrlRepository(SmugDbContext dbContext) : IRestrictedUrlRepository
+public class RestrictedUrlRepository(KyotoDbContext dbContext) : IRestrictedUrlRepository
 {
     public async Task BlockUrl(string host, string path, string reason, DateTime? bannedUntil = null)
     {

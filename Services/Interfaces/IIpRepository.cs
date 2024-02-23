@@ -1,7 +1,7 @@
-using Smug.Models;
-using Smug.Exceptions;
+using Kyoto.Exceptions;
+using Kyoto.Models;
 
-namespace Smug.Services.Interfaces;
+namespace Kyoto.Services.Interfaces;
 
 public interface IIpRepository
 {

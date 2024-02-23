@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using Smug.Exceptions;
-using Smug.Models.SmugDbContext;
-using Smug.Services.Implementations;
+using Kyoto.Exceptions;
+using Kyoto.Models.KyotoDbContext;
+using Kyoto.Services.Implementations;
 using Tests.Helpers;
 
 namespace Tests.RepositoryTests;
@@ -9,7 +9,7 @@ namespace Tests.RepositoryTests;
 public class RestrictedUrlRepositoryTests
 {
     private readonly RestrictedUrlRepository _restrictedUrlRepository;
-    private readonly SmugDbContext _dbContext;
+    private readonly KyotoDbContext _dbContext;
 
     public RestrictedUrlRepositoryTests()
     {

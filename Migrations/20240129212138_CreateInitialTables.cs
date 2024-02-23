@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Smug.Migrations
+namespace Kyoto.Migrations
 {
     /// <inheritdoc />
     public partial class CreateInitialTables : Migration

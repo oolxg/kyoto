@@ -1,17 +1,17 @@
+using Kyoto.Exceptions;
+using Kyoto.Models;
+using Kyoto.Models.KyotoDbContext;
+using Kyoto.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Smug.Models;
-using Smug.Models.SmugDbContext;
-using Smug.Services.Interfaces;
-using Smug.Exceptions;
 
-namespace Smug.Services.Implementations;
+namespace Kyoto.Services.Implementations;
 
 public class IpRepository : IIpRepository
 {
-    private readonly SmugDbContext _dbContext;
+    private readonly KyotoDbContext _dbContext;
     private readonly IUserRequestRepository _userRequestRepository;
 
-    public IpRepository(SmugDbContext dbContext, IUserRequestRepository userRequestRepository)
+    public IpRepository(KyotoDbContext dbContext, IUserRequestRepository userRequestRepository)
     {
         _dbContext = dbContext;
         _userRequestRepository = userRequestRepository;

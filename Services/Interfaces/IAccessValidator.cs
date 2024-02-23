@@ -1,6 +1,6 @@
-using Smug.Models;
+using Kyoto.Models;
 
-namespace Smug.Services.Interfaces;
+namespace Kyoto.Services.Interfaces;
 
 public interface IAccessValidator
 {

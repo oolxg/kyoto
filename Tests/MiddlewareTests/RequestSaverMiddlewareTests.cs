@@ -1,11 +1,11 @@
 using System.Text;
+using Kyoto.Middlewares;
+using Kyoto.Models;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using Smug.Middlewares;
-using Smug.Models;
-using Smug.Tests.Fakes;
+using Kyoto.Tests.Fakes;
 
-namespace Smug.Tests.MiddlewareTests;
+namespace Kyoto.Tests.MiddlewareTests;
 
 public class RequestSaverMiddlewareTests
 {

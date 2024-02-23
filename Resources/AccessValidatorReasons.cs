@@ -1,4 +1,4 @@
-namespace Smug.Resources;
+namespace Kyoto.Resources;
 
 public class AccessValidatorReasons
 {

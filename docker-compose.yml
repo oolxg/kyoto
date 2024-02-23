@@ -1,0 +1,6 @@
+﻿services:
+  smug:
+    image: kyoto
+    build:
+      context: .
+      dockerfile: Dockerfile

@@ -1,14 +1,14 @@
+using Kyoto.Exceptions;
+using Kyoto.Models;
+using Kyoto.Models.KyotoDbContext;
+using Kyoto.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Smug.Exceptions;
-using Smug.Models;
-using Smug.Models.SmugDbContext;
-using Smug.Services.Interfaces;
 
-namespace Smug.Services.Implementations;
+namespace Kyoto.Services.Implementations;
 
-public class UserRequestRepository(SmugDbContext context) : IUserRequestRepository
+public class UserRequestRepository(KyotoDbContext context) : IUserRequestRepository
 {
-    private SmugDbContext Context => context;
+    private KyotoDbContext Context => context;
 
     public async Task SaveUserRequestAsync(UserRequest userRequest)
     {

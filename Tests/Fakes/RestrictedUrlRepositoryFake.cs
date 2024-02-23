@@ -1,8 +1,8 @@
-using Smug.Exceptions;
-using Smug.Models;
-using Smug.Services.Interfaces;
+using Kyoto.Exceptions;
+using Kyoto.Models;
+using Kyoto.Services.Interfaces;
 
-namespace Smug.Tests.Fakes;
+namespace Kyoto.Tests.Fakes;
 
 public class RestrictedUrlRepositoryFake : IRestrictedUrlRepository
 {

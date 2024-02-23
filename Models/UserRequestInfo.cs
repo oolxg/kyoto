@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Smug.Models;
+namespace Kyoto.Models;
 
 public class UserRequestInfo
 {

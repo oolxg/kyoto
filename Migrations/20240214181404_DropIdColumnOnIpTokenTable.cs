@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Smug.Migrations
+namespace Kyoto.Migrations
 {
     /// <inheritdoc />
     public partial class DropIdColumnOnIpTokenTable : Migration

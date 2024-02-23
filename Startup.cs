@@ -1,10 +1,10 @@
+using Kyoto.Middlewares;
+using Kyoto.Models.KyotoDbContext;
+using Kyoto.Services.Implementations;
+using Kyoto.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Smug.Middlewares;
-using Smug.Models.SmugDbContext;
-using Smug.Services.Implementations;
-using Smug.Services.Interfaces;
 
-namespace Smug;
+namespace Kyoto;
 
 public class Startup
 {
@@ -15,7 +15,7 @@ public class Startup
         // Add services to the container.
 
         builder.Services.AddControllers();
-        builder.Services.AddDbContext<SmugDbContext>(options =>
+        builder.Services.AddDbContext<KyotoDbContext>(options =>
         {
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
             options.EnableSensitiveDataLogging();

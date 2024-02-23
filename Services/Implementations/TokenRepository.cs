@@ -1,12 +1,12 @@
+using Kyoto.Exceptions;
+using Kyoto.Models;
+using Kyoto.Models.KyotoDbContext;
+using Kyoto.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Smug.Models;
-using Smug.Models.SmugDbContext;
-using Smug.Services.Interfaces;
-using Smug.Exceptions;
 
-namespace Smug.Services.Implementations;
+namespace Kyoto.Services.Implementations;
 
-public class TokenRepository(SmugDbContext context, IUserRequestRepository userRequestRepository) : ITokenRepository
+public class TokenRepository(KyotoDbContext context, IUserRequestRepository userRequestRepository) : ITokenRepository
 {
     public async Task<TokenInfo> FindOrCreateTokenAsync(string token)
     {

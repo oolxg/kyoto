@@ -1,4 +1,4 @@
-namespace Smug.Exceptions;
+namespace Kyoto.Exceptions;
 
 public class UserRequestRepositoryException : Exception
 {

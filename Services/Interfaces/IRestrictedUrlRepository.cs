@@ -1,6 +1,6 @@
-using Smug.Exceptions;
+using Kyoto.Exceptions;
 
-namespace Smug.Services.Interfaces;
+namespace Kyoto.Services.Interfaces;
 
 public interface IRestrictedUrlRepository
 {

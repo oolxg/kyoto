@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Smug.Models;
+namespace Kyoto.Models;
 
 [Table("RestrictedUrls")]
 public class RestrictedUrl

@@ -1,8 +1,8 @@
-using Smug.Models;
-using Smug.Services.Interfaces;
-using Smug.Resources;
+using Kyoto.Models;
+using Kyoto.Resources;
+using Kyoto.Services.Interfaces;
 
-namespace Smug.Services.Implementations;
+namespace Kyoto.Services.Implementations;
 
 public class AccessValidator(
     IUserRequestRepository userRequestRepository,

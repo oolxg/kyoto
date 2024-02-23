@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
-namespace Smug.Models.SmugDbContext;
+namespace Kyoto.Models.KyotoDbContext;
 
-public class SmugDbContext : DbContext
+public class KyotoDbContext : DbContext
 {
-    public SmugDbContext(DbContextOptions<SmugDbContext> options) : base(options)
+    public KyotoDbContext(DbContextOptions<KyotoDbContext> options) : base(options)
     {
     }
 

@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using Smug.Models.SmugDbContext;
+using Kyoto.Models.KyotoDbContext;
 
 #nullable disable
 
-namespace Smug.Migrations
+namespace Kyoto.Migrations
 {
-    [DbContext(typeof(SmugDbContext))]
+    [DbContext(typeof(KyotoDbContext))]
     [Migration("20240129212138_CreateInitialTables")]
     partial class CreateInitialTables
     {
@@ -25,7 +25,7 @@ namespace Smug.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Smug.Models.IpAddressInfo", b =>
+            modelBuilder.Entity("Kyoto.Models.IpAddressInfo", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -55,7 +55,7 @@ namespace Smug.Migrations
                     b.ToTable("IpAddresses");
                 });
 
-            modelBuilder.Entity("Smug.Models.IpToken", b =>
+            modelBuilder.Entity("Kyoto.Models.IpToken", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -82,7 +82,7 @@ namespace Smug.Migrations
                     b.ToTable("IpToken");
                 });
 
-            modelBuilder.Entity("Smug.Models.RestrictedUrl", b =>
+            modelBuilder.Entity("Kyoto.Models.RestrictedUrl", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -108,7 +108,7 @@ namespace Smug.Migrations
                     b.ToTable("RestrictedUrls");
                 });
 
-            modelBuilder.Entity("Smug.Models.TokenInfo", b =>
+            modelBuilder.Entity("Kyoto.Models.TokenInfo", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -135,7 +135,7 @@ namespace Smug.Migrations
                     b.ToTable("Tokens");
                 });
 
-            modelBuilder.Entity("Smug.Models.UserRequest", b =>
+            modelBuilder.Entity("Kyoto.Models.UserRequest", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -171,26 +171,26 @@ namespace Smug.Migrations
                     b.ToTable("UserRequests");
                 });
 
-            modelBuilder.Entity("Smug.Models.IpToken", b =>
+            modelBuilder.Entity("Kyoto.Models.IpToken", b =>
                 {
-                    b.HasOne("Smug.Models.IpAddressInfo", null)
+                    b.HasOne("Kyoto.Models.IpAddressInfo", null)
                         .WithMany("IpTokens")
                         .HasForeignKey("IpAddressInfoId");
 
-                    b.HasOne("Smug.Models.TokenInfo", null)
+                    b.HasOne("Kyoto.Models.TokenInfo", null)
                         .WithMany("IpTokens")
                         .HasForeignKey("TokenInfoId");
                 });
 
-            modelBuilder.Entity("Smug.Models.UserRequest", b =>
+            modelBuilder.Entity("Kyoto.Models.UserRequest", b =>
                 {
-                    b.HasOne("Smug.Models.IpAddressInfo", "IpInfo")
+                    b.HasOne("Kyoto.Models.IpAddressInfo", "IpInfo")
                         .WithMany("UserRequests")
                         .HasForeignKey("IpInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Smug.Models.TokenInfo", "TokenInfo")
+                    b.HasOne("Kyoto.Models.TokenInfo", "TokenInfo")
                         .WithMany("UserRequests")
                         .HasForeignKey("TokenInfoId");
 
@@ -199,14 +199,14 @@ namespace Smug.Migrations
                     b.Navigation("TokenInfo");
                 });
 
-            modelBuilder.Entity("Smug.Models.IpAddressInfo", b =>
+            modelBuilder.Entity("Kyoto.Models.IpAddressInfo", b =>
                 {
                     b.Navigation("IpTokens");
 
                     b.Navigation("UserRequests");
                 });
 
-            modelBuilder.Entity("Smug.Models.TokenInfo", b =>
+            modelBuilder.Entity("Kyoto.Models.TokenInfo", b =>
                 {
                     b.Navigation("IpTokens");
 

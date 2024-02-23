@@ -1,15 +1,15 @@
 using Microsoft.EntityFrameworkCore;
-using Smug.Exceptions;
+using Kyoto.Exceptions;
 using Tests.Helpers;
-using Smug.Models;
-using Smug.Models.SmugDbContext;
-using Smug.Services.Implementations;
+using Kyoto.Models;
+using Kyoto.Models.KyotoDbContext;
+using Kyoto.Services.Implementations;
 
 namespace Tests.RepositoryTests;
 
 public class UserRequestRepositoryTests
 {
-    private readonly SmugDbContext _dbContext;
+    private readonly KyotoDbContext _dbContext;
     private readonly UserRequestRepository _userRequestRepository;
 
     public UserRequestRepositoryTests()

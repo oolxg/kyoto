@@ -1,10 +1,10 @@
 using System.Globalization;
 using System.Text;
+using Kyoto.Models;
+using Kyoto.Services.Interfaces;
 using Newtonsoft.Json;
-using Smug.Models;
-using Smug.Services.Interfaces;
 
-namespace Smug.Middlewares;
+namespace Kyoto.Middlewares;
 
 public class RequestSaverMiddleware(RequestDelegate next)
 {

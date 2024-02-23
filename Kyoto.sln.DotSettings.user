@@ -60,25 +60,24 @@
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Smug.Tests.MiddlewareTests.RequestSaverMiddlewareTests.InvokeAsync_GivenValidDataAndToken_ShouldSaveUserRequestAndReturn200&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=922010fc_002D5bf8_002D46d1_002D8bc2_002D63d822c69a92/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="AccessValidatorTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
-  &lt;TestAncestor&gt;
-    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests&lt;/TestId&gt;
-    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Smug.Tests.MiddlewareTests.RequestSaverMiddlewareTests&lt;/TestId&gt;
-  &lt;/TestAncestor&gt;
-&lt;/SessionState&gt;</s:String>
-	
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ae417b9e_002D9c69_002D4c28_002D90e6_002Ddcd534970a64/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ValidateRequestAsync_GivenUserAgentWithPython_ReturnsValidationResultWithBlockTrue" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_GivenUserAgentWithPython_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_GivenRefererWithJsRedir_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=d220ccae_002D8098_002D46ac_002D95cd_002D915940f2d6f6/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ValidateRequestAsync_GivenRefererWithJsRedir_ReturnsValidationResultWithBlockTrue" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=d220ccae_002D8098_002D46ac_002D95cd_002D915940f2d6f6/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="ValidateRequestAsync_GivenRefererWithJsRedir_ReturnsValidationResultWithBlockTrue" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_GivenRefererWithJsRedir_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenIpIsLinkedToBannedToken_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenIpIsBannedAndNoTokenGiven_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests.ValidateRequestAsync_WhenTokenIsBanned_ReturnsValidationResultWithBlockTrue&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.IpRepositoryTests.FindOrCreateIpAsync_GivenIp_ShouldSaveNewIp&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
-	
-	
-	</wpf:ResourceDictionary>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=922010fc_002D5bf8_002D46d1_002D8bc2_002D63d822c69a92/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="AccessValidatorTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.AccessValidatorTests&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Smug.Tests.MiddlewareTests.RequestSaverMiddlewareTests&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
