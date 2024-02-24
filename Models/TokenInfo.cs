@@ -20,7 +20,7 @@ public class TokenInfo
     [Column(TypeName = "timestamp with time zone")]
     public DateTime? StatusChangeDate { get; private set; }
 
-    [Column(TypeName = "text")] public string? Reason { get; set; }
+    [Column(TypeName = "text")] public string? DecisionReason { get; set; }
 
     [Column(TypeName = "timestamp with time zone")]
     [Required]
@@ -42,7 +42,7 @@ public class TokenInfo
     public void UpdateStatus(TokenStatus status, string reason)
     {
         Status = status;
-        Reason = reason;
+        DecisionReason = reason;
         StatusChangeDate = DateTime.UtcNow;
     }
 

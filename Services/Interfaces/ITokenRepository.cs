@@ -28,6 +28,15 @@ public interface ITokenRepository
     /// <throws><see cref="TokenRepositoryException"/> if the token is not banned.</throws>
     /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation.</returns>
     public Task UnbanTokenAsync(string token, string reason);
+    
+    /// <summary>
+    /// Whitelist token
+    /// </summary>
+    /// <param name="token">Token to whitelist</param>
+    /// <param name="reason">Reason for whitelist</param>
+    /// <throws><see cref="TokenRepositoryException"/> if the token is not found.</throws>
+    /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation.</returns>
+    public Task WhitelistTokenAsync(string token, string reason);
 
     /// <summary>
     /// Find token by token string

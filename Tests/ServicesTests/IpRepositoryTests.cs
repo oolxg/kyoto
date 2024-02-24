@@ -1,9 +1,9 @@
-using Microsoft.EntityFrameworkCore;
 using Kyoto.Exceptions;
 using Tests.Helpers;
 using Kyoto.Models;
 using Kyoto.Models.KyotoDbContext;
 using Kyoto.Services.Implementations;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tests.RepositoryTests;
 

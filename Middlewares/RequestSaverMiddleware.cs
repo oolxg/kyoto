@@ -35,6 +35,17 @@ public class RequestSaverMiddleware(RequestDelegate next)
                 await context.Response.WriteAsync("Invalid request body");
                 return;
             }
+            
+            if (!requestDetails.Host.EndsWith('/'))
+                requestDetails.Host += '/';
+            
+            if (!requestDetails.Path.StartsWith('/'))
+                requestDetails.Path = '/' + requestDetails.Path;
+            
+            // remove http or https from the host
+            requestDetails.Host = requestDetails.Host
+                .Replace("http://", "")
+                .Replace("https://", "");
 
             var ipInfo = await ipRepository.FindOrCreateIpAsync(requestDetails.UserIp);
             var tokenInfo = requestDetails.Token != null

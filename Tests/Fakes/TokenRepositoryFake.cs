@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Kyoto.Exceptions;
 using Kyoto.Models;
 using Kyoto.Services.Interfaces;
@@ -14,6 +18,7 @@ public class TokenRepositoryFake(IUserRequestRepository userRequestRepository) :
     public int FindTokenAsyncByIdCount { get; private set; } = 0;
     public int AddIpAddressIfNeededAsyncCount { get; private set; } = 0;
     public int AddUserRequestToTokenAsyncCount { get; private set; } = 0;
+    public int WhiteListTokenAsyncCount { get; private set; } = 0;
 
     public Task<TokenInfo> FindOrCreateTokenAsync(string token)
     {
@@ -97,6 +102,19 @@ public class TokenRepositoryFake(IUserRequestRepository userRequestRepository) :
 
         tokenInfo.UserRequests.Add(userRequest);
 
+        return Task.CompletedTask;
+    }
+    
+    public Task WhitelistTokenAsync(string token, string reason)
+    {
+        WhiteListTokenAsyncCount++;
+        var tokenInfo = Tokens.FirstOrDefault(t => t.Token == token);
+        if (tokenInfo == null)
+        {
+            throw new TokenRepositoryException("TokenInfo is not in the database");
+        }
+
+        tokenInfo.UpdateStatus(TokenStatus.Whitelisted, reason);
         return Task.CompletedTask;
     }
 }

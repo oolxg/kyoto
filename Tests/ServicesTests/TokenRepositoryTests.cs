@@ -40,7 +40,7 @@ public class TokenRepositoryTests
         Assert.Single(tokens);
         Assert.Equal(token, tokens[0].Token);
         Assert.Equal(TokenStatus.Normal, tokens[0].Status);
-        Assert.Null(tokens[0].Reason);
+        Assert.Null(tokens[0].DecisionReason);
         Assert.Equal(tokenInfo.Id, tokens[0].Id);
     }
 
@@ -58,7 +58,7 @@ public class TokenRepositoryTests
         Assert.Single(tokens);
         Assert.Equal(tokenInfo.Token, tokens[0].Token);
         Assert.Equal(TokenStatus.Normal, tokens[0].Status);
-        Assert.Null(tokens[0].Reason);
+        Assert.Null(tokens[0].DecisionReason);
         Assert.Equal(tokenInfo.Id, tokens[0].Id);
     }
 
@@ -77,7 +77,7 @@ public class TokenRepositoryTests
         Assert.Single(tokens);
         Assert.Equal(token, tokens[0].Token);
         Assert.Equal(TokenStatus.Banned, tokens[0].Status);
-        Assert.Equal(reason, tokens[0].Reason);
+        Assert.Equal(reason, tokens[0].DecisionReason);
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class TokenRepositoryTests
         Assert.Single(tokens);
         Assert.Equal(token, tokens[0].Token);
         Assert.Equal(TokenStatus.Banned, tokens[0].Status);
-        Assert.Equal(reason, tokens[0].Reason);
+        Assert.Equal(reason, tokens[0].DecisionReason);
     }
 
     [Fact]
@@ -114,7 +114,7 @@ public class TokenRepositoryTests
         Assert.Single(tokens);
         Assert.Equal(token, tokens[0].Token);
         Assert.Equal(TokenStatus.Banned, tokens[0].Status);
-        Assert.Equal(reason, tokens[0].Reason);
+        Assert.Equal(reason, tokens[0].DecisionReason);
     }
 
     [Fact]
@@ -134,7 +134,7 @@ public class TokenRepositoryTests
         Assert.Single(tokens);
         Assert.Equal(token, tokens[0].Token);
         Assert.Equal(TokenStatus.Normal, tokens[0].Status);
-        Assert.Equal(reason, tokens[0].Reason);
+        Assert.Equal(reason, tokens[0].DecisionReason);
     }
 
     [Fact]
@@ -153,7 +153,7 @@ public class TokenRepositoryTests
         Assert.Single(tokens);
         Assert.Equal(token, tokens[0].Token);
         Assert.Equal(TokenStatus.Normal, tokens[0].Status);
-        Assert.Equal(reason, tokens[0].Reason);
+        Assert.Equal(reason, tokens[0].DecisionReason);
     }
 
     [Fact]
@@ -172,7 +172,7 @@ public class TokenRepositoryTests
         Assert.Single(tokens);
         Assert.Equal(token, tokens[0].Token);
         Assert.Equal(TokenStatus.Normal, tokens[0].Status);
-        Assert.Equal(reason, tokens[0].Reason);
+        Assert.Equal(reason, tokens[0].DecisionReason);
     }
 
     [Fact]
@@ -325,16 +325,39 @@ public class TokenRepositoryTests
         await _dbContext.UserRequests.AddAsync(userRequest);
         await _dbContext.SaveChangesAsync();
 
+        // Act & Assert
+        await Assert.ThrowsAsync<TokenRepositoryException>(() =>
+            _tokenRepository.AddUserRequestToTokenAsync("NotExistingToken", userRequest.Id));
+    }
+    
+    [Fact]
+    public async Task WhitelistTokenAsync_ShouldWhitelistToken()
+    {
+        // Arrange
+        var token = MockToken();
+        const string reason = "test reason";
+        await _dbContext.Tokens.AddAsync(token);
+        await _dbContext.SaveChangesAsync();
+
         // Act
-        try
-        {
-            await _tokenRepository.AddUserRequestToTokenAsync("NotExistingToken", userRequest.Id);
-        }
-        catch (TokenRepositoryException)
-        {
-            // Assert
-            Assert.True(true);
-        }
+        await _tokenRepository.WhitelistTokenAsync(token.Token, reason);
+        var tokens = await _dbContext.Tokens.Where(t => t.Token == token.Token).ToListAsync();
+
+        // Assert
+        Assert.Single(tokens);
+        Assert.Equal(TokenStatus.Whitelisted, tokens[0].Status);
+        Assert.Contains(tokens[0].DecisionReason!, reason);
+    }
+    
+    [Fact]
+    public async Task WhitelistTokenAsync_GivenNonExistingToken_ShouldThrowException()
+    {
+        // Arrange
+        const string nonExistingToken = "NotExistingToken";
+        
+        // Act & Assert
+        await Assert.ThrowsAsync<TokenRepositoryException>(() =>
+            _tokenRepository.WhitelistTokenAsync(nonExistingToken, "test reason"));
     }
 
     private static TokenInfo MockToken(string? token = null)

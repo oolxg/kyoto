@@ -27,7 +27,7 @@ WORKDIR /app
 COPY --from=build /app/publish .
 
 # Expose the port
-EXPOSE 80
+EXPOSE 5243
 
 # Start the ASP.NET Core application
 CMD ["dotnet", "Kyoto.dll"]

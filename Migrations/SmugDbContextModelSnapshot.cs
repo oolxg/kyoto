@@ -129,7 +129,7 @@ namespace Kyoto.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("BlockReason")
+                    b.Property<string>("DecisionReason")
                         .HasColumnType("text");
 
                     b.Property<string>("Headers")

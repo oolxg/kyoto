@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Kyoto.Migrations
 {
     [DbContext(typeof(KyotoDbContext))]
-    [Migration("20240220002811_AddBlockReasonOnUserRequestTable")]
-    partial class AddBlockReasonOnUserRequestTable
+    [Migration("20240224175916_RenameReasonColumnOnTokenInfoTable")]
+    partial class RenameReasonColumnOnTokenInfoTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -132,7 +132,7 @@ namespace Kyoto.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("BlockReason")
+                    b.Property<string>("DecisionReason")
                         .HasColumnType("text");
 
                     b.Property<string>("Headers")

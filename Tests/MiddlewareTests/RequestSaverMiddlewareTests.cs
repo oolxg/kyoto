@@ -1,7 +1,6 @@
 using System.Text;
 using Kyoto.Middlewares;
 using Kyoto.Models;
-using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Kyoto.Tests.Fakes;
 
@@ -91,6 +90,75 @@ public class RequestSaverMiddlewareTests
         Assert.NotNull(context.Items["TokenInfo"]);
         Assert.Single(_userRequestRepositoryFake.UserRequests);
         Assert.Equal(requestInfo.UserIp, _ipRepositoryFake.Ips[0].Ip);
+    }
+    
+    [Fact]
+    public async Task InvokeAsync_GivenValidDataAndTokenAndHostWithHttp_ShouldSaveUserRequestAndReturn200()
+    {
+        // Arrange
+        var context = new DefaultHttpContext();
+        var requestInfo = CreateRequestInfo(host: "http://example.com");
+        var requestBody = JsonConvert.SerializeObject(requestInfo);
+        context.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(requestBody));
+
+        // Act
+        await _requestSaverMiddleware.InvokeAsync(context, _ipRepositoryFake, _tokenRepositoryFake,
+            _userRequestRepositoryFake);
+
+        // Assert
+        Assert.Equal(200, context.Response.StatusCode);
+        Assert.NotNull(context.Items["UserRequest"]);
+        Assert.NotNull(context.Items["IpInfo"]);
+        Assert.Null(context.Items["TokenInfo"]);
+        Assert.Single(_userRequestRepositoryFake.UserRequests);
+        Assert.Equal(requestInfo.UserIp, _ipRepositoryFake.Ips[0].Ip);
+        Assert.Equal("example.com/", _userRequestRepositoryFake.UserRequests[0].Host);
+    }
+    
+    [Fact]
+    public async Task InvokeAsync_GivenValidDataAndTokenAndHostWithHttps_ShouldSaveUserRequestAndReturn200()
+    {
+        // Arrange
+        var context = new DefaultHttpContext();
+        var requestInfo = CreateRequestInfo(host: "https://example.com");
+        var requestBody = JsonConvert.SerializeObject(requestInfo);
+        context.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(requestBody));
+
+        // Act
+        await _requestSaverMiddleware.InvokeAsync(context, _ipRepositoryFake, _tokenRepositoryFake,
+            _userRequestRepositoryFake);
+
+        // Assert
+        Assert.Equal(200, context.Response.StatusCode);
+        Assert.NotNull(context.Items["UserRequest"]);
+        Assert.NotNull(context.Items["IpInfo"]);
+        Assert.Null(context.Items["TokenInfo"]);
+        Assert.Single(_userRequestRepositoryFake.UserRequests);
+        Assert.Equal(requestInfo.UserIp, _ipRepositoryFake.Ips[0].Ip);
+        Assert.Equal("example.com/", _userRequestRepositoryFake.UserRequests[0].Host);
+    }
+    
+    [Fact]
+    public async Task InvokeAsync_GivenValidDataAndTokenAndPathWithoutSlash_ShouldSaveUserRequestAndReturn200()
+    {
+        // Arrange
+        var context = new DefaultHttpContext();
+        var requestInfo = CreateRequestInfo(path: "test/path");
+        var requestBody = JsonConvert.SerializeObject(requestInfo);
+        context.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(requestBody));
+
+        // Act
+        await _requestSaverMiddleware.InvokeAsync(context, _ipRepositoryFake, _tokenRepositoryFake,
+            _userRequestRepositoryFake);
+
+        // Assert
+        Assert.Equal(200, context.Response.StatusCode);
+        Assert.NotNull(context.Items["UserRequest"]);
+        Assert.NotNull(context.Items["IpInfo"]);
+        Assert.Null(context.Items["TokenInfo"]);
+        Assert.Single(_userRequestRepositoryFake.UserRequests);
+        Assert.Equal(requestInfo.UserIp, _ipRepositoryFake.Ips[0].Ip);
+        Assert.Equal("/test/path", _userRequestRepositoryFake.UserRequests[0].Path);
     }
 
     private static UserRequestInfo CreateRequestInfo(

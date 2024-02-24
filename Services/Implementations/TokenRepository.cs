@@ -93,4 +93,13 @@ public class TokenRepository(KyotoDbContext context, IUserRequestRepository user
 
         await context.SaveChangesAsync();
     }
+    
+    public async Task WhitelistTokenAsync(string token, string reason)
+    {
+        var tokenInfo = await FindTokenAsync(token);
+        if (tokenInfo == null) throw new TokenRepositoryException("TokenInfo is not in the database");
+
+        tokenInfo.UpdateStatus(TokenStatus.Whitelisted, reason);
+        await context.SaveChangesAsync();
+    }
 }

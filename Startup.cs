@@ -8,10 +8,10 @@ namespace Kyoto;
 
 public class Startup
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-
+        
         // Add services to the container.
 
         builder.Services.AddControllers();
@@ -42,9 +42,16 @@ public class Startup
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "ToDoApp v1");
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Kyoto");
                 options.RoutePrefix = string.Empty;
             });
+        }
+
+        using (var scope = app.Services.CreateScope())
+        {
+            var services = scope.ServiceProvider;
+            var context = services.GetRequiredService<KyotoDbContext>();
+            await context.Database.MigrateAsync();
         }
 
         app.UseHttpsRedirection();
