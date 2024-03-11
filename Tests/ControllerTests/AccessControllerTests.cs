@@ -51,10 +51,26 @@ public class AccessControllerTests
         Assert.NotNull(bannedToken);
         Assert.Equal(TokenStatus.Banned, bannedToken.Status);
         Assert.Equal(DefaultToken, bannedToken.Token);
-        Assert.Equal(DefaultReason, bannedToken.DecisionReason);
+        Assert.Equal(DefaultReason, bannedToken.StatusChangeReason);
         Assert.Equal(1, _tokenRepository.BanTokenAsyncCount);
         Assert.Contains(bannedToken, _tokenRepository.Tokens);
         Assert.Single(_tokenRepository.Tokens);
+    }
+    
+    [Fact]
+    public async Task BanIp_GivenInvalidIp_ShouldReturnBadRequest()
+    {
+        // Act
+        var result = await _accessController.BanIp("InvalidIp", DefaultReason) as BadRequestObjectResult;
+        var response = result?.Value as dynamic;
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.True(response?.error);
+        Assert.Equal("Invalid IP address", response?.description);
+        Assert.Equal("InvalidIp", response?.ip);
+        Assert.Equal(0, _ipRepository.BanIpIfNeededAsync2ParamsCount);
+        Assert.Empty(_ipRepository.Ips);
     }
 
     [Fact]
@@ -128,7 +144,7 @@ public class AccessControllerTests
         Assert.NotNull(bannedToken);
         Assert.Equal(TokenStatus.Banned, bannedToken.Status);
         Assert.Equal(DefaultToken, bannedToken.Token);
-        Assert.Equal(DefaultReason, bannedToken.DecisionReason);
+        Assert.Equal(DefaultReason, bannedToken.StatusChangeReason);
         Assert.Equal(1, _tokenRepository.BanTokenAsyncCount);
         Assert.Contains(bannedToken, _tokenRepository.Tokens);
         Assert.Single(_tokenRepository.Tokens);

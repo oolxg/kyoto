@@ -1,7 +1,3 @@
 namespace Kyoto.Models;
 
-public class AccessValidationResult(bool block, string reason)
-{
-    public bool Block { get; } = block;
-    public string Reason { get; } = reason;
-}
+public record AccessValidationResult(bool Block, string Reason);

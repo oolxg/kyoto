@@ -30,12 +30,10 @@ public class RequestValidatorController(
 
         await ipRepository.BanIpIfNeededAsync(ipInfo.Ip, validationResult.Reason);
 
-        if (tokenInfo != null) await tokenRepository.BanTokenAsync(tokenInfo.Token, validationResult.Reason);
-
-        if (!ipInfo.ShouldHideIfBanned)
+        if (tokenInfo != null)
         {
+            await tokenRepository.BanTokenAsync(tokenInfo.Token, validationResult.Reason);
         }
-
 
         return Ok(validationResult);
     }

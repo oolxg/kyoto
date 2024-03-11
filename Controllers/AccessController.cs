@@ -117,6 +117,7 @@ public class AccessController(
         }
 
         await ipRepository.WhitelistIpAsync(ip, reason);
+        var ipInfo = await ipRepository.FindIpAsync(ip);
         
         var requests = await userRequestRepository.FindUserRequestByIpAsync(ip);
         foreach (var request in requests.Where(request => request.TokenInfo?.Token != null))

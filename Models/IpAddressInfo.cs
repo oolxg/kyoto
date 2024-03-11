@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Net;
 
 namespace Kyoto.Models;
 
@@ -12,13 +11,15 @@ public class IpAddressInfo
     [Required]
     public Guid Id { get; set; }
 
-    [Column(TypeName = "text")] [Required] public string Ip { get; set; }
+    [Column(TypeName = "text")] [Required]
+    public string Ip { get; set; }
 
     [Column(TypeName = "integer")]
     [Required]
     public IpStatus Status { get; set; }
 
-    [Column(TypeName = "text")] public string? StatusChangeReason { get; set; }
+    [Column(TypeName = "text")] 
+    public string? StatusChangeReason { get; set; }
 
     [Column(TypeName = "timestamp with time zone")]
     public DateTime? StatusChangeDate { get; set; }
@@ -59,7 +60,7 @@ public class IpAddressInfo
 
 public enum IpStatus
 {
-    Whitelisted,
-    Banned,
-    Normal
+    Whitelisted, // 0
+    Banned, // 1
+    Normal // 2
 }

@@ -15,7 +15,6 @@ public class AccessValidator(
         var ip = await ipRepository.FindOrCreateIpAsync(userRequest.IpInfo.Ip);
         if (ip.Status == IpStatus.Whitelisted)
             return new AccessValidationResult(false, AccessValidatorReasons.IpIsWhitelisted);
-
         var validationResult = ValidateUserAgent(userRequest.UserAgent);
         if (validationResult.Block) return validationResult;
 
@@ -49,6 +48,9 @@ public class AccessValidator(
 
         if (await IsUrlBlocked(userRequest.Host, userRequest.Path))
             return new AccessValidationResult(true, AccessValidatorReasons.RequestedUrlIsBlocked);
+        
+        if (userRequest.Path == "/")
+            return new AccessValidationResult(false, AccessValidatorReasons.RequestIsValid);
 
         var timeThreshold = DateTime.UtcNow.AddMinutes(userRequest.Referer == null ? -30 : -5);
         var blockedRequests = await userRequestRepository

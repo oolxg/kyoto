@@ -33,7 +33,7 @@ public class Startup
         var app = builder.Build();
 
         app.UseWhen(context => context.Request.Path == "/api/v1/check",
-            appBuilder => { appBuilder.UseMiddleware<RequestSaverMiddleware>(); });
+            appBuilder => appBuilder.UseMiddleware<RequestSaverMiddleware>());
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
@@ -60,6 +60,6 @@ public class Startup
 
         app.MapControllers();
 
-        app.Run();
+        await app.RunAsync();
     }
 }

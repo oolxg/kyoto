@@ -937,6 +937,100 @@ public class AccessValidatorTests
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
         Assert.Equal(1, _userRequestRepositoryFake.GetBlockedRequestsAsyncCount);
     }
+    
+    [Fact]
+    public async Task ValidateRequestAsync_GivenRecentBlockedRequestToRootAndLessThan5MinutesIntervalAndNoReferer_ReturnsValidationResultWithBlockFalse()
+    {
+        // Arrange
+        var bannedUserRequestInfo = CreateRequestInfo(DateTime.UtcNow.AddMinutes(-4), path: "/", headers: _defaultHeaders);
+        var bannedUserRequest = bannedUserRequestInfo.AsUserRequest(Guid.Empty, null);
+        bannedUserRequest.IsBlocked = true;
+        _userRequestRepositoryFake.UserRequests.Add(bannedUserRequest);
+
+        var userRequestInfo = CreateRequestInfo(path: "/", headers: _defaultHeaders);
+        var ipInfo = new IpAddressInfo(userRequestInfo.UserIp);
+        var userRequest = userRequestInfo.AsUserRequest(ipInfo.Id, null);
+        userRequest.IpInfo = ipInfo;
+        
+        // Act
+        var result = await _accessValidator.ValidateAsync(userRequest);
+
+        // Assert
+        Assert.Equal(AccessValidatorReasons.RequestIsValid, result.Reason);
+        Assert.False(result.Block);
+        Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
+    }
+    
+    [Fact]
+    public async Task ValidateRequestAsync_GivenRecentBlockedRequestToRootAndLessThan5MinutesIntervalAndValidReferer_ReturnsValidationResultWithBlockFalse()
+    {
+        // Arrange
+        var bannedUserRequestInfo = CreateRequestInfo(DateTime.UtcNow.AddMinutes(-4), path: "/", headers: _defaultHeaders);
+        var bannedUserRequest = bannedUserRequestInfo.AsUserRequest(Guid.Empty, null);
+        bannedUserRequest.IsBlocked = true;
+        _userRequestRepositoryFake.UserRequests.Add(bannedUserRequest);
+
+        _defaultHeaders.Add("Referer", "https://google.com");
+        var userRequestInfo = CreateRequestInfo(path: "/", headers: _defaultHeaders);
+        var ipInfo = new IpAddressInfo(userRequestInfo.UserIp);
+        var userRequest = userRequestInfo.AsUserRequest(ipInfo.Id, null);
+        userRequest.IpInfo = ipInfo;
+        
+        // Act
+        var result = await _accessValidator.ValidateAsync(userRequest);
+
+        // Assert
+        Assert.Equal(AccessValidatorReasons.RequestIsValid, result.Reason);
+        Assert.False(result.Block);
+        Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
+    }
+    
+    [Fact]
+    public async Task ValidateRequestAsync_GivenRecentBlockedRequestToRootAndMoreThan5MinutesIntervalAndNoReferer_ReturnsValidationResultWithBlockFalse()
+    {
+        // Arrange
+        var bannedUserRequestInfo = CreateRequestInfo(DateTime.UtcNow.AddMinutes(-7), path: "/", headers: _defaultHeaders);
+        var bannedUserRequest = bannedUserRequestInfo.AsUserRequest(Guid.Empty, null);
+        bannedUserRequest.IsBlocked = true;
+        _userRequestRepositoryFake.UserRequests.Add(bannedUserRequest);
+
+        var userRequestInfo = CreateRequestInfo(path: "/", headers: _defaultHeaders);
+        var ipInfo = new IpAddressInfo(userRequestInfo.UserIp);
+        var userRequest = userRequestInfo.AsUserRequest(ipInfo.Id, null);
+        userRequest.IpInfo = ipInfo;
+        
+        // Act
+        var result = await _accessValidator.ValidateAsync(userRequest);
+
+        // Assert
+        Assert.Equal(AccessValidatorReasons.RequestIsValid, result.Reason);
+        Assert.False(result.Block);
+        Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
+    }
+    
+    [Fact]
+    public async Task ValidateRequestAsync_GivenRecentBlockedRequestToRootAndMoreThan5MinutesIntervalAndValidReferer_ReturnsValidationResultWithBlockFalse()
+    {
+        // Arrange
+        var bannedUserRequestInfo = CreateRequestInfo(DateTime.UtcNow.AddMinutes(-7), path: "/", headers: _defaultHeaders);
+        var bannedUserRequest = bannedUserRequestInfo.AsUserRequest(Guid.Empty, null);
+        bannedUserRequest.IsBlocked = true;
+        _userRequestRepositoryFake.UserRequests.Add(bannedUserRequest);
+
+        _defaultHeaders.Add("Referer", "https://google.com");
+        var userRequestInfo = CreateRequestInfo(path: "/", headers: _defaultHeaders);
+        var ipInfo = new IpAddressInfo(userRequestInfo.UserIp);
+        var userRequest = userRequestInfo.AsUserRequest(ipInfo.Id, null);
+        userRequest.IpInfo = ipInfo;
+        
+        // Act
+        var result = await _accessValidator.ValidateAsync(userRequest);
+
+        // Assert
+        Assert.Equal(AccessValidatorReasons.RequestIsValid, result.Reason);
+        Assert.False(result.Block);
+        Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
+    }
 
     private static UserRequestInfo CreateRequestInfo(
         DateTime requestDate = default,

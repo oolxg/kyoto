@@ -21,7 +21,7 @@ public class RestrictedUrl
     [Required]
     public string Path { get; set; }
 
-    [Column(TypeName = "text")] [Required] public string Reason { get; set; }
+    [Column(TypeName = "text"), Required] public string Reason { get; set; }
 
     [Column(TypeName = "timestamp with time zone")]
     [Required]

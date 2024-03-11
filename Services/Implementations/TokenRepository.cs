@@ -54,7 +54,6 @@ public class TokenRepository(KyotoDbContext context, IUserRequestRepository user
     public async Task<TokenInfo?> FindTokenAsync(string token)
     {
         return await context.Tokens.FirstOrDefaultAsync(bt => bt.Token == token);
-        ;
     }
 
     public async Task<TokenInfo?> FindTokenAsync(Guid id)
