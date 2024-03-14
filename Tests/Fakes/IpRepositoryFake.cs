@@ -23,6 +23,7 @@ public class IpRepositoryFake
     public int ChangeShouldHideIfBannedAsyncCount { get; private set; } = 0;
     public int AddTokenAsyncIfNeededCount { get; private set; } = 0;
     public int AddUserRequestToIpAsyncCount { get; private set; } = 0;
+    public int FindTokensByIpAsyncCount { get; private set; } = 0;
 
     public Task<IpAddressInfo> FindOrCreateIpAsync(string ipToSave)
     {
@@ -135,4 +136,23 @@ public class IpRepositoryFake
         ipInfo.UserRequests.Add(userRequest);
         return Task.CompletedTask;
     }
+
+    public Task<List<TokenInfo>> FindTokensByIpAsync(string ip)
+    {
+        FindTokensByIpAsyncCount++;
+        
+        var ipInfo = Ips.FirstOrDefault(i => i.Ip == ip);
+        if (ipInfo == null) throw new IpRepositoryException("Ip not found");
+        
+        var tokens = new List<TokenInfo>();
+        foreach (var ipToken in IpTokens.Where(it => it.IpAddressInfoId == ipInfo.Id))
+        {
+            var token = tokenRepository.FindTokenAsync(ipToken.TokenInfoId).Result;
+            if (token == null) throw new IpRepositoryException("Token not found");
+            tokens.Add(token);
+        }
+        
+        return Task.FromResult(tokens);
+    }
+    
 }

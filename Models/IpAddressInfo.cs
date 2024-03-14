@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace Kyoto.Models;
 
@@ -28,6 +29,7 @@ public class IpAddressInfo
     [Required]
     public bool ShouldHideIfBanned { get; set; }
 
+    [JsonIgnore]
     public List<IpToken> IpTokens { get; set; } = new();
     public List<UserRequest> UserRequests { get; set; } = new();
 

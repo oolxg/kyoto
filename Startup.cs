@@ -3,6 +3,7 @@ using Kyoto.Models.KyotoDbContext;
 using Kyoto.Services.Implementations;
 using Kyoto.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace Kyoto;
 
@@ -14,7 +15,12 @@ public class Startup
         
         // Add services to the container.
 
-        builder.Services.AddControllers();
+        builder.Services.AddControllers()
+            .AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            });
+        
         builder.Services.AddDbContext<KyotoDbContext>(options =>
         {
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));

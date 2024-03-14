@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace Kyoto.Models;
 
@@ -26,6 +27,7 @@ public class TokenInfo
     [Required]
     public DateTime CreatedAt { get; set; }
 
+    [JsonIgnore]
     public List<IpToken> IpTokens { get; set; } = new();
     public List<UserRequest> UserRequests { get; set; } = new();
 

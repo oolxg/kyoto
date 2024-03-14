@@ -24,14 +24,14 @@ public interface IUserRequestRepository
     /// </summary>
     /// <param name="token">User request token</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the list of found <see cref="UserRequest"/> objects.</returns>
-    Task<List<UserRequest>> FindUserRequestByTokenAsync(string token);
+    Task<List<UserRequest>> FindUserRequestsByTokenAsync(string token);
 
     /// <summary>
     /// Find user requests by ip
     /// </summary>
     /// <param name="ip">User request ip</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the list of found <see cref="UserRequest"/> objects.</returns>
-    Task<List<UserRequest>> FindUserRequestByIpAsync(string ip);
+    Task<List<UserRequest>> FindUserRequestsByIpAsync(string ip);
 
     /// <summary>
     /// Get user requests on endpoints

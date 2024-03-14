@@ -101,4 +101,22 @@ public class TokenRepository(KyotoDbContext context, IUserRequestRepository user
         tokenInfo.UpdateStatus(TokenStatus.Whitelisted, reason);
         await context.SaveChangesAsync();
     }
+    
+    public async Task<List<IpAddressInfo>> FindIpsByTokenAsync(string token)
+    {
+        var tokenInfo = await FindTokenAsync(token);
+        if (tokenInfo == null) throw new TokenRepositoryException("TokenInfo is not in the database");
+        
+        await context.Entry(tokenInfo).Collection(ti => ti.IpTokens).LoadAsync();
+        var ips = new List<IpAddressInfo>();
+        
+        foreach (var ipToken in tokenInfo.IpTokens)
+        {
+            var ip = await context.Ips.FindAsync(ipToken.IpAddressInfoId);
+            if (ip == null) throw new TokenRepositoryException("IpAddress is not in the database");
+            ips.Add(ip);
+        }
+        
+        return ips;
+    }
 }

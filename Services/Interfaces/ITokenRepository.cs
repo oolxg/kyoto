@@ -53,16 +53,6 @@ public interface ITokenRepository
     public Task<TokenInfo?> FindTokenAsync(string token);
 
     /// <summary>
-    /// Add ips associated with token
-    /// </summary>
-    /// <param name="token">Token string</param>
-    /// <param name="ipAddressId">Id of ip address</param>
-    /// <throws><see cref="TokenRepositoryException"/> If the token is not found.</throws>
-    /// <throws><see cref="IpRepositoryException"/> If the ip address or token is not found.</throws>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    public Task AddIpAddressIfNeededAsync(string token, Guid ipAddressId);
-
-    /// <summary>
     /// Add user request associated with token
     /// </summary>
     /// <param name="token">Token string</param>
@@ -70,4 +60,11 @@ public interface ITokenRepository
     /// <throws><see cref="TokenRepositoryException"/> If the token or user request is not found.</throws>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public Task AddUserRequestToTokenAsync(string token, Guid userRequestId);
+    
+    /// <summary>
+    /// Find user requests associated with token
+    /// </summary>
+    /// <param name="token">Token string</param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the list of <see cref="UserRequest"/> objects associated with the token.</returns>
+    public Task<List<IpAddressInfo>> FindIpsByTokenAsync(string token);
 }

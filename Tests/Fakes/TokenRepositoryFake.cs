@@ -19,6 +19,7 @@ public class TokenRepositoryFake(IUserRequestRepository userRequestRepository) :
     public int AddIpAddressIfNeededAsyncCount { get; private set; } = 0;
     public int AddUserRequestToTokenAsyncCount { get; private set; } = 0;
     public int WhiteListTokenAsyncCount { get; private set; } = 0;
+    public int FindIpsByTokenAsyncCount { get; private set; } = 0;
 
     public Task<TokenInfo> FindOrCreateTokenAsync(string token)
     {
@@ -116,5 +117,22 @@ public class TokenRepositoryFake(IUserRequestRepository userRequestRepository) :
 
         tokenInfo.UpdateStatus(TokenStatus.Whitelisted, reason);
         return Task.CompletedTask;
+    }
+    
+    public Task<List<IpAddressInfo>> FindIpsByTokenAsync(string token)
+    {
+        FindIpsByTokenAsyncCount++;
+        var tokenInfo = Tokens.FirstOrDefault(t => t.Token == token);
+        if (tokenInfo == null) throw new TokenRepositoryException("TokenInfo is not in the database");
+
+        var ips = new List<IpAddressInfo>();
+        foreach (var ipToken in IpTokens.Where(it => it.TokenInfoId == tokenInfo.Id))
+        {
+            var ip = Ips.FirstOrDefault(i => i.Id == ipToken.IpAddressInfoId);
+            if (ip == null) throw new TokenRepositoryException("IpAddress is not in the database");
+            ips.Add(ip);
+        }
+
+        return Task.FromResult(ips);
     }
 }

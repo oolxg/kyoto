@@ -28,7 +28,7 @@ public class AccessController(
 
         var bannedIp = await ipRepository.BanIpIfNeededAsync(ip, reason);
 
-        var requests = await userRequestRepository.FindUserRequestByIpAsync(ip);
+        var requests = await userRequestRepository.FindUserRequestsByIpAsync(ip);
         foreach (var request in requests.Where(request => request.TokenInfo?.Token != null))
             await tokenRepository.BanTokenAsync(request.TokenInfo!.Token, $"Banned along with IP: [{reason}]");
 
@@ -40,14 +40,14 @@ public class AccessController(
     {
         var bannedToken = await tokenRepository.BanTokenAsync(token, reason);
 
-        var requests = await userRequestRepository.FindUserRequestByTokenAsync(token);
+        var requests = await userRequestRepository.FindUserRequestsByTokenAsync(token);
         foreach (var request in requests)
             await ipRepository.BanIpIfNeededAsync(request.IpInfo.Ip, $"Banned along with token: [{reason}]");
 
         return Ok(bannedToken);
     }
 
-    [HttpGet("unban/ip/{ip}")]
+    [HttpGet("unblock/ip/{ip}")]
     public async Task<IActionResult> UnbanIp(string ip, [FromQuery] string reason)
     {
         if (IPAddress.TryParse(ip, out _) == false)
@@ -64,7 +64,7 @@ public class AccessController(
 
         await ipRepository.UnbanIpAsync(ip, reason);
 
-        var requests = await userRequestRepository.FindUserRequestByIpAsync(ip);
+        var requests = await userRequestRepository.FindUserRequestsByIpAsync(ip);
 
         var tokens = new List<string>();
         foreach (var request in requests.Where(request => request.TokenInfo?.Token != null))
@@ -83,12 +83,12 @@ public class AccessController(
         return Ok(okResponse);
     }
 
-    [HttpGet("unban/token/{token}")]
+    [HttpGet("unblock/token/{token}")]
     public async Task<IActionResult> UnbanToken(string token, [FromQuery] string reason)
     {
         await tokenRepository.UnbanTokenAsync(token, reason);
 
-        var requests = await userRequestRepository.FindUserRequestByTokenAsync(token);
+        var requests = await userRequestRepository.FindUserRequestsByTokenAsync(token);
         foreach (var request in requests) 
             await ipRepository.UnbanIpAsync(request.IpInfo.Ip, reason);
         
@@ -117,9 +117,8 @@ public class AccessController(
         }
 
         await ipRepository.WhitelistIpAsync(ip, reason);
-        var ipInfo = await ipRepository.FindIpAsync(ip);
         
-        var requests = await userRequestRepository.FindUserRequestByIpAsync(ip);
+        var requests = await userRequestRepository.FindUserRequestsByIpAsync(ip);
         foreach (var request in requests.Where(request => request.TokenInfo?.Token != null))
             await tokenRepository.WhitelistTokenAsync(request.TokenInfo!.Token,
                 $"Whitelisted along with IP: [{reason}]");

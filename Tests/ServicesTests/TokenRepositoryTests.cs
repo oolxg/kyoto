@@ -359,6 +359,36 @@ public class TokenRepositoryTests
         await Assert.ThrowsAsync<TokenRepositoryException>(() =>
             _tokenRepository.WhitelistTokenAsync(nonExistingToken, "test reason"));
     }
+    
+    [Fact]
+    public async Task FindIpsByTokenAsync_ShouldReturnIps()
+    {
+        // Arrange
+        var token = MockToken();
+        var ip = new IpAddressInfo("192.168.0.1");
+        await _dbContext.Tokens.AddAsync(token);
+        await _dbContext.Ips.AddAsync(ip);
+        await _dbContext.IpTokens.AddAsync(new IpToken(ip.Id, token.Id));
+        await _dbContext.SaveChangesAsync();
+        
+        // Act
+        var ips = await _tokenRepository.FindIpsByTokenAsync(token.Token);
+        
+        // Assert
+        Assert.Single(ips);
+        Assert.Equal(ip, ips[0]);
+    }
+    
+    [Fact]
+    public async Task FindIpsByTokenAsync_GivenNonExistingToken_ShouldThrowException()
+    {
+        // Arrange
+        const string nonExistingToken = "192.168.0.1";
+        
+        // Act & Assert
+        await Assert.ThrowsAsync<TokenRepositoryException>(() =>
+            _tokenRepository.FindIpsByTokenAsync(nonExistingToken));
+    }
 
     private static TokenInfo MockToken(string? token = null)
     {

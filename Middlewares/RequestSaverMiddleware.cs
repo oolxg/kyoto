@@ -42,7 +42,6 @@ public class RequestSaverMiddleware(RequestDelegate next)
             if (!requestDetails.Path.StartsWith('/'))
                 requestDetails.Path = '/' + requestDetails.Path;
             
-            // remove http or https from the host
             requestDetails.Host = requestDetails.Host
                 .Replace("http://", "")
                 .Replace("https://", "");

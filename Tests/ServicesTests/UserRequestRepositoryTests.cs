@@ -55,7 +55,7 @@ public class UserRequestRepositoryTests
     }
 
     [Fact]
-    public async Task FindUserRequestAsync_ShouldFindUserRequestById()
+    public async Task FindUserRequestsAsync_ShouldFindUserRequestById()
     {
         // Arrange
         var userRequests = await MockUserRequests();
@@ -70,7 +70,7 @@ public class UserRequestRepositoryTests
     }
 
     [Fact]
-    public async Task FindUserRequestAsync_ShouldReturnNullIfUserRequestNotFoundById()
+    public async Task FindUserRequestsAsync_ShouldReturnNullIfUserRequestNotFoundById()
     {
         // Arrange
         var userRequests = await MockUserRequests();
@@ -97,7 +97,7 @@ public class UserRequestRepositoryTests
 
         // Act
         var foundUserRequests = await _userRequestRepository
-            .FindUserRequestByTokenAsync(userRequests[1].TokenInfo!.Token);
+            .FindUserRequestsByTokenAsync(userRequests[1].TokenInfo!.Token);
 
         // Assert
         Assert.Single(foundUserRequests);
@@ -116,7 +116,7 @@ public class UserRequestRepositoryTests
         await _dbContext.SaveChangesAsync();
 
         // Act
-        var foundUserRequests = await _userRequestRepository.FindUserRequestByTokenAsync("notFoundToken");
+        var foundUserRequests = await _userRequestRepository.FindUserRequestsByTokenAsync("notFoundToken");
 
         // Assert
         Assert.Empty(foundUserRequests);
@@ -134,7 +134,7 @@ public class UserRequestRepositoryTests
         await _dbContext.SaveChangesAsync();
 
         // Act
-        var foundUserRequests = await _userRequestRepository.FindUserRequestByIpAsync(userRequests[1].IpInfo.Ip);
+        var foundUserRequests = await _userRequestRepository.FindUserRequestsByIpAsync(userRequests[1].IpInfo.Ip);
 
         // Assert
         Assert.Single(foundUserRequests);
@@ -153,7 +153,7 @@ public class UserRequestRepositoryTests
         await _dbContext.SaveChangesAsync();
 
         // Act
-        var foundUserRequests = await _userRequestRepository.FindUserRequestByIpAsync("1.2.3.4");
+        var foundUserRequests = await _userRequestRepository.FindUserRequestsByIpAsync("1.2.3.4");
 
         // Assert
         Assert.Empty(foundUserRequests);

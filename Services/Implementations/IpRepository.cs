@@ -31,11 +31,6 @@ public class IpRepository : IIpRepository
 
     public async Task<IpAddressInfo> BanIpIfNeededAsync(string ip, string reason)
     {
-        return await BanIpIfNeededAsync(ip, false, reason);
-    }
-
-    public async Task<IpAddressInfo> BanIpIfNeededAsync(string ip, bool shouldHide, string reason)
-    {
         var bannedIp = await FindIpAsync(ip);
 
         if (bannedIp == null)
@@ -47,7 +42,6 @@ public class IpRepository : IIpRepository
         if (bannedIp.Status == IpStatus.Banned) return bannedIp;
 
         bannedIp.UpdateStatus(IpStatus.Banned, reason);
-        bannedIp.ShouldHideIfBanned = shouldHide;
 
         await _dbContext.SaveChangesAsync();
         return bannedIp;
@@ -65,11 +59,6 @@ public class IpRepository : IIpRepository
     public async Task<IpAddressInfo?> FindIpAsync(string ipToFind)
     {
         return await _dbContext.Ips.FirstOrDefaultAsync(ipInfo => ipInfo.Ip == ipToFind);
-    }
-
-    public async Task<IpAddressInfo?> FindIpAsync(Guid id)
-    {
-        return await _dbContext.Ips.FindAsync(id);
     }
 
     public async Task WhitelistIpAsync(string ip, string reason)
@@ -135,5 +124,23 @@ public class IpRepository : IIpRepository
         ipAddressInfo.UserRequests.Add(userRequest);
 
         await _dbContext.SaveChangesAsync();
+    }
+    
+    public async Task<List<TokenInfo>> FindTokensByIpAsync(string ip)
+    {
+        var ipAddressInfo = await FindIpAsync(ip);
+        if (ipAddressInfo == null) throw new IpRepositoryException("IP is not in the database");
+
+        await _dbContext.Entry(ipAddressInfo).Collection(ipInfo => ipInfo.IpTokens).LoadAsync();
+        
+        var tokens = new List<TokenInfo>();
+        foreach (var ipToken in ipAddressInfo.IpTokens)
+        {
+            var token = await _dbContext.Tokens.FindAsync(ipToken.TokenInfoId);
+            if (token == null) throw new IpRepositoryException("Token is not in the database");
+            tokens.Add(token);
+        }
+        
+        return tokens;
     }
 }

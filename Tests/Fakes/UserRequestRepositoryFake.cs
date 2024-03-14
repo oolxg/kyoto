@@ -32,13 +32,13 @@ public class UserRequestRepositoryFake : IUserRequestRepository
         return Task.FromResult(UserRequests.FirstOrDefault(ur => ur.Id == requestId));
     }
 
-    public Task<List<UserRequest>> FindUserRequestByTokenAsync(string token)
+    public Task<List<UserRequest>> FindUserRequestsByTokenAsync(string token)
     {
         FindUserRequestByTokenAsyncCount++;
         return Task.FromResult(UserRequests.Where(ur => ur.TokenInfo != null && ur.TokenInfo!.Token == token).ToList());
     }
 
-    public Task<List<UserRequest>> FindUserRequestByIpAsync(string ipToFind)
+    public Task<List<UserRequest>> FindUserRequestsByIpAsync(string ipToFind)
     {
         FindUserRequestByIpAsyncCount++;
         return Task.FromResult(UserRequests.Where(ur => ur.IpInfo.Ip == ipToFind).ToList());

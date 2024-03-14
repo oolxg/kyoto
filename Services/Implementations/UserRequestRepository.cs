@@ -23,7 +23,7 @@ public class UserRequestRepository(KyotoDbContext context) : IUserRequestReposit
         return await Context.UserRequests.FindAsync(requestId);
     }
 
-    public async Task<List<UserRequest>> FindUserRequestByTokenAsync(string token)
+    public async Task<List<UserRequest>> FindUserRequestsByTokenAsync(string token)
     {
         return await Context.UserRequests
             .Include(ur => ur.TokenInfo)
@@ -33,7 +33,7 @@ public class UserRequestRepository(KyotoDbContext context) : IUserRequestReposit
             .ToListAsync();
     }
 
-    public async Task<List<UserRequest>> FindUserRequestByIpAsync(string ipToFind)
+    public async Task<List<UserRequest>> FindUserRequestsByIpAsync(string ipToFind)
     {
         return await Context.UserRequests
             .Include(ur => ur.TokenInfo)
