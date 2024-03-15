@@ -42,6 +42,7 @@ public class TokenRepositoryFake(IUserRequestRepository userRequestRepository) :
             Tokens.Add(tokenInfo);
         }
 
+        if (tokenInfo.Status == TokenStatus.Banned) return Task.FromResult(tokenInfo);
         tokenInfo.UpdateStatus(TokenStatus.Banned, reason);
         return Task.FromResult(tokenInfo);
     }

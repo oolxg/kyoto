@@ -29,6 +29,8 @@ public class TokenRepository(KyotoDbContext context, IUserRequestRepository user
             await context.Tokens.AddAsync(bannedToken);
         }
 
+        if (bannedToken.Status == TokenStatus.Banned) return bannedToken;
+        
         bannedToken.UpdateStatus(TokenStatus.Banned, reason);
 
         await context.SaveChangesAsync();
