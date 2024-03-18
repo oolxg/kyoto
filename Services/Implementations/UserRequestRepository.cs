@@ -48,9 +48,14 @@ public class UserRequestRepository(KyotoDbContext context) : IUserRequestReposit
         return await Context.UserRequests
             .Include(ur => ur.TokenInfo)
             .Include(ur => ur.IpInfo)
-            .Where(ur => ur.Host == host && ur.Path == path && ur.RequestDate >= start)
-            .OrderBy(ur => ur.RequestDate)
+            .Where(ur =>
+                (host == "*" || ur.Host == host) &&
+                (path == "*" || ur.Path == path) &&
+                ur.RequestDate >= start
+            )
+            .OrderByDescending(ur => ur.RequestDate)
             .ToListAsync();
+
     }
 
     public async Task<List<UserRequest>> GetBlockedRequestsAsync(string host, string path, DateTime? start = null)
@@ -59,7 +64,12 @@ public class UserRequestRepository(KyotoDbContext context) : IUserRequestReposit
         return await Context.UserRequests
             .Include(ur => ur.TokenInfo)
             .Include(ur => ur.IpInfo)
-            .Where(ur => ur.Host == host && ur.Path == path && ur.IsBlocked && ur.RequestDate >= start)
+            .Where(ur =>
+                (host == "*" || ur.Host == host) &&
+                (path == "*" || ur.Path == path) &&
+                ur.RequestDate >= start &&
+                ur.IsBlocked
+            )
             .OrderByDescending(ur => ur.RequestDate)
             .ToListAsync();
     }

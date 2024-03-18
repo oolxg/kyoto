@@ -259,6 +259,33 @@ public class UserRequestRepositoryTests
         // Assert
         Assert.Empty(foundUserRequests);
     }
+    
+    [Fact]
+    public async Task GetUserRequestsOnEndPointsAsync_GivenWildcardHostAndPath_ShouldFindUserRequestsByHostPathAndDate()
+    {
+        // Arrange
+        var userRequests = new List<UserRequest>();
+        const int requestsCount = 3;
+
+        for (var i = 0; i < requestsCount; i++)
+            userRequests.Add(await MockUserRequest(
+                host: $"google{i}.com",
+                ip: $"192.168.0.{i}",
+                token: $"testToken-{i}",
+                requestDate: DateTime.UtcNow.AddHours(-i))
+            );
+
+        await _dbContext.UserRequests.AddRangeAsync(userRequests);
+        await _dbContext.SaveChangesAsync();
+
+        // Act
+        var foundUserRequests = await _userRequestRepository
+            .GetUserRequestsOnEndPointsAsync("*", "*", DateTime.UtcNow.AddHours(-12));
+
+        // Assert
+        Assert.Equal(requestsCount, foundUserRequests.Count);
+        Assert.Equal(userRequests, foundUserRequests);
+    }
 
     [Fact]
     public async Task GetBlockedRequestsAsync_ShouldFindBlockedUserRequestsByHostPathAndDate()
@@ -373,8 +400,9 @@ public class UserRequestRepositoryTests
         await _dbContext.UserRequests.AddAsync(userRequest);
         await _dbContext.SaveChangesAsync();
 
+        var newReason = Guid.NewGuid().ToString();
         userRequest.IsBlocked = true;
-        userRequest.DecisionReason = "testReason";
+        userRequest.DecisionReason = newReason;
 
         // Act
         await _userRequestRepository.UpdateUserRequestAsync(userRequest);
@@ -382,7 +410,7 @@ public class UserRequestRepositoryTests
 
         // Assert
         Assert.True(updatedUserRequest!.IsBlocked);
-        Assert.Equal("testReason", updatedUserRequest.DecisionReason);
+        Assert.Equal(newReason, updatedUserRequest.DecisionReason);
     }
 
     [Fact]

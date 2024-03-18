@@ -11,6 +11,23 @@
     &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.IpRepositoryTests.FindIpAsync_ShouldFindIpByIpId&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=861f2e72_002Dcec2_002D4f3d_002Db73b_002D19a05adb894f/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="IpRepositoryTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.IpRepositoryTests&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::0DFBC8EE-37B4-4A61-AE52-BE5153703205::net8.0::Tests.RepositoryTests.IpRepositoryTests.AddUserRequestToIpAsync_ShouldAddUserRequestToIp&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.UserRequestRepositoryTests&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Tests.RepositoryTests.TokenRepositoryTests&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Kyoto.Tests.StatControllerTests.GetTodayStats_WithNoRequests_ReturnsEmptyList&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Kyoto.Tests.StatControllerTests.GetTodayStats_WithRequests_ReturnsRequests&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Kyoto.Tests.StatControllerTests.GetTodayStats_GivenTodaysRequestAndEarlierRequest_ReturnsTodaysRequest&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Kyoto.Tests.StatControllerTests.GetTodayStats_GivenNotBlockedRequest_ShouldReturnEmptyList&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Kyoto.Tests.StatControllerTests.GetTodayStats_GivenDifferentHostAndPath_ShouldReturnEmptyList&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Kyoto.Tests.StatControllerTests.GetTodayStats_GivenDifferentHostAndSamePath_ShouldReturnEmptyList&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Kyoto.Tests.StatControllerTests.GetTodayStats_GivenSameHostAndDifferentPath_ShouldReturnEmptyList&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Kyoto.Tests.StatControllerTests.GetTodayStats_GivenSameHostAndPath_ShouldReturnRequest&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::180363EE-C4C9-4DDF-87AA-B3144B4DC749::net8.0::Kyoto.Tests.StatControllerTests.GetTodayStats_GivenSpecificPathAndWildcardHost_ShouldReturnValidRequests&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=b134b67e_002D74aa_002D4e5c_002D9c71_002Db549808cdb2d/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="AccessValidatorTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;Or&gt;
     &lt;And&gt;

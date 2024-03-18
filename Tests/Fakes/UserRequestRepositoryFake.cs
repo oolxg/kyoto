@@ -55,7 +55,14 @@ public class UserRequestRepositoryFake : IUserRequestRepository
     {
         GetBlockedRequestsAsyncCount++;
         start ??= DateTime.MinValue;
-        return Task.FromResult(UserRequests.Where(ur => ur.Host == host && ur.Path == path && ur.RequestDate >= start)
+        return Task.FromResult(UserRequests
+            .Where(ur =>
+                    (host == "*" || ur.Host == host) &&
+                    (path == "*" || ur.Path == path) &&
+                    ur.RequestDate >= start &&
+                    ur.IsBlocked
+                )
+            .OrderByDescending(ur => ur.RequestDate)
             .ToList());
     }
 
