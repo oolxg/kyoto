@@ -46,8 +46,6 @@ public class UserRequestRepository(KyotoDbContext context) : IUserRequestReposit
     public async Task<List<UserRequest>> GetUserRequestsOnEndPointsAsync(string host, string path, DateTime start)
     {
         return await Context.UserRequests
-            .Include(ur => ur.TokenInfo)
-            .Include(ur => ur.IpInfo)
             .Where(ur =>
                 (host == "*" || ur.Host == host) &&
                 (path == "*" || ur.Path == path) &&
@@ -62,8 +60,6 @@ public class UserRequestRepository(KyotoDbContext context) : IUserRequestReposit
     {
         start ??= DateTime.MinValue;
         return await Context.UserRequests
-            .Include(ur => ur.TokenInfo)
-            .Include(ur => ur.IpInfo)
             .Where(ur =>
                 (host == "*" || ur.Host == host) &&
                 (path == "*" || ur.Path == path) &&

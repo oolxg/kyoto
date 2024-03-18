@@ -170,7 +170,7 @@ public class UserRequestRepositoryTests
             userRequests.Add(await MockUserRequest(
                 ip: $"192.168.0.{i}",
                 token: $"testToken-{i}",
-                requestDate: DateTime.UtcNow.AddHours(i))
+                requestDate: DateTime.UtcNow.AddHours(-i))
             );
 
         await _dbContext.UserRequests.AddRangeAsync(userRequests);
