@@ -14,8 +14,7 @@ public class UserRequestRepositoryFake : IUserRequestRepository
     public int FindUserRequestAsyncCount { get; private set; } = 0;
     public int FindUserRequestByTokenAsyncCount { get; private set; } = 0;
     public int FindUserRequestByIpAsyncCount { get; private set; } = 0;
-    public int GetUserRequestsOnEndPointsAsyncCount { get; private set; } = 0;
-    public int GetBlockedRequestsAsyncCount { get; private set; } = 0;
+    public int GetRequestsAsyncCount { get; private set; } = 0;
     public int UpdateUserRequestAsyncCount { get; private set; } = 0;
 
     public async Task SaveUserRequestAsync(UserRequest userRequest)
@@ -44,23 +43,17 @@ public class UserRequestRepositoryFake : IUserRequestRepository
         return Task.FromResult(UserRequests.Where(ur => ur.IpInfo.Ip == ipToFind).ToList());
     }
 
-    public Task<List<UserRequest>> GetUserRequestsOnEndPointsAsync(string host, string path, DateTime start)
+    public Task<List<UserRequest>> GetRequestsAsync(string host, string path, bool includeNonBlocked = false, DateTime? start = null, DateTime? end = null)
     {
-        GetUserRequestsOnEndPointsAsyncCount++;
-        return Task.FromResult(UserRequests.Where(ur => ur.Host == host && ur.Path == path && ur.RequestDate >= start)
-            .ToList());
-    }
-
-    public Task<List<UserRequest>> GetBlockedRequestsAsync(string host, string path, DateTime? start = null)
-    {
-        GetBlockedRequestsAsyncCount++;
+        GetRequestsAsyncCount++;
         start ??= DateTime.MinValue;
+        end ??= DateTime.MaxValue;
         return Task.FromResult(UserRequests
             .Where(ur =>
                     (host == "*" || ur.Host == host) &&
                     (path == "*" || ur.Path == path) &&
-                    ur.RequestDate >= start &&
-                    ur.IsBlocked
+                    ur.RequestDate >= start && ur.RequestDate <= end &&
+                    (includeNonBlocked || ur.IsBlocked)
                 )
             .OrderByDescending(ur => ur.RequestDate)
             .ToList());

@@ -54,11 +54,17 @@ public class IpRepository : IIpRepository
         if (bannedIp == null) throw new IpRepositoryException("IpAddressInfo is not in the database");
 
         bannedIp.UpdateStatus(IpStatus.Normal, reason);
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task<IpAddressInfo?> FindIpAsync(string ipToFind)
     {
         return await _dbContext.Ips.FirstOrDefaultAsync(ipInfo => ipInfo.Ip == ipToFind);
+    }
+    
+    public async Task<IpAddressInfo?> FindIpAsync(Guid id)
+    {
+        return await _dbContext.Ips.FindAsync(id);
     }
 
     public async Task WhitelistIpAsync(string ip, string reason)

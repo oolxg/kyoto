@@ -23,7 +23,7 @@ public class StatControllerTests
     public async Task GetTodayStats_WithNoRequests_ReturnsEmptyList()
     {
         // Act
-        var result = await _controller.GetTodayStats();
+        var result = await _controller.GetStats();
         
         // Assert
         Assert.IsType<OkObjectResult>(result);
@@ -39,7 +39,7 @@ public class StatControllerTests
         await _userRequestRepository.SaveUserRequestAsync(request);
         
         // Act
-        var result = await _controller.GetTodayStats();
+        var result = await _controller.GetStats();
         
         // Assert
         Assert.IsType<OkObjectResult>(result);
@@ -59,7 +59,7 @@ public class StatControllerTests
         await _userRequestRepository.SaveUserRequestAsync(earlierRequest);
         
         // Act
-        var result = await _controller.GetTodayStats();
+        var result = await _controller.GetStats();
         
         // Assert
         Assert.IsType<OkObjectResult>(result);
@@ -78,7 +78,7 @@ public class StatControllerTests
         await _userRequestRepository.SaveUserRequestAsync(request);
         
         // Act
-        var result = await _controller.GetTodayStats();
+        var result = await _controller.GetStats();
         
         // Assert
         Assert.IsType<OkObjectResult>(result);
@@ -94,7 +94,7 @@ public class StatControllerTests
         await _userRequestRepository.SaveUserRequestAsync(request);
         
         // Act
-        var result = await _controller.GetTodayStats("example.com", "/test/path/");
+        var result = await _controller.GetStats(host: "example.com", path: "/test/path/");
         
         // Assert
         Assert.IsType<OkObjectResult>(result);
@@ -110,7 +110,7 @@ public class StatControllerTests
         await _userRequestRepository.SaveUserRequestAsync(request);
         
         // Act
-        var result = await _controller.GetTodayStats(defaultHost, defaultPath);
+        var result = await _controller.GetStats(host: defaultHost, path: defaultPath);
         
         // Assert
         Assert.IsType<OkObjectResult>(result);
@@ -126,7 +126,7 @@ public class StatControllerTests
         await _userRequestRepository.SaveUserRequestAsync(request);
         
         // Act
-        var result = await _controller.GetTodayStats(defaultHost, defaultPath);
+        var result = await _controller.GetStats(host: defaultHost, path: defaultPath);
         
         // Assert
         Assert.IsType<OkObjectResult>(result);
@@ -146,7 +146,7 @@ public class StatControllerTests
         await _userRequestRepository.SaveUserRequestAsync(request3);
         
         // Act
-        var result = await _controller.GetTodayStats(path: defaultPath);
+        var result = await _controller.GetStats(path: defaultPath);
         
         // Assert
         Assert.IsType<OkObjectResult>(result);
@@ -169,7 +169,7 @@ public class StatControllerTests
         await _userRequestRepository.SaveUserRequestAsync(request3);
         
         // Act
-        var result = await _controller.GetTodayStats("*", "/path-2/");
+        var result = await _controller.GetStats(path: "/path-2/");
         
         // Assert
         Assert.IsType<OkObjectResult>(result);
@@ -184,9 +184,9 @@ public class StatControllerTests
         DateTime requestDate,
         string host = defaultHost,
         string path = defaultPath,
-        string ip = defaultIp)
+        bool isBlocked = true)
     {
-        return new UserRequest(
+        var ur = new UserRequest(
             Guid.NewGuid(),
             null,
             host,
@@ -200,5 +200,8 @@ public class StatControllerTests
             RequestDate = requestDate,
             IsBlocked = true
         };
+        
+        ur.IsBlocked = isBlocked;
+        return ur;
     }
 }

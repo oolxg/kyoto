@@ -178,7 +178,7 @@ public class UserRequestRepositoryTests
 
         // Act
         var foundUserRequests = await _userRequestRepository
-            .GetUserRequestsOnEndPointsAsync("google.com", "some/path", DateTime.UtcNow.AddHours(-12));
+            .GetRequestsAsync("google.com", "some/path", true,DateTime.UtcNow.AddHours(-12), DateTime.UtcNow.AddHours(1));
 
         // Assert
         Assert.Equal(requestsCount, foundUserRequests.Count);
@@ -186,7 +186,7 @@ public class UserRequestRepositoryTests
     }
 
     [Fact]
-    public async Task GetUserRequestsOnEndPointsAsync_ShouldReturnEmptyListIfUserRequestsNotFoundByDate()
+    public async Task GetRequestsAsync_ShouldReturnEmptyListIfUserRequestsNotFoundByDate()
     {
         // Arrange
         var userRequests = new List<UserRequest>();
@@ -204,7 +204,7 @@ public class UserRequestRepositoryTests
 
         // Act
         var foundUserRequests = await _userRequestRepository
-            .GetUserRequestsOnEndPointsAsync("google.com", "some/path", DateTime.UtcNow.AddHours(1));
+            .GetRequestsAsync("google.com", "some/path", true,DateTime.UtcNow.AddHours(1), DateTime.UtcNow.AddHours(2));
 
         // Assert
         Assert.Empty(foundUserRequests);
@@ -229,39 +229,14 @@ public class UserRequestRepositoryTests
 
         // Act
         var foundUserRequests = await _userRequestRepository
-            .GetUserRequestsOnEndPointsAsync("google.com", "some/other/path", DateTime.UtcNow.AddHours(-12));
+            .GetRequestsAsync("google.com", "some/other/path", true,DateTime.UtcNow.AddHours(-12), DateTime.UtcNow.AddHours(1));
 
         // Assert
         Assert.Empty(foundUserRequests);
     }
 
     [Fact]
-    public async Task GetUserRequestsOnEndPointsAsync_ShouldReturnEmptyListIfUserRequestsNotFoundByHost()
-    {
-        // Arrange
-        var userRequests = new List<UserRequest>();
-        const int requestsCount = 3;
-
-        for (var i = 0; i < requestsCount; i++)
-            userRequests.Add(await MockUserRequest(
-                ip: $"192.168.0.{i}",
-                token: $"testToken-{i}",
-                requestDate: DateTime.UtcNow.AddHours(-i))
-            );
-
-        await _dbContext.UserRequests.AddRangeAsync(userRequests);
-        await _dbContext.SaveChangesAsync();
-
-        // Act
-        var foundUserRequests = await _userRequestRepository
-            .GetUserRequestsOnEndPointsAsync("some-other-host.com", "some/path", DateTime.UtcNow.AddHours(-12));
-
-        // Assert
-        Assert.Empty(foundUserRequests);
-    }
-    
-    [Fact]
-    public async Task GetUserRequestsOnEndPointsAsync_GivenWildcardHostAndPath_ShouldFindUserRequestsByHostPathAndDate()
+    public async Task GetRequestsAsync_GivenWildcardHostAndPath_ShouldFindUserRequestsByHostPathAndDate()
     {
         // Arrange
         var userRequests = new List<UserRequest>();
@@ -280,7 +255,7 @@ public class UserRequestRepositoryTests
 
         // Act
         var foundUserRequests = await _userRequestRepository
-            .GetUserRequestsOnEndPointsAsync("*", "*", DateTime.UtcNow.AddHours(-12));
+            .GetRequestsAsync("*", "*", true,DateTime.UtcNow.AddHours(-12), DateTime.UtcNow.AddHours(1));
 
         // Assert
         Assert.Equal(requestsCount, foundUserRequests.Count);
@@ -288,7 +263,7 @@ public class UserRequestRepositoryTests
     }
 
     [Fact]
-    public async Task GetBlockedRequestsAsync_ShouldFindBlockedUserRequestsByHostPathAndDate()
+    public async Task GetRequestsAsync_ShouldFindBlockedUserRequestsByHostPathAndDate()
     {
         // Arrange
         var userRequests = new List<UserRequest>();
@@ -307,7 +282,7 @@ public class UserRequestRepositoryTests
 
         // Act
         var foundUserRequests = await _userRequestRepository
-            .GetBlockedRequestsAsync("google.com", "some/path", DateTime.UtcNow.AddHours(-12));
+            .GetRequestsAsync("google.com", "some/path", false, DateTime.UtcNow.AddHours(-12));
 
         // Assert
         Assert.Equal(requestsCount / 2, foundUserRequests.Count);
@@ -315,7 +290,7 @@ public class UserRequestRepositoryTests
     }
 
     [Fact]
-    public async Task GetBlockedRequestsAsync_ShouldReturnEmptyListIfUserRequestsNotFoundByDate()
+    public async Task GetRequestsAsync_ShouldReturnEmptyListIfUserRequestsNotFoundByPath()
     {
         // Arrange
         var userRequests = new List<UserRequest>();
@@ -334,14 +309,14 @@ public class UserRequestRepositoryTests
 
         // Act
         var foundUserRequests = await _userRequestRepository
-            .GetBlockedRequestsAsync("google.com", "some/path", DateTime.UtcNow.AddHours(1));
+            .GetRequestsAsync("google.com", "some/other/path", false,DateTime.UtcNow.AddHours(-12));
 
         // Assert
         Assert.Empty(foundUserRequests);
     }
 
     [Fact]
-    public async Task GetBlockedRequestsAsync_ShouldReturnEmptyListIfUserRequestsNotFoundByPath()
+    public async Task GetRequestsAsync_ShouldReturnEmptyListIfUserRequestsNotFoundByHost()
     {
         // Arrange
         var userRequests = new List<UserRequest>();
@@ -360,33 +335,7 @@ public class UserRequestRepositoryTests
 
         // Act
         var foundUserRequests = await _userRequestRepository
-            .GetBlockedRequestsAsync("google.com", "some/other/path", DateTime.UtcNow.AddHours(-12));
-
-        // Assert
-        Assert.Empty(foundUserRequests);
-    }
-
-    [Fact]
-    public async Task GetBlockedRequestsAsync_ShouldReturnEmptyListIfUserRequestsNotFoundByHost()
-    {
-        // Arrange
-        var userRequests = new List<UserRequest>();
-        const int requestsCount = 10;
-
-        for (var i = 0; i < requestsCount; i++)
-            userRequests.Add(await MockUserRequest(
-                ip: $"192.168.0.{i}",
-                token: $"testToken-{i}",
-                requestDate: DateTime.UtcNow.AddHours(-i),
-                isBlocked: i % 2 == 0)
-            );
-
-        await _dbContext.UserRequests.AddRangeAsync(userRequests);
-        await _dbContext.SaveChangesAsync();
-
-        // Act
-        var foundUserRequests = await _userRequestRepository
-            .GetBlockedRequestsAsync("some-other-host.com", "some/path", DateTime.UtcNow.AddHours(-12));
+            .GetRequestsAsync("some-other-host.com", "some/path", false,DateTime.UtcNow.AddHours(-12));
 
         // Assert
         Assert.Empty(foundUserRequests);

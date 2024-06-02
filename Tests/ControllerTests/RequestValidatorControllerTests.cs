@@ -36,7 +36,7 @@ public class RequestValidatorControllerTests
     }
 
     [Fact]
-    public async Task CheckRequest_GivenNoUserAgent_ShouldReturnOkWithBlockTrueAndBanIP()
+    public async Task CheckRequest_GivenNoUserAgent_ShouldReturnOkWithBlockTrueAndBanAndHideIP()
     {
         // Arrange
         var ipInfo = new IpAddressInfo(DefaultIp);
@@ -65,6 +65,8 @@ public class RequestValidatorControllerTests
         Assert.Equal(validationResult.Reason, _userRequestRepository.UserRequests[0].DecisionReason);
         Assert.Equal(IpStatus.Banned, _ipRepository.Ips[0].Status);
         Assert.True(_userRequestRepository.UserRequests[0].IsBlocked);
+        Assert.Equal(1, _ipRepository.ChangeShouldHideIfBannedAsyncCount);
+        Assert.True(_ipRepository.Ips[0].ShouldHideIfBanned);
     }
     
     [Fact]

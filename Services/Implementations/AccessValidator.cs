@@ -13,8 +13,10 @@ public class AccessValidator(
     public async Task<AccessValidationResult> ValidateAsync(UserRequest userRequest)
     {
         var ip = await ipRepository.FindOrCreateIpAsync(userRequest.IpInfo.Ip);
+        
         if (ip.Status == IpStatus.Whitelisted)
             return new AccessValidationResult(false, AccessValidatorReasons.IpIsWhitelisted);
+        
         var validationResult = ValidateUserAgent(userRequest.UserAgent);
         if (validationResult.Block) return validationResult;
 
@@ -54,7 +56,7 @@ public class AccessValidator(
 
         var timeThreshold = DateTime.UtcNow.AddMinutes(userRequest.Referer == null ? -30 : -5);
         var blockedRequests = await userRequestRepository
-            .GetBlockedRequestsAsync(userRequest.Host, userRequest.Path, timeThreshold);
+            .GetRequestsAsync(userRequest.Host, userRequest.Path, false, start: timeThreshold);
 
         if (blockedRequests.Count == 0) return new AccessValidationResult(false, AccessValidatorReasons.RequestIsValid);
 
@@ -99,7 +101,7 @@ public class AccessValidator(
 
     private async Task<bool> IsRequestedPagePopular(string host, string path, DateTime start, int threshold)
     {
-        var requests = await userRequestRepository.GetUserRequestsOnEndPointsAsync(host, path, start);
+        var requests = await userRequestRepository.GetRequestsAsync(host, path, true, start, DateTime.UtcNow);
 
         return requests.Count > threshold;
     }

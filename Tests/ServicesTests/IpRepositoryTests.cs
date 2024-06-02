@@ -227,6 +227,33 @@ public class IpRepositoryTests
         // Assert
         Assert.Null(foundIp);
     }
+    
+    [Fact]
+    public async Task FindIpAsync_byId_ShouldFindIpByIpId()
+    {
+        // Arrange
+        var ip = new IpAddressInfo("192.168.0.1");
+        await _dbContext.Ips.AddAsync(ip);
+        
+        // Act
+        var foundIp = await _ipRepository.FindIpAsync(ip.Id);
+        
+        // Assert
+        Assert.NotNull(foundIp);
+        Assert.Equal(ip.Ip, foundIp.Ip);
+    }
+    
+    [Fact]
+    public async Task FindIpAsync_byId_ShouldReturnNullIfIpNotFoundByIpId()
+    {
+        // Arrange
+
+        // Act
+        var foundIp = await _ipRepository.FindIpAsync(Guid.NewGuid());
+        
+        // Assert
+        Assert.Null(foundIp);
+    }
 
     [Fact]
     public async Task ChangeShouldHideIfBannedAsync_ShouldChangeShouldHideStatus()

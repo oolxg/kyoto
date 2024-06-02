@@ -19,6 +19,7 @@ public class Startup
             .AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
             });
         
         builder.Services.AddDbContext<KyotoDbContext>(options =>

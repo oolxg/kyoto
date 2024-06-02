@@ -101,8 +101,10 @@ public class IpRepositoryFake
         ChangeShouldHideIfBannedAsyncCount++;
         var ipInfo = Ips.FirstOrDefault(i => i.Ip == ip);
         if (ipInfo == null) throw new IpRepositoryException("Ip not found");
-
-        ipInfo.ShouldHideIfBanned = shouldHide;
+        
+        var ipIndex = Ips.FindIndex(i => i.Ip == ip);
+        Ips[ipIndex].ShouldHideIfBanned = shouldHide;
+        
         return Task.CompletedTask;
     }
 

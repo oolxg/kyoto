@@ -42,4 +42,21 @@ public class InfoController(IIpRepository ipRepository,
 
         return Ok(response);
     }
+    
+    [HttpGet("ip/{id:Guid}")]
+    public async Task<IActionResult> GetIpInfo(Guid id)
+    {
+        var ipInfo = await ipRepository.FindIpAsync(id);
+        if (ipInfo == null) return NotFound();
+
+        var tokens = await ipRepository.FindTokensByIpAsync(ipInfo.Ip);
+
+        var response = new
+        {
+            ipInfo,
+            relatedTokens = tokens
+        };
+        
+        return Ok(response);
+    }
 }

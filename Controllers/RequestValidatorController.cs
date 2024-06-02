@@ -1,4 +1,5 @@
 using Kyoto.Models;
+using Kyoto.Resources;
 using Kyoto.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,7 +30,13 @@ public class RequestValidatorController(
         var ipInfo = (IpAddressInfo)HttpContext.Items["IpInfo"]!;
 
         await ipRepository.BanIpIfNeededAsync(ipInfo.Ip, validationResult.Reason);
-
+        
+        if (validationResult.Reason == AccessValidatorReasons.UserAgentIsEmpty ||
+            validationResult.Reason == AccessValidatorReasons.BadBotUserAgent)
+        {
+            await ipRepository.ChangeShouldHideIfBannedAsync(ipInfo.Ip, true);
+        }
+        
         if (tokenInfo != null)
         {
             await tokenRepository.BanTokenAsync(tokenInfo.Token, validationResult.Reason);

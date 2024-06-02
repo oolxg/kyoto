@@ -218,4 +218,59 @@ public class AccessControllerTests
         Assert.Equal(1, _tokenRepository.UnbanTokenAsyncCount);
         Assert.Equal(TokenStatus.Normal, _tokenRepository.Tokens[0].Status);
     }
+    
+    [Fact]
+    public async Task WhitelistIp_ShouldWhitelistIp()
+    {
+        // Arrange
+        var ipInfo = new IpAddressInfo(DefaultIp);
+        _ipRepository.Ips.Add(ipInfo);
+        
+        // Act
+        var result = await _accessController.WhitelistIp(DefaultIp, DefaultReason) as OkObjectResult;
+        var response = result?.Value as dynamic;
+        
+        // Assert
+        Assert.NotNull(response);
+        Assert.Equal($"IP {DefaultIp} added to white list.", response?.message);
+        Assert.Equal(DefaultIp, response?.ip);
+        Assert.Equal(IpStatus.Whitelisted, _ipRepository.Ips[0].Status);
+    }
+    
+    [Fact]
+    public async Task WhitelistIp_GivenInvalidIp_ShouldReturnBadRequest()
+    {
+        // Act
+        var result = await _accessController.WhitelistIp("InvalidIp", DefaultReason) as BadRequestObjectResult;
+        var response = result?.Value as dynamic;
+        
+        // Assert
+        Assert.NotNull(response);
+        Assert.True(response?.error);
+        Assert.Equal("Invalid IP address", response?.description);
+        Assert.Equal("InvalidIp", response?.ip);
+        Assert.Equal(0, _ipRepository.WhitelistIpAsyncCount);
+        Assert.Empty(_ipRepository.Ips);
+    }
+    
+    [Fact]
+    public async Task WhitelistIp_GivenAlreadyWhitelistedIp_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var ipInfo = new IpAddressInfo(DefaultIp);
+        ipInfo.UpdateStatus(IpStatus.Whitelisted, DefaultReason);
+        _ipRepository.Ips.Add(ipInfo);
+        
+        // Act
+        var result = await _accessController.WhitelistIp(DefaultIp, DefaultReason) as BadRequestObjectResult;
+        var response = result?.Value as dynamic;
+        
+        // Assert
+        Assert.NotNull(response);
+        Assert.True(response?.error);
+        Assert.Equal("IP is already whitelisted", response?.description);
+        Assert.Equal(DefaultIp, response?.ip);
+        Assert.Equal(1, _ipRepository.WhitelistIpAsyncCount);
+        Assert.Single(_ipRepository.Ips);
+    }
 }

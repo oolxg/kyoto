@@ -35,6 +35,13 @@ public interface IIpRepository
     /// <param name="ip">The IP address to search for.</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the found <see cref="IpAddressInfo"/> object, or null if not found.</returns>
     public Task<IpAddressInfo?> FindIpAsync(string ip);
+    
+    /// <summary>
+    /// Finds and retrieves the banned IP information based on the specified IP address asynchronously.
+    /// </summary>
+    /// <param name="id">The IP address id to search for.</param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the found <see cref="IpAddressInfo"/> object, or null if not found.</returns>
+    public Task<IpAddressInfo?> FindIpAsync(Guid id);
 
     /// <summary>
     /// Whitelists the specified IP address asynchronously.
@@ -77,5 +84,4 @@ public interface IIpRepository
     /// <param name="ip">IP string</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the list of found <see cref="TokenInfo"/> objects.</returns>
     public Task<List<TokenInfo>> FindTokensByIpAsync(string ip);
-    
 }

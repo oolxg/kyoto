@@ -833,7 +833,7 @@ public class AccessValidatorTests
         Assert.Equal(AccessValidatorReasons.RequestWasMadeToRecentlyBlockedPage, result.Reason);
         Assert.True(result.Block);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
-        Assert.Equal(1, _userRequestRepositoryFake.GetBlockedRequestsAsyncCount);
+        Assert.Equal(2, _userRequestRepositoryFake.GetRequestsAsyncCount);
     }
 
     [Fact]
@@ -859,7 +859,7 @@ public class AccessValidatorTests
         Assert.Equal(AccessValidatorReasons.RequestIsValid, result.Reason);
         Assert.False(result.Block);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
-        Assert.Equal(1, _userRequestRepositoryFake.GetBlockedRequestsAsyncCount);
+        Assert.Equal(1, _userRequestRepositoryFake.GetRequestsAsyncCount);
     }
 
     [Fact]
@@ -884,7 +884,7 @@ public class AccessValidatorTests
         Assert.Equal(AccessValidatorReasons.RequestWasMadeToRecentlyBlockedPage, result.Reason);
         Assert.True(result.Block);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
-        Assert.Equal(1, _userRequestRepositoryFake.GetBlockedRequestsAsyncCount);
+        Assert.Equal(2, _userRequestRepositoryFake.GetRequestsAsyncCount);
     }
 
     [Fact]
@@ -908,8 +908,8 @@ public class AccessValidatorTests
         // Assert
         Assert.Equal(AccessValidatorReasons.RequestIsValid, result.Reason);
         Assert.False(result.Block);
-        Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
-        Assert.Equal(1, _userRequestRepositoryFake.GetBlockedRequestsAsyncCount);
+        Assert.Equal(2, _ipRepositoryFake.FindOrCreateIpAsyncCount);
+        Assert.Equal(2, _userRequestRepositoryFake.GetRequestsAsyncCount);
     }
 
     [Fact]
@@ -935,7 +935,7 @@ public class AccessValidatorTests
         Assert.Equal(AccessValidatorReasons.RequestIsValid, result.Reason);
         Assert.False(result.Block);
         Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
-        Assert.Equal(1, _userRequestRepositoryFake.GetBlockedRequestsAsyncCount);
+        Assert.Equal(1, _userRequestRepositoryFake.GetRequestsAsyncCount);
     }
     
     [Fact]

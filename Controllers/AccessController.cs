@@ -1,4 +1,5 @@
 using System.Net;
+using Kyoto.Exceptions;
 using Kyoto.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -102,7 +103,7 @@ public class AccessController(
     }
     
     [HttpGet("whitelist/ip/{ip}")]
-    public async Task<IActionResult> WhiteListIp(string ip, [FromQuery] string reason)
+    public async Task<IActionResult> WhitelistIp(string ip, [FromQuery] string reason)
     {
         if (IPAddress.TryParse(ip, out _) == false)
         {
@@ -116,8 +117,22 @@ public class AccessController(
             return BadRequest(response);
         }
 
-        await ipRepository.WhitelistIpAsync(ip, reason);
-        
+        try
+        {
+            await ipRepository.WhitelistIpAsync(ip, reason);
+        } 
+        catch (IpRepositoryException)
+        {
+            var response = new
+            {
+                error = true,
+                description = "IP is already whitelisted",
+                ip
+            };
+
+            return BadRequest(response);
+        }
+
         var requests = await userRequestRepository.FindUserRequestsByIpAsync(ip);
         foreach (var request in requests.Where(request => request.TokenInfo?.Token != null))
             await tokenRepository.WhitelistTokenAsync(request.TokenInfo!.Token,
