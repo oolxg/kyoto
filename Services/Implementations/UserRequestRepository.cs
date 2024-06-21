@@ -43,17 +43,23 @@ public class UserRequestRepository(KyotoDbContext context) : IUserRequestReposit
             .ToListAsync();
     }
 
-    public async Task<List<UserRequest>> GetRequestsAsync(string host, string path, bool includeNonBlocked = false, DateTime? start = null, DateTime? end = null)
+    public async Task<List<UserRequest>> GetRequestsAsync(
+        string host,
+        string path, 
+        bool includeNonBlocked = false,
+        bool includeHidden = false,
+        DateTime? start = null,
+        DateTime? end = null)
     {
         start ??= DateTime.MinValue;
         end ??= DateTime.MaxValue;
         return await Context.UserRequests
             .Where(ur =>
-                (host == "*" || ur.Host == host) &&
-                (path == "*" || ur.Path == path) &&
+                (host == "*" || ur.Host.Contains(host)) &&
+                (path == "*" || ur.Path.StartsWith(path)) &&
                 ur.RequestDate >= start && ur.RequestDate <= end &&
-                (includeNonBlocked || ur.IsBlocked)
-            )
+                (includeNonBlocked || ur.IsBlocked) &&
+                (includeHidden || !ur.IsHidden))
             .OrderByDescending(ur => ur.RequestDate)
             .ToListAsync();
     }

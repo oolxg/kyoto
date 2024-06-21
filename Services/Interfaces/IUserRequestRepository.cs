@@ -39,11 +39,17 @@ public interface IUserRequestRepository
     /// <param name="host">Host of the endpoint</param>
     /// <param name="path">Path of the endpoint</param>
     /// <param name="includeNonBlocked">Include non-blocked requests</param>
+    /// <param name="includeHidden">Include hidden requests</param>
     /// <param name="start">Start date</param>
     /// <param name="end">End date</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation. The task result is the list of found <see cref="UserRequest"/> objects.</returns>
-    public Task<List<UserRequest>> GetRequestsAsync(string host, string path, bool includeNonBlocked = false,
-        DateTime? start = null, DateTime? end = null);
+    public Task<List<UserRequest>> GetRequestsAsync(
+        string host, 
+        string path, 
+        bool includeNonBlocked = false,
+        bool includeHidden = false,
+        DateTime? start = null, 
+        DateTime? end = null);
 
     /// <summary>
     /// Updates user request

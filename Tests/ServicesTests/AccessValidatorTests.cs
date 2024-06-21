@@ -908,8 +908,8 @@ public class AccessValidatorTests
         // Assert
         Assert.Equal(AccessValidatorReasons.RequestIsValid, result.Reason);
         Assert.False(result.Block);
-        Assert.Equal(2, _ipRepositoryFake.FindOrCreateIpAsyncCount);
-        Assert.Equal(2, _userRequestRepositoryFake.GetRequestsAsyncCount);
+        Assert.Equal(1, _ipRepositoryFake.FindOrCreateIpAsyncCount);
+        Assert.Equal(1, _userRequestRepositoryFake.GetRequestsAsyncCount);
     }
 
     [Fact]

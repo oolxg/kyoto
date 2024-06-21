@@ -22,6 +22,10 @@ public class UserRequest
     [Column(TypeName = "boolean")]
     [Required]
     public bool IsBlocked { get; set; }
+    
+    [Column(TypeName = "boolean")]
+    [Required]
+    public bool IsHidden { get; set; }
 
     [Column(TypeName = "text")] public string? DecisionReason { get; set; }
 
@@ -32,8 +36,8 @@ public class UserRequest
     public IpAddressInfo IpInfo { get; set; }
     public TokenInfo? TokenInfo { get; set; }
 
-    public string? Referer => Headers.TryGetValue("Referer", out var referer) ? referer : null;
-    public string? UserAgent => Headers.TryGetValue("User-Agent", out var userAgent) ? userAgent : null;
+    public string? Referer => Headers.GetValueOrDefault("Referer");
+    public string? UserAgent => Headers.GetValueOrDefault("User-Agent");
 
     [Column(TypeName = "jsonb")]
     [Required]
@@ -53,6 +57,7 @@ public class UserRequest
         Host = host;
         Path = path;
         IsBlocked = false;
+        IsHidden = false;
         Headers = headers ?? new Dictionary<string, string>();
     }
 
@@ -72,6 +77,7 @@ public class UserRequest
         Host = host;
         Path = path;
         IsBlocked = false;
+        IsHidden = false;
         Headers = headers ?? new Dictionary<string, string>();
     }
 

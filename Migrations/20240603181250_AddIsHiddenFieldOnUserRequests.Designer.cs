@@ -3,6 +3,7 @@ using System;
 using Kyoto.Models.KyotoDbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Kyoto.Migrations
 {
     [DbContext(typeof(KyotoDbContext))]
-    partial class SmugDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240603181250_AddIsHiddenFieldOnUserRequests")]
+    partial class AddIsHiddenFieldOnUserRequests
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

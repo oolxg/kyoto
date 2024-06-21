@@ -101,7 +101,12 @@ public class AccessValidator(
 
     private async Task<bool> IsRequestedPagePopular(string host, string path, DateTime start, int threshold)
     {
-        var requests = await userRequestRepository.GetRequestsAsync(host, path, true, start, DateTime.UtcNow);
+        var requests = await userRequestRepository.GetRequestsAsync(
+            host, 
+            path,  
+            includeNonBlocked: true,
+            start: start,
+            end: DateTime.UtcNow);
 
         return requests.Count > threshold;
     }

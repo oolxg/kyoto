@@ -1,5 +1,6 @@
 using System.Net;
 using Kyoto.Exceptions;
+using Kyoto.Services.Implementations;
 using Kyoto.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,7 +11,8 @@ namespace Kyoto.Controllers;
 public class AccessController(
     IIpRepository ipRepository,
     ITokenRepository tokenRepository,
-    IUserRequestRepository userRequestRepository) : ControllerBase
+    IUserRequestRepository userRequestRepository,
+    IRestrictedUrlRepository restrictedUrlRepository) : ControllerBase
 {
     [HttpGet("block/ip/{ip}")]
     public async Task<IActionResult> BanIp(string ip, [FromQuery] string reason)
@@ -100,6 +102,84 @@ public class AccessController(
         };
 
         return Ok(okResponse);
+    }
+    
+    [HttpGet("toggleHide/ip/{ip}")]
+    public async Task<IActionResult> ToggleHideIp(string ip)
+    {
+        if (IPAddress.TryParse(ip, out _) == false)
+        {
+            var response = new
+            {
+                error = true,
+                description = "Invalid IP address",
+                ip
+            };
+
+            return BadRequest(response);
+        }
+
+        var ipInfo = await ipRepository.FindIpAsync(ip);
+        if (ipInfo == null)
+        {
+            var response = new
+            {
+                error = true,
+                description = "IP not found",
+                ip
+            };
+
+            return NotFound(response);
+        }
+        
+        await ipRepository.ChangeShouldHideIfBannedAsync(ip, !ipInfo.ShouldHideIfBanned);
+        
+        var okResponse = new
+        {
+            message = $"IP {ip} should hide if banned: {!ipInfo.ShouldHideIfBanned} -> {ipInfo.ShouldHideIfBanned}",
+            ip
+        };
+        
+        return Ok(okResponse);
+    }
+    
+    [HttpGet("toggleBlockUrl")]
+    public async Task<IActionResult> ToggleBlockUrl(
+        [FromQuery] string host,
+        [FromQuery] string path,
+        [FromQuery] string reason)
+    {
+        if (!host.EndsWith('/'))
+            host += '/';
+        
+        if (!path.StartsWith('/') && path != "*" && path != "/")
+            path = '/' + path;
+        
+        if (path.EndsWith("/"))
+            path = path[..^1];
+        
+        if (await restrictedUrlRepository.IsUrlBlocked(host, path))
+        {
+            await restrictedUrlRepository.UnblockUrl(host, path);
+            var okResponse = new
+            {
+                message = $"URL {host}{path} unblocked",
+                host,
+                path
+            };
+
+            return Ok(okResponse);
+        }
+        
+        await restrictedUrlRepository.BlockUrl(host, path, reason);
+        var response = new
+        {
+            message = $"URL {host}{path} blocked",
+            host,
+            path
+        };
+        
+        return Ok(response);
     }
     
     [HttpGet("whitelist/ip/{ip}")]

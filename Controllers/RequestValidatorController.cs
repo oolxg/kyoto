@@ -35,6 +35,8 @@ public class RequestValidatorController(
             validationResult.Reason == AccessValidatorReasons.BadBotUserAgent)
         {
             await ipRepository.ChangeShouldHideIfBannedAsync(ipInfo.Ip, true);
+            userRequest.IsHidden = true;
+            await userRequestRepository.UpdateUserRequestAsync(userRequest);
         }
         
         if (tokenInfo != null)

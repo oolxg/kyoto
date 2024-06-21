@@ -178,7 +178,13 @@ public class UserRequestRepositoryTests
 
         // Act
         var foundUserRequests = await _userRequestRepository
-            .GetRequestsAsync("google.com", "some/path", true,DateTime.UtcNow.AddHours(-12), DateTime.UtcNow.AddHours(1));
+            .GetRequestsAsync(
+                "google.com", 
+                "some/path", 
+                true,
+                false,
+                DateTime.UtcNow.AddHours(-12),
+                DateTime.UtcNow.AddHours(1));
 
         // Assert
         Assert.Equal(requestsCount, foundUserRequests.Count);
@@ -204,7 +210,13 @@ public class UserRequestRepositoryTests
 
         // Act
         var foundUserRequests = await _userRequestRepository
-            .GetRequestsAsync("google.com", "some/path", true,DateTime.UtcNow.AddHours(1), DateTime.UtcNow.AddHours(2));
+            .GetRequestsAsync(
+                "google.com", 
+                "some/path", 
+                true,
+                false,
+                DateTime.UtcNow.AddHours(1), 
+                DateTime.UtcNow.AddHours(2));
 
         // Assert
         Assert.Empty(foundUserRequests);
@@ -229,7 +241,13 @@ public class UserRequestRepositoryTests
 
         // Act
         var foundUserRequests = await _userRequestRepository
-            .GetRequestsAsync("google.com", "some/other/path", true,DateTime.UtcNow.AddHours(-12), DateTime.UtcNow.AddHours(1));
+            .GetRequestsAsync(
+                "google.com", 
+                "some/other/path", 
+                true,
+                false,
+                DateTime.UtcNow.AddHours(-12),
+                DateTime.UtcNow.AddHours(1));
 
         // Assert
         Assert.Empty(foundUserRequests);
@@ -255,7 +273,13 @@ public class UserRequestRepositoryTests
 
         // Act
         var foundUserRequests = await _userRequestRepository
-            .GetRequestsAsync("*", "*", true,DateTime.UtcNow.AddHours(-12), DateTime.UtcNow.AddHours(1));
+            .GetRequestsAsync(
+                "*", 
+                "*", 
+                true,
+                false,
+                DateTime.UtcNow.AddHours(-12), 
+                DateTime.UtcNow.AddHours(1));
 
         // Assert
         Assert.Equal(requestsCount, foundUserRequests.Count);
@@ -282,7 +306,12 @@ public class UserRequestRepositoryTests
 
         // Act
         var foundUserRequests = await _userRequestRepository
-            .GetRequestsAsync("google.com", "some/path", false, DateTime.UtcNow.AddHours(-12));
+            .GetRequestsAsync(
+                "google.com", 
+                "some/path", 
+                false, 
+                false,
+                DateTime.UtcNow.AddHours(-12));
 
         // Assert
         Assert.Equal(requestsCount / 2, foundUserRequests.Count);
@@ -309,7 +338,12 @@ public class UserRequestRepositoryTests
 
         // Act
         var foundUserRequests = await _userRequestRepository
-            .GetRequestsAsync("google.com", "some/other/path", false,DateTime.UtcNow.AddHours(-12));
+            .GetRequestsAsync(
+                "google.com", 
+                "some/other/path", 
+                false,
+                false,
+                DateTime.UtcNow.AddHours(-12));
 
         // Assert
         Assert.Empty(foundUserRequests);
@@ -335,7 +369,12 @@ public class UserRequestRepositoryTests
 
         // Act
         var foundUserRequests = await _userRequestRepository
-            .GetRequestsAsync("some-other-host.com", "some/path", false,DateTime.UtcNow.AddHours(-12));
+            .GetRequestsAsync(
+                "some-other-host.com",
+                "some/path", 
+                false,
+                false,
+                DateTime.UtcNow.AddHours(-12));
 
         // Assert
         Assert.Empty(foundUserRequests);

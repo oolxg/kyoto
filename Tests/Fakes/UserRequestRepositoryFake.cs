@@ -43,7 +43,13 @@ public class UserRequestRepositoryFake : IUserRequestRepository
         return Task.FromResult(UserRequests.Where(ur => ur.IpInfo.Ip == ipToFind).ToList());
     }
 
-    public Task<List<UserRequest>> GetRequestsAsync(string host, string path, bool includeNonBlocked = false, DateTime? start = null, DateTime? end = null)
+    public Task<List<UserRequest>> GetRequestsAsync(
+        string host, 
+        string path,
+        bool includeNonBlocked = false, 
+        bool includeHidden = false,
+        DateTime? start = null,
+        DateTime? end = null)
     {
         GetRequestsAsyncCount++;
         start ??= DateTime.MinValue;
@@ -53,7 +59,8 @@ public class UserRequestRepositoryFake : IUserRequestRepository
                     (host == "*" || ur.Host == host) &&
                     (path == "*" || ur.Path == path) &&
                     ur.RequestDate >= start && ur.RequestDate <= end &&
-                    (includeNonBlocked || ur.IsBlocked)
+                    (includeNonBlocked || ur.IsBlocked) &&
+                    (includeHidden || !ur.IsHidden)
                 )
             .OrderByDescending(ur => ur.RequestDate)
             .ToList());

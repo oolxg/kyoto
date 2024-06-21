@@ -12,7 +12,7 @@ public interface IRestrictedUrlRepository
     /// <param name="reason">The reason for banning the URL.</param>
     /// <param name="bannedUntil">The date until the URL is banned. If null, the URL is banned indefinitely.</param>
     /// <throws><see cref="RestrictedUrlRepositoryException"/> If the URL is already blocked.</throws>
-    Task BlockUrl(string host, string path, string reason, DateTime? bannedUntil);
+    Task BlockUrl(string host, string path, string reason, DateTime? bannedUntil = null);
 
     /// <summary>
     /// Unblocks the URL for the specified host and path.

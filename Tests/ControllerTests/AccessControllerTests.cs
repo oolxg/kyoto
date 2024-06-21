@@ -11,6 +11,7 @@ public class AccessControllerTests
     private TokenRepositoryFake _tokenRepository;
     private UserRequestRepositoryFake _userRequestRepository;
     private AccessController _accessController;
+    private RestrictedUrlRepositoryFake _restrictedUrlRepository;
     private const string DefaultIp = "192.168.0.1";
     private const string DefaultToken = "TestToken";
     private const string DefaultReason = "Test";
@@ -20,7 +21,8 @@ public class AccessControllerTests
         _userRequestRepository = new UserRequestRepositoryFake();
         _tokenRepository = new TokenRepositoryFake(_userRequestRepository);
         _ipRepository = new IpRepositoryFake(_userRequestRepository, _tokenRepository);
-        _accessController = new AccessController(_ipRepository, _tokenRepository, _userRequestRepository);
+        _restrictedUrlRepository = new RestrictedUrlRepositoryFake();
+        _accessController = new AccessController(_ipRepository, _tokenRepository, _userRequestRepository, _restrictedUrlRepository);
     }
 
     [Fact]
